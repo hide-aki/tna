@@ -1,1 +1,11 @@
-settings: []
+settings:
+  - !com.jazasoft.mtdb.dto.Setting
+    key: 'min-marker-percent'
+    name: 'Minimum Marker Percentage'
+    description: ''
+    value: '85'
+    unit: '%'
+    dataType: 'number'
+    serialNo: 1
+    roles: 'super_user,admin'
+    groupId: 'default'

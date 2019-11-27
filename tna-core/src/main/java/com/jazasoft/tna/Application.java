@@ -6,6 +6,7 @@ import com.jazasoft.mtdb.dto.License;
 import com.jazasoft.mtdb.entity.Tenant;
 import com.jazasoft.mtdb.service.ILicenseService;
 import com.jazasoft.mtdb.service.TenantService;
+import com.jazasoft.util.PropUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,16 +17,27 @@ import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.client.RestTemplate;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.time.LocalTime;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Properties;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 /**
  * Created by mdzahidraza on 21/07/17.
  */
+@Controller
 @SpringBootApplication
 @ComponentScan(basePackages = {"com.jazasoft.mtdb", "com.jazasoft.tna"})
 public class Application extends AbstractApplication {
@@ -37,6 +49,41 @@ public class Application extends AbstractApplication {
 
   public static void main(String[] args) {
     SpringApplication.run(Application.class, args);
+  }
+
+
+  @RequestMapping(value = {"/", "/index.html"})
+  public String home() {
+    return "index.html";
+  }
+
+  @RequestMapping(value = "/service-worker.js", method = RequestMethod.GET)
+  public String serviceWorker() {
+    return "service-worker.js";
+  }
+
+  @RequestMapping(value = {"/{path:[^\\.]*}", "/**/{path:^(?!oauth).*}/{path:[^\\.]*}"}, method = RequestMethod.GET)
+  public String redirect() {
+    return "forward:/";
+  }
+
+  @GetMapping("/buildInfo")
+  @ResponseBody
+  public Map<String, String> buildInfo() {
+
+    InputStream is = PropUtils.class.getClassLoader().getResourceAsStream("build.properties");
+    Properties props = new Properties();
+    try {
+      props.load(is);
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+    Map<String, String> buildInfo = new HashMap<>();
+
+    buildInfo.put("version", props.getProperty("build.version", ""));
+    buildInfo.put("number", props.getProperty("build.number", ""));
+    buildInfo.put("date", props.getProperty("build.date", ""));
+    return buildInfo;
   }
 
   //    @Bean
