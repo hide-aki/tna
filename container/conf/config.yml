@@ -1,0 +1,22 @@
+app:
+  app-id: tna
+client:
+  id: client
+  secret: secret
+tenant:
+  database:
+    init-script-filename: initdb.sh
+liquibase:
+  tenant-changelog: 'classpath:/db/changelog-tenant.xml'
+  enabled: true
+  test:
+    tenant-changelog: 'classpath:/db/changelog-integration-test.xml'
+scheduler:
+  pool-size: 10
+auth-server:
+  endpoint:
+    base: http://iam-dev.jaza-soft.tk
+
+default-conf:
+
+

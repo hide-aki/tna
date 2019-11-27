@@ -1,0 +1,44 @@
+spring:
+  datasource:
+    url: jdbc:h2:mem:tna_master;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+    platform: h2
+    initialize: true
+    continue-on-error: false
+
+  jpa:
+    generate-ddl: false
+    show-sql: true
+    format-sql: true
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.H2Dialect
+
+  h2:
+    console:
+      enabled: true
+      path: /console
+
+  liquibase:
+    enabled: true
+
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          jwk-set-uri: https://iam-dev.jaza-soft.com/.well-known/jwks.json
+
+test:
+  tenant:
+    datasource:
+      db-name: tna_test
+      url: jdbc:h2:mem:tna_test;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
+      driver-class-name: org.h2.Driver
+      username: sa
+      password: ""
+      platform: h2
+

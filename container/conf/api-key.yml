@@ -1,0 +1,12 @@
+api-keys:
+  - !com.jazasoft.mtdb.dto.ApiKey
+    key: OeM7NxAbEtS7C04vwwF7kvSo.dGVzdA==
+    client: optacut
+    active: true
+    apis:
+      - !com.jazasoft.mtdb.dto.UrlInterceptor
+        url: /api/buyers/\d+
+        resourceId: buyer
+        scopeActionList:
+          - 'read'
+#          - 'read,default'

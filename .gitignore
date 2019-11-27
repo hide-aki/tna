@@ -1,0 +1,16 @@
+**/*.iml
+**/target/**
+.idea/
+**/*.log
+**/node_modules/**
+**/dist/**
+**/node/**
+**/javadoc/
+**/.vscode/**
+**bak**
+**/src/main/webapp/static/**
+**/src/main/webapp/WEB-INF/**
+src/main/webapp/static/**
+src/main/webapp/WEB-INF/**
+**-lock.json
+

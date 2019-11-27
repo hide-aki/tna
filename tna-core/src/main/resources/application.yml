@@ -1,0 +1,55 @@
+app:
+  home: TNA_HOME
+
+server:
+  port: 8006
+
+spring:
+  datasource:
+    ###### PostgreSQL Configuration #######
+    driverClassName: org.postgresql.Driver
+    url: jdbc:postgresql://localhost:5432/tna_master
+    username: razamd
+    password: zahid7292
+    platform: postgresql
+    host: localhost
+    port: 5432
+    masterdb: tna_master
+
+  jpa:
+    show-sql: false
+    format-sql: true
+    hibernate:
+      ddl-auto: none
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        jdbc:
+          lob:
+            non_contextual_creation: true
+
+  mail:
+    protocol: smtp
+    test-connection: false
+    host: smtp.gmail.com
+    port: 587
+    from: noreply@jaza-soft.com
+    username: admin@jaza-soft.com
+    password: tuksysvicjegaufu
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          jwk-set-uri: http://iam-dev.jaza-soft.tk/.well-known/jwks.json
+
+  liquibase:
+    enabled: true
+
+

@@ -1,0 +1,40 @@
+public:
+  - !com.jazasoft.mtdb.dto.UrlInterceptor
+     url: ''
+     resourceId: home
+     exact: true
+     scopes:
+     - read
+  - !com.jazasoft.mtdb.dto.UrlInterceptor
+     url: WEB-INF
+     exact: false
+     scopes:
+     - read
+  - !com.jazasoft.mtdb.dto.UrlInterceptor
+     url: /static
+     resourceId: static_contents
+     exact: false
+     scopes:
+     - read
+
+authenticated:
+  - !com.jazasoft.mtdb.dto.UrlInterceptor
+     url: /api/buyers
+     resourceId: product
+     scopes:
+     - read
+
+  - !com.jazasoft.mtdb.dto.UrlInterceptor
+     url: /api/buyers/\d+
+     resourceId: product
+     scopes:
+     - read
+
+protected:
+  - !com.jazasoft.mtdb.dto.UrlInterceptor
+     url: /api/buyers
+     resourceId: product
+
+  - !com.jazasoft.mtdb.dto.UrlInterceptor
+     url: /api/buyers/\d+
+     resourceId: product
