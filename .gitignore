@@ -13,4 +13,8 @@
 src/main/webapp/static/**
 src/main/webapp/WEB-INF/**
 **-lock.json
+**.bak*
+**.lck
+**/yarn.lock
+**/package-lock.json.lock
 
