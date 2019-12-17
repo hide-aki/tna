@@ -10,7 +10,7 @@ import javax.validation.constraints.NotEmpty;
 @NoArgsConstructor
 @Data
 @Entity
-public class Buyer extends Auditable {
+public class SubActivity extends Auditable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -22,4 +22,7 @@ public class Buyer extends Auditable {
 
     @Column(name = "description")
     private String desc;
+
+    @ManyToOne(optional = false, fetch = FetchType.LAZY)
+    private Activity activity;
 }

@@ -6,11 +6,13 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotEmpty;
+import java.util.HashSet;
+import java.util.Set;
 
 @NoArgsConstructor
 @Data
 @Entity
-public class Buyer extends Auditable {
+public class Team extends Auditable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -22,4 +24,12 @@ public class Buyer extends Auditable {
 
     @Column(name = "description")
     private String desc;
+
+    @ManyToOne(optional = false, fetch = FetchType.LAZY)
+    @Column(nullable = false)
+    private Department department;
+
+//    @OneToMany(mappedBy = "team", cascade = CascadeType.ALL)
+//    private Set<User> userList = new HashSet<>();
+//
 }

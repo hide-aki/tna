@@ -10,7 +10,7 @@ import javax.validation.constraints.NotEmpty;
 @NoArgsConstructor
 @Data
 @Entity
-public class Buyer extends Auditable {
+public class Timeline extends Auditable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -20,6 +20,15 @@ public class Buyer extends Auditable {
     @Column(nullable = false)
     private String name;
 
-    @Column(name = "description")
-    private String desc;
+    @NotEmpty
+    @Column(nullable = false)
+    private String tnaType;
+
+//    @Column(nullable = false)
+    private Boolean approved;
+
+    private String approvedBy;
+
+    @ManyToOne(optional = false, fetch = FetchType.LAZY)
+    private Buyer buyer;
 }

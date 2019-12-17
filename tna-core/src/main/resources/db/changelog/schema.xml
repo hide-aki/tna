@@ -1,0 +1,730 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
+    <changeSet author="shahrukhkarim (generated)" id="1576499385866-17">
+        <createTable tableName="activity">
+            <column autoIncrement="true" name="id" type="BIGSERIAL">
+                <constraints primaryKey="true" primaryKeyName="activity_pkey"/>
+            </column>
+            <column name="created_at" type="TIMESTAMP(29) WITHOUT TIME ZONE"/>
+            <column name="created_by" type="VARCHAR(255)"/>
+            <column name="last_modified_by" type="VARCHAR(255)"/>
+            <column name="modified_at" type="TIMESTAMP(29) WITHOUT TIME ZONE"/>
+            <column name="c_level" type="BOOL"/>
+            <column name="is_default" type="BOOL"/>
+            <column name="name" type="VARCHAR(255)"/>
+            <column name="notify" type="INT"/>
+            <column name="serial_no" type="INT"/>
+            <column name="department_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <addForeignKeyConstraint baseColumnNames="department_id" baseTableName="activity" constraintName="fkbkmgaplt93mmh4ho55xlgqe0w" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="department"/>
+    </changeSet>
+
+    <changeSet author="shahrukhkarim (generated)" id="1576499385866-18">
+        <createTable tableName="buyer">
+            <column autoIncrement="true" name="id" type="BIGSERIAL">
+                <constraints primaryKey="true" primaryKeyName="buyer_pkey"/>
+            </column>
+            <column name="created_at" type="TIMESTAMP(29) WITHOUT TIME ZONE"/>
+            <column name="created_by" type="VARCHAR(255)"/>
+            <column name="last_modified_by" type="VARCHAR(255)"/>
+            <column name="modified_at" type="TIMESTAMP(29) WITHOUT TIME ZONE"/>
+            <column name="description" type="VARCHAR(255)"/>
+            <column name="name" type="VARCHAR(255)"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="shahrukhkarim (generated)" id="1576499385866-19">
+        <createTable tableName="delay_reason">
+            <column autoIncrement="true" name="id" type="BIGSERIAL">
+                <constraints primaryKey="true" primaryKeyName="delay_reason_pkey"/>
+            </column>
+            <column name="created_at" type="TIMESTAMP(29) WITHOUT TIME ZONE"/>
+            <column name="created_by" type="VARCHAR(255)"/>
+            <column name="last_modified_by" type="VARCHAR(255)"/>
+            <column name="modified_at" type="TIMESTAMP(29) WITHOUT TIME ZONE"/>
+            <column name="name" type="VARCHAR(255)"/>
+            <column name="activity_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="shahrukhkarim (generated)" id="1576499385866-20">
+        <createTable tableName="department">
+            <column autoIncrement="true" name="id" type="BIGSERIAL">
+                <constraints primaryKey="true" primaryKeyName="department_pkey"/>
+            </column>
+            <column name="created_at" type="TIMESTAMP(29) WITHOUT TIME ZONE"/>
+            <column name="created_by" type="VARCHAR(255)"/>
+            <column name="last_modified_by" type="VARCHAR(255)"/>
+            <column name="modified_at" type="TIMESTAMP(29) WITHOUT TIME ZONE"/>
+            <column name="description" type="VARCHAR(255)"/>
+            <column name="name" type="VARCHAR(255)"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="shahrukhkarim (generated)" id="1576499385866-21">
+        <createTable tableName="garment_type">
+            <column autoIncrement="true" name="id" type="BIGSERIAL">
+                <constraints primaryKey="true" primaryKeyName="garment_type_pkey"/>
+            </column>
+            <column name="created_at" type="TIMESTAMP(29) WITHOUT TIME ZONE"/>
+            <column name="created_by" type="VARCHAR(255)"/>
+            <column name="last_modified_by" type="VARCHAR(255)"/>
+            <column name="modified_at" type="TIMESTAMP(29) WITHOUT TIME ZONE"/>
+            <column name="description" type="VARCHAR(255)"/>
+            <column name="name" type="VARCHAR(255)"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="shahrukhkarim (generated)" id="1576499385866-22">
+        <createTable tableName="oactivity">
+            <column autoIncrement="true" name="id" type="BIGSERIAL">
+                <constraints primaryKey="true" primaryKeyName="oactivity_pkey"/>
+            </column>
+            <column name="created_at" type="TIMESTAMP(29) WITHOUT TIME ZONE"/>
+            <column name="created_by" type="VARCHAR(255)"/>
+            <column name="last_modified_by" type="VARCHAR(255)"/>
+            <column name="modified_at" type="TIMESTAMP(29) WITHOUT TIME ZONE"/>
+            <column name="completed_date" type="TIMESTAMP(29) WITHOUT TIME ZONE"/>
+            <column name="delay_reason" type="VARCHAR(255)"/>
+            <column name="lead_time" type="INT"/>
+            <column name="remarks" type="VARCHAR(255)"/>
+            <column name="order_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="t_activity_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="shahrukhkarim (generated)" id="1576499385866-23">
+        <createTable tableName="order_log">
+            <column autoIncrement="true" name="id" type="BIGSERIAL">
+                <constraints primaryKey="true" primaryKeyName="order_log_pkey"/>
+            </column>
+            <column name="created_at" type="TIMESTAMP(29) WITHOUT TIME ZONE"/>
+            <column name="created_by" type="VARCHAR(255)"/>
+            <column name="last_modified_by" type="VARCHAR(255)"/>
+            <column name="modified_at" type="TIMESTAMP(29) WITHOUT TIME ZONE"/>
+            <column name="data" type="VARCHAR(255)"/>
+            <column name="diff" type="VARCHAR(255)"/>
+            <column name="o_activity_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="order_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="shahrukhkarim (generated)" id="1576499385866-24">
+        <createTable tableName="orders">
+            <column autoIncrement="true" name="id" type="BIGSERIAL">
+                <constraints primaryKey="true" primaryKeyName="orders_pkey"/>
+            </column>
+            <column name="created_at" type="TIMESTAMP(29) WITHOUT TIME ZONE"/>
+            <column name="created_by" type="VARCHAR(255)"/>
+            <column name="last_modified_by" type="VARCHAR(255)"/>
+            <column name="modified_at" type="TIMESTAMP(29) WITHOUT TIME ZONE"/>
+            <column name="ex_factory_data" type="TIMESTAMP(29) WITHOUT TIME ZONE"/>
+            <column name="order_date" type="TIMESTAMP(29) WITHOUT TIME ZONE"/>
+            <column name="order_qty" type="INT"/>
+            <column name="po_ref" type="VARCHAR(255)"/>
+            <column name="style" type="VARCHAR(255)"/>
+            <column name="buyer_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="garment_type_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="season_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="time_line_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="shahrukhkarim (generated)" id="1576499385866-25">
+        <createTable tableName="osub_activity">
+            <column autoIncrement="true" name="id" type="BIGSERIAL">
+                <constraints primaryKey="true" primaryKeyName="osub_activity_pkey"/>
+            </column>
+            <column name="created_at" type="TIMESTAMP(29) WITHOUT TIME ZONE"/>
+            <column name="created_by" type="VARCHAR(255)"/>
+            <column name="last_modified_by" type="VARCHAR(255)"/>
+            <column name="modified_at" type="TIMESTAMP(29) WITHOUT TIME ZONE"/>
+            <column name="completed_date" type="TIME WITHOUT TIME ZONE"/>
+            <column name="lead_time" type="INT"/>
+            <column name="remarks" type="VARCHAR(255)"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="shahrukhkarim (generated)" id="1576499385866-26">
+        <createTable tableName="season">
+            <column autoIncrement="true" name="id" type="BIGSERIAL">
+                <constraints primaryKey="true" primaryKeyName="season_pkey"/>
+            </column>
+            <column name="created_at" type="TIMESTAMP(29) WITHOUT TIME ZONE"/>
+            <column name="created_by" type="VARCHAR(255)"/>
+            <column name="last_modified_by" type="VARCHAR(255)"/>
+            <column name="modified_at" type="TIMESTAMP(29) WITHOUT TIME ZONE"/>
+            <column name="description" type="VARCHAR(255)"/>
+            <column name="name" type="VARCHAR(255)"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="shahrukhkarim (generated)" id="1576499385866-27">
+        <createTable tableName="sub_activity">
+            <column autoIncrement="true" name="id" type="BIGSERIAL">
+                <constraints primaryKey="true" primaryKeyName="sub_activity_pkey"/>
+            </column>
+            <column name="created_at" type="TIMESTAMP(29) WITHOUT TIME ZONE"/>
+            <column name="created_by" type="VARCHAR(255)"/>
+            <column name="last_modified_by" type="VARCHAR(255)"/>
+            <column name="modified_at" type="TIMESTAMP(29) WITHOUT TIME ZONE"/>
+            <column name="description" type="VARCHAR(255)"/>
+            <column name="name" type="VARCHAR(255)"/>
+            <column name="activity_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="shahrukhkarim (generated)" id="1576499385866-28">
+        <createTable tableName="tactivity">
+            <column autoIncrement="true" name="id" type="BIGSERIAL">
+                <constraints primaryKey="true" primaryKeyName="tactivity_pkey"/>
+            </column>
+            <column name="created_at" type="TIMESTAMP(29) WITHOUT TIME ZONE"/>
+            <column name="created_by" type="VARCHAR(255)"/>
+            <column name="last_modified_by" type="VARCHAR(255)"/>
+            <column name="modified_at" type="TIMESTAMP(29) WITHOUT TIME ZONE"/>
+            <column name="lead_time_normal" type="INT"/>
+            <column name="lead_time_optimal" type="INT"/>
+            <column name="time_from" type="VARCHAR(255)"/>
+            <column name="activity_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="time_line_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="shahrukhkarim (generated)" id="1576499385866-29">
+        <createTable tableName="team">
+            <column autoIncrement="true" name="id" type="BIGSERIAL">
+                <constraints primaryKey="true" primaryKeyName="team_pkey"/>
+            </column>
+            <column name="created_at" type="TIMESTAMP(29) WITHOUT TIME ZONE"/>
+            <column name="created_by" type="VARCHAR(255)"/>
+            <column name="last_modified_by" type="VARCHAR(255)"/>
+            <column name="modified_at" type="TIMESTAMP(29) WITHOUT TIME ZONE"/>
+            <column name="description" type="VARCHAR(255)"/>
+            <column name="name" type="VARCHAR(255)"/>
+            <column name="department_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="shahrukhkarim (generated)" id="1576499385866-30">
+        <createTable tableName="time_line">
+            <column autoIncrement="true" name="id" type="BIGSERIAL">
+                <constraints primaryKey="true" primaryKeyName="time_line_pkey"/>
+            </column>
+            <column name="created_at" type="TIMESTAMP(29) WITHOUT TIME ZONE"/>
+            <column name="created_by" type="VARCHAR(255)"/>
+            <column name="last_modified_by" type="VARCHAR(255)"/>
+            <column name="modified_at" type="TIMESTAMP(29) WITHOUT TIME ZONE"/>
+            <column name="approved" type="BOOL">
+                <constraints nullable="false"/>
+            </column>
+            <column name="approved_by" type="VARCHAR(255)"/>
+            <column name="name" type="VARCHAR(255)"/>
+            <column name="tna_type" type="VARCHAR(255)"/>
+            <column name="buyer_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="shahrukhkarim (generated)" id="1576499385866-31">
+        <createTable tableName="tsub_activity">
+            <column autoIncrement="true" name="id" type="BIGSERIAL">
+                <constraints primaryKey="true" primaryKeyName="tsub_activity_pkey"/>
+            </column>
+            <column name="created_at" type="TIMESTAMP(29) WITHOUT TIME ZONE"/>
+            <column name="created_by" type="VARCHAR(255)"/>
+            <column name="last_modified_by" type="VARCHAR(255)"/>
+            <column name="modified_at" type="TIMESTAMP(29) WITHOUT TIME ZONE"/>
+            <column name="lead_time_normal" type="INT"/>
+            <column name="sub_activity_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="t_activity_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="shahrukhkarim (generated)" id="1576499385866-32">
+        <createTable tableName="users">
+            <column autoIncrement="true" name="id" type="BIGSERIAL">
+                <constraints primaryKey="true" primaryKeyName="users_pkey"/>
+            </column>
+            <column name="created_at" type="TIMESTAMP(29) WITHOUT TIME ZONE"/>
+            <column name="created_by" type="VARCHAR(255)"/>
+            <column name="last_modified_by" type="VARCHAR(255)"/>
+            <column name="modified_at" type="TIMESTAMP(29) WITHOUT TIME ZONE"/>
+            <column name="email" type="VARCHAR(255)"/>
+            <column name="full_name" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="mobile" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="roles" type="TEXT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="username" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="team_id" type="BIGINT"/>
+        </createTable>
+    </changeSet>
+
+
+    <changeSet author="shahrukhkarim (generated)" id="1576499385866-33">
+        <addForeignKeyConstraint baseColumnNames="buyer_id" baseTableName="time_line" constraintName="fk5b2c2a17gowhva4gl08odkuce" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="buyer"/>
+    </changeSet>
+    <changeSet author="shahrukhkarim (generated)" id="1576499385866-34">
+        <addForeignKeyConstraint baseColumnNames="activity_id" baseTableName="tactivity" constraintName="fk74dl2pqlwkrd2xaoj7sj13gpf" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="activity"/>
+    </changeSet>
+    <changeSet author="shahrukhkarim (generated)" id="1576499385866-35">
+        <addForeignKeyConstraint baseColumnNames="buyer_id" baseTableName="orders" constraintName="fk8bfdq6yuliu59tbo7go78xt51" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="buyer"/>
+    </changeSet>
+    <changeSet author="shahrukhkarim (generated)" id="1576499385866-36">
+        <addForeignKeyConstraint baseColumnNames="t_activity_id" baseTableName="oactivity" constraintName="fk903ngrssotylv2t7564e3xmig" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="tactivity"/>
+    </changeSet>
+    <changeSet author="shahrukhkarim (generated)" id="1576499385866-37">
+        <addForeignKeyConstraint baseColumnNames="order_id" baseTableName="oactivity" constraintName="fka740skjciaemd5ygfssi7gn0t" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="orders"/>
+    </changeSet>
+    <changeSet author="shahrukhkarim (generated)" id="1576499385866-38">
+        <addForeignKeyConstraint baseColumnNames="time_line_id" baseTableName="tactivity" constraintName="fkbddex13owcki45pfjjbcvgije" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="time_line"/>
+    </changeSet>
+    <changeSet author="shahrukhkarim (generated)" id="1576499385866-39">
+        <addForeignKeyConstraint baseColumnNames="department_id" baseTableName="activity" constraintName="fkbkmgaplt93mmh4ho55xlgqe0w" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="department"/>
+    </changeSet>
+    <changeSet author="shahrukhkarim (generated)" id="1576499385866-40">
+        <addForeignKeyConstraint baseColumnNames="department_id" baseTableName="team" constraintName="fkcitsl0ygrf7nbmydhlcqorb3p" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="department"/>
+    </changeSet>
+    <changeSet author="shahrukhkarim (generated)" id="1576499385866-41">
+        <addForeignKeyConstraint baseColumnNames="season_id" baseTableName="orders" constraintName="fkggdh0w4v24vn61xjej0hkijl8" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="season"/>
+    </changeSet>
+    <changeSet author="shahrukhkarim (generated)" id="1576499385866-42">
+        <addForeignKeyConstraint baseColumnNames="team_id" baseTableName="users" constraintName="fkhn2tnbh9fqjqeuv8ehw5ple7a" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="team"/>
+    </changeSet>
+    <changeSet author="shahrukhkarim (generated)" id="1576499385866-43">
+        <addForeignKeyConstraint baseColumnNames="o_activity_id" baseTableName="order_log" constraintName="fkis708c1f4syub2s5vc7r032f3" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="oactivity"/>
+    </changeSet>
+    <changeSet author="shahrukhkarim (generated)" id="1576499385866-44">
+        <addForeignKeyConstraint baseColumnNames="order_id" baseTableName="order_log" constraintName="fkm36xxtro0ovsdhc0b38tb19us" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="orders"/>
+    </changeSet>
+    <changeSet author="shahrukhkarim (generated)" id="1576499385866-45">
+        <addForeignKeyConstraint baseColumnNames="sub_activity_id" baseTableName="tsub_activity" constraintName="fkmv8cmrkeq7e6jul9tqjpr6wua" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="sub_activity"/>
+    </changeSet>
+    <changeSet author="shahrukhkarim (generated)" id="1576499385866-46">
+        <addForeignKeyConstraint baseColumnNames="time_line_id" baseTableName="orders" constraintName="fkntqn1ma5tmug3vqciqt54kdg7" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="time_line"/>
+    </changeSet>
+    <changeSet author="shahrukhkarim (generated)" id="1576499385866-47">
+        <addForeignKeyConstraint baseColumnNames="activity_id" baseTableName="delay_reason" constraintName="fkoweaewjh6bnrecfok7398ymjr" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="activity"/>
+    </changeSet>
+    <changeSet author="shahrukhkarim (generated)" id="1576499385866-48">
+        <addForeignKeyConstraint baseColumnNames="activity_id" baseTableName="sub_activity" constraintName="fksq79ukqaw2ghy7tei1cyuv4vx" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="activity"/>
+    </changeSet>
+    <changeSet author="shahrukhkarim (generated)" id="1576499385866-49">
+        <addForeignKeyConstraint baseColumnNames="t_activity_id" baseTableName="tsub_activity" constraintName="fkt8d9v2cwe1qw8td2tmbjmj0br" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="tactivity"/>
+    </changeSet>
+    <changeSet author="shahrukhkarim (generated)" id="1576499385866-50">
+        <addForeignKeyConstraint baseColumnNames="garment_type_id" baseTableName="orders" constraintName="fkysbpjdo75vb9iy2lnr69qr6w" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="garment_type"/>
+    </changeSet>
+    <changeSet author="shahrukhkarim (generated)" id="1576503193585-1">
+        <createSequence sequenceName="activity_id_seq"/>
+    </changeSet>
+    <changeSet author="shahrukhkarim (generated)" id="1576503193585-2">
+        <createSequence sequenceName="buyer_id_seq"/>
+    </changeSet>
+    <changeSet author="shahrukhkarim (generated)" id="1576503193585-3">
+        <createSequence sequenceName="delay_reason_id_seq"/>
+    </changeSet>
+    <changeSet author="shahrukhkarim (generated)" id="1576503193585-4">
+        <createSequence sequenceName="department_id_seq"/>
+    </changeSet>
+    <changeSet author="shahrukhkarim (generated)" id="1576503193585-5">
+        <createSequence sequenceName="garment_type_id_seq"/>
+    </changeSet>
+    <changeSet author="shahrukhkarim (generated)" id="1576503193585-6">
+        <createSequence sequenceName="oactivity_id_seq"/>
+    </changeSet>
+    <changeSet author="shahrukhkarim (generated)" id="1576503193585-7">
+        <createSequence sequenceName="order_log_id_seq"/>
+    </changeSet>
+    <changeSet author="shahrukhkarim (generated)" id="1576503193585-8">
+        <createSequence sequenceName="orders_id_seq"/>
+    </changeSet>
+    <changeSet author="shahrukhkarim (generated)" id="1576503193585-9">
+        <createSequence sequenceName="osub_activity_id_seq"/>
+    </changeSet>
+    <changeSet author="shahrukhkarim (generated)" id="1576503193585-10">
+        <createSequence sequenceName="season_id_seq"/>
+    </changeSet>
+    <changeSet author="shahrukhkarim (generated)" id="1576503193585-11">
+        <createSequence sequenceName="sub_activity_id_seq"/>
+    </changeSet>
+    <changeSet author="shahrukhkarim (generated)" id="1576503193585-12">
+        <createSequence sequenceName="tactivity_id_seq"/>
+    </changeSet>
+    <changeSet author="shahrukhkarim (generated)" id="1576503193585-13">
+        <createSequence sequenceName="team_id_seq"/>
+    </changeSet>
+    <changeSet author="shahrukhkarim (generated)" id="1576503193585-14">
+        <createSequence sequenceName="time_line_id_seq"/>
+    </changeSet>
+    <changeSet author="shahrukhkarim (generated)" id="1576503193585-15">
+        <createSequence sequenceName="tsub_activity_id_seq"/>
+    </changeSet>
+    <changeSet author="shahrukhkarim (generated)" id="1576503193585-16">
+        <createSequence sequenceName="users_id_seq"/>
+    </changeSet>
+    <changeSet author="shahrukhkarim (generated)" id="1576503193585-17">
+        <createTable tableName="activity">
+            <column autoIncrement="true" name="id" type="BIGSERIAL">
+                <constraints primaryKey="true" primaryKeyName="activity_pkey"/>
+            </column>
+            <column name="created_at" type="TIMESTAMP(29) WITHOUT TIME ZONE"/>
+            <column name="created_by" type="VARCHAR(255)"/>
+            <column name="last_modified_by" type="VARCHAR(255)"/>
+            <column name="modified_at" type="TIMESTAMP(29) WITHOUT TIME ZONE"/>
+            <column name="c_level" type="BOOL"/>
+            <column name="is_default" type="BOOL"/>
+            <column name="name" type="VARCHAR(255)"/>
+            <column name="notify" type="INT"/>
+            <column name="serial_no" type="INT"/>
+            <column name="department_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="shahrukhkarim (generated)" id="1576503193585-18">
+        <createTable tableName="buyer">
+            <column autoIncrement="true" name="id" type="BIGSERIAL">
+                <constraints primaryKey="true" primaryKeyName="buyer_pkey"/>
+            </column>
+            <column name="created_at" type="TIMESTAMP(29) WITHOUT TIME ZONE"/>
+            <column name="created_by" type="VARCHAR(255)"/>
+            <column name="last_modified_by" type="VARCHAR(255)"/>
+            <column name="modified_at" type="TIMESTAMP(29) WITHOUT TIME ZONE"/>
+            <column name="description" type="VARCHAR(255)"/>
+            <column name="name" type="VARCHAR(255)"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="shahrukhkarim (generated)" id="1576503193585-19">
+        <createTable tableName="delay_reason">
+            <column autoIncrement="true" name="id" type="BIGSERIAL">
+                <constraints primaryKey="true" primaryKeyName="delay_reason_pkey"/>
+            </column>
+            <column name="created_at" type="TIMESTAMP(29) WITHOUT TIME ZONE"/>
+            <column name="created_by" type="VARCHAR(255)"/>
+            <column name="last_modified_by" type="VARCHAR(255)"/>
+            <column name="modified_at" type="TIMESTAMP(29) WITHOUT TIME ZONE"/>
+            <column name="name" type="VARCHAR(255)"/>
+            <column name="activity_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="shahrukhkarim (generated)" id="1576503193585-20">
+        <createTable tableName="department">
+            <column autoIncrement="true" name="id" type="BIGSERIAL">
+                <constraints primaryKey="true" primaryKeyName="department_pkey"/>
+            </column>
+            <column name="created_at" type="TIMESTAMP(29) WITHOUT TIME ZONE"/>
+            <column name="created_by" type="VARCHAR(255)"/>
+            <column name="last_modified_by" type="VARCHAR(255)"/>
+            <column name="modified_at" type="TIMESTAMP(29) WITHOUT TIME ZONE"/>
+            <column name="description" type="VARCHAR(255)"/>
+            <column name="name" type="VARCHAR(255)"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="shahrukhkarim (generated)" id="1576503193585-21">
+        <createTable tableName="garment_type">
+            <column autoIncrement="true" name="id" type="BIGSERIAL">
+                <constraints primaryKey="true" primaryKeyName="garment_type_pkey"/>
+            </column>
+            <column name="created_at" type="TIMESTAMP(29) WITHOUT TIME ZONE"/>
+            <column name="created_by" type="VARCHAR(255)"/>
+            <column name="last_modified_by" type="VARCHAR(255)"/>
+            <column name="modified_at" type="TIMESTAMP(29) WITHOUT TIME ZONE"/>
+            <column name="description" type="VARCHAR(255)"/>
+            <column name="name" type="VARCHAR(255)"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="shahrukhkarim (generated)" id="1576503193585-22">
+        <createTable tableName="oactivity">
+            <column autoIncrement="true" name="id" type="BIGSERIAL">
+                <constraints primaryKey="true" primaryKeyName="oactivity_pkey"/>
+            </column>
+            <column name="created_at" type="TIMESTAMP(29) WITHOUT TIME ZONE"/>
+            <column name="created_by" type="VARCHAR(255)"/>
+            <column name="last_modified_by" type="VARCHAR(255)"/>
+            <column name="modified_at" type="TIMESTAMP(29) WITHOUT TIME ZONE"/>
+            <column name="completed_date" type="TIMESTAMP(29) WITHOUT TIME ZONE"/>
+            <column name="delay_reason" type="VARCHAR(255)"/>
+            <column name="lead_time" type="INT"/>
+            <column name="remarks" type="VARCHAR(255)"/>
+            <column name="order_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="t_activity_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="shahrukhkarim (generated)" id="1576503193585-23">
+        <createTable tableName="order_log">
+            <column autoIncrement="true" name="id" type="BIGSERIAL">
+                <constraints primaryKey="true" primaryKeyName="order_log_pkey"/>
+            </column>
+            <column name="created_at" type="TIMESTAMP(29) WITHOUT TIME ZONE"/>
+            <column name="created_by" type="VARCHAR(255)"/>
+            <column name="last_modified_by" type="VARCHAR(255)"/>
+            <column name="modified_at" type="TIMESTAMP(29) WITHOUT TIME ZONE"/>
+            <column name="data" type="VARCHAR(255)"/>
+            <column name="diff" type="VARCHAR(255)"/>
+            <column name="o_activity_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="order_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="shahrukhkarim (generated)" id="1576503193585-24">
+        <createTable tableName="orders">
+            <column autoIncrement="true" name="id" type="BIGSERIAL">
+                <constraints primaryKey="true" primaryKeyName="orders_pkey"/>
+            </column>
+            <column name="created_at" type="TIMESTAMP(29) WITHOUT TIME ZONE"/>
+            <column name="created_by" type="VARCHAR(255)"/>
+            <column name="last_modified_by" type="VARCHAR(255)"/>
+            <column name="modified_at" type="TIMESTAMP(29) WITHOUT TIME ZONE"/>
+            <column name="ex_factory_data" type="TIMESTAMP(29) WITHOUT TIME ZONE"/>
+            <column name="order_date" type="TIMESTAMP(29) WITHOUT TIME ZONE"/>
+            <column name="order_qty" type="INT"/>
+            <column name="po_ref" type="VARCHAR(255)"/>
+            <column name="style" type="VARCHAR(255)"/>
+            <column name="buyer_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="garment_type_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="season_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="time_line_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="shahrukhkarim (generated)" id="1576503193585-25">
+        <createTable tableName="osub_activity">
+            <column autoIncrement="true" name="id" type="BIGSERIAL">
+                <constraints primaryKey="true" primaryKeyName="osub_activity_pkey"/>
+            </column>
+            <column name="created_at" type="TIMESTAMP(29) WITHOUT TIME ZONE"/>
+            <column name="created_by" type="VARCHAR(255)"/>
+            <column name="last_modified_by" type="VARCHAR(255)"/>
+            <column name="modified_at" type="TIMESTAMP(29) WITHOUT TIME ZONE"/>
+            <column name="completed_date" type="TIME WITHOUT TIME ZONE"/>
+            <column name="lead_time" type="INT"/>
+            <column name="remarks" type="VARCHAR(255)"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="shahrukhkarim (generated)" id="1576503193585-26">
+        <createTable tableName="season">
+            <column autoIncrement="true" name="id" type="BIGSERIAL">
+                <constraints primaryKey="true" primaryKeyName="season_pkey"/>
+            </column>
+            <column name="created_at" type="TIMESTAMP(29) WITHOUT TIME ZONE"/>
+            <column name="created_by" type="VARCHAR(255)"/>
+            <column name="last_modified_by" type="VARCHAR(255)"/>
+            <column name="modified_at" type="TIMESTAMP(29) WITHOUT TIME ZONE"/>
+            <column name="description" type="VARCHAR(255)"/>
+            <column name="name" type="VARCHAR(255)"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="shahrukhkarim (generated)" id="1576503193585-27">
+        <createTable tableName="sub_activity">
+            <column autoIncrement="true" name="id" type="BIGSERIAL">
+                <constraints primaryKey="true" primaryKeyName="sub_activity_pkey"/>
+            </column>
+            <column name="created_at" type="TIMESTAMP(29) WITHOUT TIME ZONE"/>
+            <column name="created_by" type="VARCHAR(255)"/>
+            <column name="last_modified_by" type="VARCHAR(255)"/>
+            <column name="modified_at" type="TIMESTAMP(29) WITHOUT TIME ZONE"/>
+            <column name="description" type="VARCHAR(255)"/>
+            <column name="name" type="VARCHAR(255)"/>
+            <column name="activity_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <addForeignKeyConstraint baseColumnNames="activity_id" baseTableName="sub_activity" constraintName="fksq79ukqaw2ghy7tei1cyuv4vx" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="activity"/>
+    </changeSet>
+    <changeSet author="shahrukhkarim (generated)" id="1576503193585-28">
+        <createTable tableName="tactivity">
+            <column autoIncrement="true" name="id" type="BIGSERIAL">
+                <constraints primaryKey="true" primaryKeyName="tactivity_pkey"/>
+            </column>
+            <column name="created_at" type="TIMESTAMP(29) WITHOUT TIME ZONE"/>
+            <column name="created_by" type="VARCHAR(255)"/>
+            <column name="last_modified_by" type="VARCHAR(255)"/>
+            <column name="modified_at" type="TIMESTAMP(29) WITHOUT TIME ZONE"/>
+            <column name="lead_time_normal" type="INT"/>
+            <column name="lead_time_optimal" type="INT"/>
+            <column name="time_from" type="VARCHAR(255)"/>
+            <column name="activity_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="time_line_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="shahrukhkarim (generated)" id="1576503193585-29">
+        <createTable tableName="team">
+            <column autoIncrement="true" name="id" type="BIGSERIAL">
+                <constraints primaryKey="true" primaryKeyName="team_pkey"/>
+            </column>
+            <column name="created_at" type="TIMESTAMP(29) WITHOUT TIME ZONE"/>
+            <column name="created_by" type="VARCHAR(255)"/>
+            <column name="last_modified_by" type="VARCHAR(255)"/>
+            <column name="modified_at" type="TIMESTAMP(29) WITHOUT TIME ZONE"/>
+            <column name="description" type="VARCHAR(255)"/>
+            <column name="name" type="VARCHAR(255)"/>
+            <column name="department_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="shahrukhkarim (generated)" id="1576503193585-30">
+        <createTable tableName="time_line">
+            <column autoIncrement="true" name="id" type="BIGSERIAL">
+                <constraints primaryKey="true" primaryKeyName="time_line_pkey"/>
+            </column>
+            <column name="created_at" type="TIMESTAMP(29) WITHOUT TIME ZONE"/>
+            <column name="created_by" type="VARCHAR(255)"/>
+            <column name="last_modified_by" type="VARCHAR(255)"/>
+            <column name="modified_at" type="TIMESTAMP(29) WITHOUT TIME ZONE"/>
+            <column name="approved" type="BOOL">
+                <constraints nullable="false"/>
+            </column>
+            <column name="approved_by" type="VARCHAR(255)"/>
+            <column name="name" type="VARCHAR(255)"/>
+            <column name="tna_type" type="VARCHAR(255)"/>
+            <column name="buyer_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="shahrukhkarim (generated)" id="1576503193585-31">
+        <createTable tableName="tsub_activity">
+            <column autoIncrement="true" name="id" type="BIGSERIAL">
+                <constraints primaryKey="true" primaryKeyName="tsub_activity_pkey"/>
+            </column>
+            <column name="created_at" type="TIMESTAMP(29) WITHOUT TIME ZONE"/>
+            <column name="created_by" type="VARCHAR(255)"/>
+            <column name="last_modified_by" type="VARCHAR(255)"/>
+            <column name="modified_at" type="TIMESTAMP(29) WITHOUT TIME ZONE"/>
+            <column name="lead_time_normal" type="INT"/>
+            <column name="sub_activity_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="t_activity_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="shahrukhkarim (generated)" id="1576503193585-32">
+        <createTable tableName="users">
+            <column autoIncrement="true" name="id" type="BIGSERIAL">
+                <constraints primaryKey="true" primaryKeyName="users_pkey"/>
+            </column>
+            <column name="created_at" type="TIMESTAMP(29) WITHOUT TIME ZONE"/>
+            <column name="created_by" type="VARCHAR(255)"/>
+            <column name="last_modified_by" type="VARCHAR(255)"/>
+            <column name="modified_at" type="TIMESTAMP(29) WITHOUT TIME ZONE"/>
+            <column name="email" type="VARCHAR(255)"/>
+            <column name="full_name" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="mobile" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="roles" type="TEXT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="username" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="team_id" type="BIGINT"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="shahrukhkarim (generated)" id="1576503193585-33">
+        <addForeignKeyConstraint baseColumnNames="buyer_id" baseTableName="time_line" constraintName="fk5b2c2a17gowhva4gl08odkuce" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="buyer"/>
+    </changeSet>
+    <changeSet author="shahrukhkarim (generated)" id="1576503193585-34">
+        <addForeignKeyConstraint baseColumnNames="activity_id" baseTableName="tactivity" constraintName="fk74dl2pqlwkrd2xaoj7sj13gpf" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="activity"/>
+    </changeSet>
+    <changeSet author="shahrukhkarim (generated)" id="1576503193585-35">
+        <addForeignKeyConstraint baseColumnNames="buyer_id" baseTableName="orders" constraintName="fk8bfdq6yuliu59tbo7go78xt51" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="buyer"/>
+    </changeSet>
+    <changeSet author="shahrukhkarim (generated)" id="1576503193585-36">
+        <addForeignKeyConstraint baseColumnNames="t_activity_id" baseTableName="oactivity" constraintName="fk903ngrssotylv2t7564e3xmig" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="tactivity"/>
+    </changeSet>
+    <changeSet author="shahrukhkarim (generated)" id="1576503193585-37">
+        <addForeignKeyConstraint baseColumnNames="order_id" baseTableName="oactivity" constraintName="fka740skjciaemd5ygfssi7gn0t" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="orders"/>
+    </changeSet>
+    <changeSet author="shahrukhkarim (generated)" id="1576503193585-38">
+        <addForeignKeyConstraint baseColumnNames="time_line_id" baseTableName="tactivity" constraintName="fkbddex13owcki45pfjjbcvgije" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="time_line"/>
+    </changeSet>
+    <changeSet author="shahrukhkarim (generated)" id="1576503193585-39">
+        <addForeignKeyConstraint baseColumnNames="department_id" baseTableName="activity" constraintName="fkbkmgaplt93mmh4ho55xlgqe0w" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="department"/>
+    </changeSet>
+    <changeSet author="shahrukhkarim (generated)" id="1576503193585-40">
+        <addForeignKeyConstraint baseColumnNames="department_id" baseTableName="team" constraintName="fkcitsl0ygrf7nbmydhlcqorb3p" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="department"/>
+    </changeSet>
+    <changeSet author="shahrukhkarim (generated)" id="1576503193585-41">
+        <addForeignKeyConstraint baseColumnNames="season_id" baseTableName="orders" constraintName="fkggdh0w4v24vn61xjej0hkijl8" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="season"/>
+    </changeSet>
+    <changeSet author="shahrukhkarim (generated)" id="1576503193585-42">
+        <addForeignKeyConstraint baseColumnNames="team_id" baseTableName="users" constraintName="fkhn2tnbh9fqjqeuv8ehw5ple7a" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="team"/>
+    </changeSet>
+    <changeSet author="shahrukhkarim (generated)" id="1576503193585-43">
+        <addForeignKeyConstraint baseColumnNames="o_activity_id" baseTableName="order_log" constraintName="fkis708c1f4syub2s5vc7r032f3" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="oactivity"/>
+    </changeSet>
+    <changeSet author="shahrukhkarim (generated)" id="1576503193585-44">
+        <addForeignKeyConstraint baseColumnNames="order_id" baseTableName="order_log" constraintName="fkm36xxtro0ovsdhc0b38tb19us" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="orders"/>
+    </changeSet>
+    <changeSet author="shahrukhkarim (generated)" id="1576503193585-45">
+        <addForeignKeyConstraint baseColumnNames="sub_activity_id" baseTableName="tsub_activity" constraintName="fkmv8cmrkeq7e6jul9tqjpr6wua" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="sub_activity"/>
+    </changeSet>
+    <changeSet author="shahrukhkarim (generated)" id="1576503193585-46">
+        <addForeignKeyConstraint baseColumnNames="time_line_id" baseTableName="orders" constraintName="fkntqn1ma5tmug3vqciqt54kdg7" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="time_line"/>
+    </changeSet>
+    <changeSet author="shahrukhkarim (generated)" id="1576503193585-47">
+        <addForeignKeyConstraint baseColumnNames="activity_id" baseTableName="delay_reason" constraintName="fkoweaewjh6bnrecfok7398ymjr" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="activity"/>
+    </changeSet>
+    <changeSet author="shahrukhkarim (generated)" id="1576503193585-48">
+
+    </changeSet>
+    <changeSet author="shahrukhkarim (generated)" id="1576503193585-49">
+        <addForeignKeyConstraint baseColumnNames="t_activity_id" baseTableName="tsub_activity" constraintName="fkt8d9v2cwe1qw8td2tmbjmj0br" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="tactivity"/>
+    </changeSet>
+    <changeSet author="shahrukhkarim (generated)" id="1576503193585-50">
+        <addForeignKeyConstraint baseColumnNames="garment_type_id" baseTableName="orders" constraintName="fkysbpjdo75vb9iy2lnr69qr6w" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="garment_type"/>
+    </changeSet>
+</databaseChangeLog>

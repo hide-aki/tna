@@ -10,7 +10,7 @@ import javax.validation.constraints.NotEmpty;
 @NoArgsConstructor
 @Data
 @Entity
-public class Buyer extends Auditable {
+public class Season extends Auditable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

@@ -6,11 +6,13 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotEmpty;
+import java.util.HashSet;
+import java.util.Set;
 
 @NoArgsConstructor
 @Data
 @Entity
-public class Buyer extends Auditable {
+public class Department extends Auditable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -22,4 +24,7 @@ public class Buyer extends Auditable {
 
     @Column(name = "description")
     private String desc;
+
+//    @OneToMany(mappedBy = "department")
+//    private Set<Team> teamList = new HashSet<>();
 }
