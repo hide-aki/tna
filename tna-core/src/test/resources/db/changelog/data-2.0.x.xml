@@ -13,5 +13,47 @@
             <column name="name" value="GANT"/>
         </insert>
     </changeSet>
+    <changeSet author="shahrukh" id="v2.0.x-id2">
+        <insert tableName="season">
+            <column name="id" valueNumeric="1"/>
+            <column name="name" value="Spring 2019"/>
+        </insert>
+        <insert tableName="season">
+            <column name="id" valueNumeric="2"/>
+            <column name="name" value="Spring 2020"/>
+        </insert>
+    </changeSet>
+    <changeSet author="shahrukh" id="v2.0.x-id3">
+        <insert tableName="garment_Type">
+            <column name="id" valueNumeric="1"/>
+            <column name="name" value="Men's Shirt"/>
+        </insert>
+        <insert tableName="garment_Type">
+            <column name="id" valueNumeric="2"/>
+            <column name="name" value="Women's Shirt"/>
+        </insert>
+    </changeSet>
+    <changeSet author="shahrukh" id="v2.0.x-id4">
+        <insert tableName="department">
+            <column name="id" valueNumeric="1"/>
+            <column name="name" value="CAD"/>
+        </insert>
+        <insert tableName="department">
+            <column name="id" valueNumeric="2"/>
+            <column name="name" value="Cutting"/>
+        </insert>
+    </changeSet>
+    <changeSet author="shahrukh" id="v2.0.x-id5">
+        <insert tableName="team">
+            <column name="id" valueNumeric="1"/>
+            <column name="name" value="Team1"/>
+            <column name="department_id" type="BIGINT" value="1"/>
+        </insert>
+        <insert tableName="team">
+            <column name="id" valueNumeric="2"/>
+            <column name="name" value="Team2"/>
+            <column name="department_id" type="BIGINT" value="1"/>
+        </insert>
+    </changeSet>
 
 </databaseChangeLog>

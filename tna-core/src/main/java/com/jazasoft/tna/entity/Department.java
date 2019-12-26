@@ -1,5 +1,6 @@
 package com.jazasoft.tna.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.jazasoft.mtdb.entity.Auditable;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -25,6 +26,7 @@ public class Department extends Auditable {
     @Column(name = "description")
     private String desc;
 
+//    @JsonIgnore
 //    @OneToMany(mappedBy = "department")
 //    private Set<Team> teamList = new HashSet<>();
 }

@@ -4,20 +4,515 @@
                    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
 
-  <changeSet author="razamd" id="v2.0.x-id1">
-    <createTable tableName="buyer">
-      <column autoIncrement="true" name="id" type="BIGSERIAL">
-        <constraints primaryKey="true" primaryKeyName="buyer_pkey"/>
-      </column>
-      <column name="created_at" type="TIMESTAMP WITHOUT TIME ZONE"/>
-      <column name="modified_at" type="TIMESTAMP WITHOUT TIME ZONE"/>
-      <column name="created_by" type="VARCHAR(255)"/>
-      <column name="last_modified_by" type="VARCHAR(255)"/>
+    <changeSet author="shahrukh" id="v2.0.x-id1">
+        <createTable tableName="buyer">
+            <column autoIncrement="true" name="id" type="BIGSERIAL">
+                <constraints primaryKey="true" primaryKeyName="buyer_pkey"/>
+            </column>
+            <column name="created_at" type="TIMESTAMP WITHOUT TIME ZONE"/>
+            <column name="modified_at" type="TIMESTAMP WITHOUT TIME ZONE"/>
+            <column name="created_by" type="VARCHAR(255)"/>
+            <column name="last_modified_by" type="VARCHAR(255)"/>
 
-      <column name="name" type="VARCHAR(255)"/>
-      <column name="description" type="VARCHAR(255)"/>
+            <column name="name" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="description" type="VARCHAR(255)"/>
 
-    </createTable>
-  </changeSet>
+        </createTable>
+        <createIndex indexName="uk_buyer_name" tableName="buyer" unique="true">
+            <column name="name"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="shahrukh" id="v2.0.x-id2">
+        <createTable tableName="garment_type">
+            <column autoIncrement="true" name="id" type="BIGSERIAL">
+                <constraints primaryKey="true" primaryKeyName="garment_type_pkey"/>
+            </column>
+            <column name="created_at" type="TIMESTAMP WITHOUT TIME ZONE"/>
+            <column name="modified_at" type="TIMESTAMP WITHOUT TIME ZONE"/>
+            <column name="created_by" type="VARCHAR(255)"/>
+            <column name="last_modified_by" type="VARCHAR(255)"/>
 
+            <column name="name" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="description" type="VARCHAR(255)"/>
+
+        </createTable>
+
+        <createIndex indexName="uk_garment_type_name" tableName="garment_type" unique="true">
+            <column name="name"/>
+        </createIndex>
+    </changeSet>
+    <changeSet id="shahrukh" author="v2.0.x-id3">
+        <createTable tableName="department">
+            <column autoIncrement="true" name="id" type="BIGSERIAL">
+                <constraints primaryKey="true" primaryKeyName="department_pkey"/>
+            </column>
+            <column name="created_at" type="TIMESTAMP WITHOUT TIME ZONE"/>
+            <column name="modified_at" type="TIMESTAMP WITHOUT TIME ZONE"/>
+            <column name="created_by" type="VARCHAR(255)"/>
+            <column name="last_modified_by" type="VARCHAR(255)"/>
+
+            <column name="name" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="description" type="VARCHAR(255)"/>
+
+        </createTable>
+        <createIndex indexName="uk_department_name" tableName="department" unique="true">
+            <column name="name"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="shahrukh" id="v2.0.x-id4">
+        <createTable tableName="team">
+            <column autoIncrement="true" name="id" type="BIGSERIAL">
+                <constraints primaryKey="true" primaryKeyName="team_pkey"/>
+            </column>
+            <column name="created_at" type="TIMESTAMP WITHOUT TIME ZONE"/>
+            <column name="modified_at" type="TIMESTAMP WITHOUT TIME ZONE"/>
+            <column name="created_by" type="VARCHAR(255)"/>
+            <column name="last_modified_by" type="VARCHAR(255)"/>
+
+            <column name="name" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="description" type="VARCHAR(255)"/>
+
+            <column name="department_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <createIndex indexName="uk_team_name" tableName="team" unique="true">
+            <column name="name"/>
+        </createIndex>
+
+        <addForeignKeyConstraint baseColumnNames="department_id" baseTableName="team"
+                                 constraintName="fk_team_department_id" deferrable="false"
+                                 initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
+                                 referencedColumnNames="id" referencedTableName="department"/>
+    </changeSet>
+    <changeSet id="shahrukh" author="v2.0.x-id5">
+        <createTable tableName="season">
+            <column autoIncrement="true" name="id" type="BIGSERIAL">
+                <constraints primaryKey="true" primaryKeyName="season_pkey"/>
+            </column>
+            <column name="created_at" type="TIMESTAMP WITHOUT TIME ZONE"/>
+            <column name="modified_at" type="TIMESTAMP WITHOUT TIME ZONE"/>
+            <column name="created_by" type="VARCHAR(255)"/>
+            <column name="last_modified_by" type="VARCHAR(255)"/>
+
+            <column name="name" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="description" type="VARCHAR(255)"/>
+
+        </createTable>
+        <createIndex indexName="uk_season_name" tableName="season" unique="true">
+            <column name="name"/>
+        </createIndex>
+    </changeSet>
+
+
+    <changeSet id="shahrukh" author="v2.0.x-id6">
+        <createTable tableName="activity">
+            <column autoIncrement="true" name="id" type="BIGSERIAL">
+                <constraints primaryKey="true" primaryKeyName="activity_pkey"/>
+            </column>
+            <column name="created_at" type="TIMESTAMP WITHOUT TIME ZONE"/>
+            <column name="modified_at" type="TIMESTAMP WITHOUT TIME ZONE"/>
+            <column name="created_by" type="VARCHAR(255)"/>
+            <column name="last_modified_by" type="VARCHAR(255)"/>
+
+            <column name="name" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="serial_no" type="INT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="notify" type="TEXT"/>
+            <column name="c_level" type="BOOL">
+                <constraints nullable="false"/>
+            </column>
+            <column name="department_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <createIndex indexName="uk_activity_name" tableName="activity" unique="true">
+            <column name="name"/>
+        </createIndex>
+        <addForeignKeyConstraint baseColumnNames="department_id" baseTableName="activity"
+                                 constraintName="fk_activity_department_id" deferrable="false"
+                                 initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
+                                 referencedColumnNames="id" referencedTableName="department"/>
+    </changeSet>
+    <changeSet id="shahrukh" author="v2.0.x-id7">
+        <createTable tableName="delay_reason">
+            <column autoIncrement="true" name="id" type="BIGSERIAL">
+                <constraints primaryKey="true" primaryKeyName="delay_reason_pkey"/>
+            </column>
+            <column name="created_at" type="TIMESTAMP WITHOUT TIME ZONE"/>
+            <column name="modified_at" type="TIMESTAMP WITHOUT TIME ZONE"/>
+            <column name="created_by" type="VARCHAR(255)"/>
+            <column name="last_modified_by" type="VARCHAR(255)"/>
+
+            <column name="name" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="activity_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <createIndex indexName="uk_delay_reason_name" tableName="delay_reason" unique="true">
+            <column name="name"/>
+            <column name="activity_id"/>
+        </createIndex>
+
+        <addForeignKeyConstraint baseColumnNames="activity_id" baseTableName="delay_reason"
+                                 constraintName="fk_delay_reason_activity_id" deferrable="false"
+                                 initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
+                                 referencedColumnNames="id" referencedTableName="activity"/>
+    </changeSet>
+    <changeSet id="shahrukh" author="v2.0.x-id8">
+        <createTable tableName="users">
+            <column autoIncrement="true" name="id" type="BIGSERIAL">
+                <constraints primaryKey="true" primaryKeyName="users_pkey"/>
+            </column>
+            <column name="created_at" type="TIMESTAMP WITHOUT TIME ZONE"/>
+            <column name="modified_at" type="TIMESTAMP WITHOUT TIME ZONE"/>
+            <column name="created_by" type="VARCHAR(255)"/>
+            <column name="last_modified_by" type="VARCHAR(255)"/>
+
+            <column name="full_name" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="email" type="VARCHAR(255)"/>
+            <column name="username" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="roles" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="mobile" type="VARCHAR(10)">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="team_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <createIndex indexName="uk_users_username" tableName="users" unique="true">
+            <column name="username"/>
+        </createIndex>
+        <createIndex indexName="uk_users_email" tableName="users" unique="true">
+            <column name="email"/>
+        </createIndex>
+
+        <addForeignKeyConstraint baseColumnNames="team_id" baseTableName="users"
+                                 constraintName="fk_users_team_id" deferrable="false"
+                                 initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
+                                 referencedColumnNames="id" referencedTableName="team"/>
+    </changeSet>
+
+    <changeSet author="shahrukh" id="v2.0.x-id9">
+        <createTable tableName="timeline">
+            <column autoIncrement="true" name="id" type="BIGSERIAL">
+                <constraints primaryKey="true" primaryKeyName="timeline_pkey"/>
+            </column>
+            <column name="created_at" type="TIMESTAMP WITHOUT TIME ZONE"/>
+            <column name="modified_at" type="TIMESTAMP WITHOUT TIME ZONE"/>
+            <column name="created_by" type="VARCHAR(255)"/>
+            <column name="last_modified_by" type="VARCHAR(255)"/>
+
+            <column name="name" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="tna_type" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="approved" type="BOOL"/>
+            <column name="approved_by" type="VARCHAR(255)"/>
+
+            <column name="buyer_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <createIndex indexName="uk_timeline_name" tableName="timeline" unique="true">
+            <column name="name"/>
+            <column name="buyer_id"></column>
+        </createIndex>
+
+        <addForeignKeyConstraint baseColumnNames="buyer_id" baseTableName="timeline"
+                                 constraintName="fk_timeline_buyer_id" deferrable="false"
+                                 initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
+                                 referencedColumnNames="id" referencedTableName="buyer"/>
+    </changeSet>
+
+    <changeSet id="shahrukh" author="v2.0.x-id10">
+        <createTable tableName="order">
+            <column autoIncrement="true" name="id" type="BIGSERIAL">
+                <constraints primaryKey="true" primaryKeyName="order_pkey"/>
+            </column>
+            <column name="created_at" type="TIMESTAMP WITHOUT TIME ZONE"/>
+            <column name="modified_at" type="TIMESTAMP WITHOUT TIME ZONE"/>
+            <column name="created_by" type="VARCHAR(255)"/>
+            <column name="last_modified_by" type="VARCHAR(255)"/>
+
+            <column name="po_ref" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="order_qty" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="style" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="order_date" type="TIMESTAMP WITHOUT TIME ZONE">
+                <constraints nullable="false"/>
+            </column>
+            <column name="ex_factory_date" type="TIMESTAMP WITHOUT TIME ZONE">
+                <constraints nullable="false"/>
+            </column>
+            <column name="remarks" type="TEXT"/>
+
+            <column name="buyer_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="season_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="timeline_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="garment_type_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <createIndex indexName="uk_order_po_ref" tableName="order" unique="true">
+            <column name="po_ref"/>
+        </createIndex>
+
+        <addForeignKeyConstraint baseColumnNames="buyer_id" baseTableName="order"
+                                 constraintName="fk_order_buyer_id" deferrable="false"
+                                 initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
+                                 referencedColumnNames="id" referencedTableName="buyer"/>
+
+        <addForeignKeyConstraint baseColumnNames="season_id" baseTableName="order"
+                                 constraintName="fk_order_season_id" deferrable="false"
+                                 initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
+                                 referencedColumnNames="id" referencedTableName="season"/>
+
+        <addForeignKeyConstraint baseColumnNames="timeline_id" baseTableName="order"
+                                 constraintName="fk_order_timeline_id" deferrable="false"
+                                 initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
+                                 referencedColumnNames="id" referencedTableName="timeline"/>
+
+        <addForeignKeyConstraint baseColumnNames="garment_type_id" baseTableName="order"
+                                 constraintName="fk_order_garment_type_id" deferrable="false"
+                                 initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
+                                 referencedColumnNames="id" referencedTableName="garment_type"/>
+    </changeSet>
+
+    <changeSet id="shahrukh" author="v2.0.x-id11">
+        <createTable tableName="t_activity">
+            <column autoIncrement="true" name="id" type="BIGSERIAL">
+                <constraints primaryKey="true" primaryKeyName="t_activity_pkey"/>
+            </column>
+            <column name="created_at" type="TIMESTAMP WITHOUT TIME ZONE"/>
+            <column name="modified_at" type="TIMESTAMP WITHOUT TIME ZONE"/>
+            <column name="created_by" type="VARCHAR(255)"/>
+            <column name="last_modified_by" type="VARCHAR(255)"/>
+
+            <column name="lead_time_normal" type="INT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="lead_time_optimal" type="INT"/>
+            <column name="time_from" type="VARCHAR(255)" >
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="timeline_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="activity_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <addForeignKeyConstraint baseColumnNames="timeline_id" baseTableName="t_activity"
+                                 constraintName="fk_t_activity_timeline_id" deferrable="false"
+                                 initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
+                                 referencedColumnNames="id" referencedTableName="timeline"/>
+
+        <addForeignKeyConstraint baseColumnNames="activity_id" baseTableName="t_activity"
+                                 constraintName="fk_t_activity_activity_id" deferrable="false"
+                                 initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
+                                 referencedColumnNames="id" referencedTableName="activity"/>
+    </changeSet>
+
+    <changeSet id="shahrukh" author="v2.0.x-id12">
+        <createTable tableName="o_activity">
+            <column autoIncrement="true" name="id" type="BIGSERIAL">
+                <constraints primaryKey="true" primaryKeyName="o_activity_pkey"/>
+            </column>
+            <column name="created_at" type="TIMESTAMP WITHOUT TIME ZONE"/>
+            <column name="modified_at" type="TIMESTAMP WITHOUT TIME ZONE"/>
+            <column name="created_by" type="VARCHAR(255)"/>
+            <column name="last_modified_by" type="VARCHAR(255)"/>
+
+            <column name="lead_time" type="INT"/>
+            <column name="completed_date" type="TIMESTAMP WITHOUT TIME ZONE"/>
+            <column name="delay_reason" type="VARCHAR(255)"/>
+            <column name="remarks" type="VARCHAR(255)"/>
+
+            <column name="order_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="t_activity_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <addForeignKeyConstraint baseColumnNames="order_id" baseTableName="o_activity"
+                                 constraintName="fk_o_activity_order_id" deferrable="false"
+                                 initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
+                                 referencedColumnNames="id" referencedTableName="order"/>
+        <addForeignKeyConstraint baseColumnNames="t_activity_id" baseTableName="o_activity"
+                                 constraintName="fk_o_activity_t_activity_id" deferrable="false"
+                                 initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
+                                 referencedColumnNames="id" referencedTableName="t_activity"/>
+    </changeSet>
+
+    <changeSet id="shahrukh" author="v2.0.x-id13">
+        <createTable tableName="order_log">
+            <column autoIncrement="true" name="id" type="BIGSERIAL">
+                <constraints primaryKey="true" primaryKeyName="order_log_pkey"/>
+            </column>
+            <column name="created_at" type="TIMESTAMP WITHOUT TIME ZONE"/>
+            <column name="created_by" type="VARCHAR(255)"/>
+
+            <column name="diff" type="TEXT"/>
+            <column name="data" type="TEXT"/>
+
+            <column name="order_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="o_activity_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <addForeignKeyConstraint baseColumnNames="order_id" baseTableName="order_log"
+                                 constraintName="fk_order_log_order_id" deferrable="false"
+                                 initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
+                                 referencedColumnNames="id" referencedTableName="order"/>
+
+        <addForeignKeyConstraint baseColumnNames="o_activity_id" baseTableName="order_log"
+                                 constraintName="fk_order_log_o_activity_id" deferrable="false"
+                                 initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
+                                 referencedColumnNames="id" referencedTableName="o_activity"/>
+    </changeSet>
+    <changeSet author="shahrukh" id="v2.0.x-id14">
+        <createTable tableName="sub_activity">
+            <column autoIncrement="true" name="id" type="BIGSERIAL">
+                <constraints primaryKey="true" primaryKeyName="sub_activity_pkey"/>
+            </column>
+            <column name="created_at" type="TIMESTAMP WITHOUT TIME ZONE"/>
+            <column name="modified_at" type="TIMESTAMP WITHOUT TIME ZONE"/>
+            <column name="created_by" type="VARCHAR(255)"/>
+            <column name="last_modified_by" type="VARCHAR(255)"/>
+
+            <column name="name" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="description" type="VARCHAR(255)"/>
+
+            <column name="activity_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <createIndex indexName="uk_sub_activity_name" tableName="sub_activity" unique="true">
+            <column name="name"/>
+            <column name="activity_id"></column>
+        </createIndex>
+
+        <addForeignKeyConstraint baseColumnNames="activity_id" baseTableName="sub_activity"
+                                 constraintName="fk_sub_activity_activity_id" deferrable="false"
+                                 initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
+                                 referencedColumnNames="id" referencedTableName="activity"/>
+    </changeSet>
+
+    <changeSet author="shahrukh" id="v2.0.x-id15">
+        <createTable tableName="t_sub_activity">
+            <column autoIncrement="true" name="id" type="BIGSERIAL">
+                <constraints primaryKey="true" primaryKeyName="t_sub_activity_pkey"/>
+            </column>
+            <column name="created_at" type="TIMESTAMP WITHOUT TIME ZONE"/>
+            <column name="modified_at" type="TIMESTAMP WITHOUT TIME ZONE"/>
+            <column name="created_by" type="VARCHAR(255)"/>
+            <column name="last_modified_by" type="VARCHAR(255)"/>
+
+            <column name="lead_time_normal" type="INT"/>
+
+            <column name="t_activity_id" type="INT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="sub_activity_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+
+        </createTable>
+
+        <addForeignKeyConstraint baseColumnNames="t_activity_id" baseTableName="t_sub_activity"
+                                 constraintName="fk_t_sub_activity_t_activity_id" deferrable="false"
+                                 initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
+                                 referencedColumnNames="id" referencedTableName="t_activity"/>
+
+        <addForeignKeyConstraint baseColumnNames="sub_activity_id" baseTableName="t_sub_activity"
+                                 constraintName="fk_t_sub_activity_sub_activity_id" deferrable="false"
+                                 initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
+                                 referencedColumnNames="id" referencedTableName="sub_activity"/>
+    </changeSet>
+
+    <changeSet id="shahrukh" author="v2.0.x-id16">
+        <createTable tableName="o_sub_activity">
+            <column autoIncrement="true" name="id" type="BIGSERIAL">
+                <constraints primaryKey="true" primaryKeyName="o_sub_activity_pkey"/>
+            </column>
+            <column name="created_at" type="TIMESTAMP WITHOUT TIME ZONE"/>
+            <column name="modified_at" type="TIMESTAMP WITHOUT TIME ZONE"/>
+            <column name="created_by" type="VARCHAR(255)"/>
+            <column name="last_modified_by" type="VARCHAR(255)"/>
+
+            <column name="lead_time" type="INT"/>
+            <column name="completed_date" type="TIMESTAMP WITHOUT TIME ZONE"/>
+            <column name="remarks" type="VARCHAR(255)"/>
+
+            <column name="o_activity_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="t_sub_activity_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+
+        </createTable>
+
+        <addForeignKeyConstraint baseColumnNames="o_activity_id" baseTableName="o_sub_activity"
+                                 constraintName="fk_o_sub_activity_o_activity_id" deferrable="false"
+                                 initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
+                                 referencedColumnNames="id" referencedTableName="o_activity"/>
+
+        <addForeignKeyConstraint baseColumnNames="t_sub_activity_id" baseTableName="o_sub_activity"
+                                 constraintName="fk_o_sub_activity_t_sub_activity_id" deferrable="false"
+                                 initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
+                                 referencedColumnNames="id" referencedTableName="t_sub_activity"/>
+    </changeSet>
 </databaseChangeLog>

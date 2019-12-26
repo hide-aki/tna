@@ -1,4 +1,4 @@
-### Running Uint and Integration Test without pysical database (i.e InMemory H2 database)
+### Running Unit and Integration Test without physical database (i.e InMemory H2 database)
 1. Copy content of `application-h2.yml` to `application-test.yml`. Here H2 related configurations are specified
 2. Data Initialization:
 
@@ -7,10 +7,12 @@
        
     b. Tenant database: Liquibase is used to initialize schema and data. liquibase entry file is 
         `changelog-tenant-h2.xml` which contains change sets of both schema and data.
-        test schema change set and  main schema change set are same except for createIndex change set
+        test schema change set and  main schema change set are same except:
+        
+            1. for createIndex change set
         
         
-### Running Uint and Integration Test with pysical database (i.e Postgre database)
+### Running Unit and Integration Test with physical database (i.e Postgre database)
 1. Copy content of `application-h2.yml` to `application-db.yml`. Here Postgre related configurations are specified
 2. Data Initialization:
 

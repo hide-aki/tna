@@ -36,7 +36,7 @@ const rootUrl = `http://${window.location.hostname}:8006`;
 // const rootUrl = "https://spms.jaza-soft.com";
 
 const appId = "tna";
-const authServerUrl = "http://iam-dev.jaza-soft.tk";
+const authServerUrl = "https://iam-dev.jaza-soft.com";
 const appUrl = `${rootUrl}/api`;
 
 export const authProvider = createAuthProvider(

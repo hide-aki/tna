@@ -54,7 +54,7 @@ class BaseISpec extends Specification {
     Sql sql
 
     @Shared
-            accessToken
+    def accessToken
 
 
     def setupSpec() {
