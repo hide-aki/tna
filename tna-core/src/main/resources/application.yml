@@ -47,7 +47,7 @@ spring:
     oauth2:
       resourceserver:
         jwt:
-          jwk-set-uri: http://iam-dev.jaza-soft.tk/.well-known/jwks.json
+          jwk-set-uri: https://iam-dev.jaza-soft.com/.well-known/jwks.json
 
   liquibase:
     enabled: true

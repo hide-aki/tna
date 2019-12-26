@@ -15,7 +15,7 @@ scheduler:
   pool-size: 10
 auth-server:
   endpoint:
-    base: http://iam-dev.jaza-soft.tk
+    base: https://iam-dev.jaza-soft.com
 
 configuration:
   groups:
