@@ -11,15 +11,7 @@
 **FetchAll Response Structure**
 ```$xslt
         {
-        "content": [{
-            "id": 5,
-            "modifiedAt": 1576391224503,
-            "lastModifiedBy": "super_user",
-            "name": "Muji",
-            "code": "MUJI",
-            "desc": null,
-            "uid": "Buyer-Muji"
-        }],
+        "content": [data1, data2, ..., datan],
         "last": true,
         "totalPages": 1,
         "totalElements": 5,
@@ -49,9 +41,9 @@
     params: search, page, size, sort
     request data: 
     response data: 
-        data structure - 
+        data placeholder in fetch all - 
     {
-        "id": 5,
+        "id": 1,
         "name": "Muji",
         "desc": null,
     }
@@ -63,11 +55,11 @@
     url: ~/v1/api/buyers/{buyerId}
     method: GET
     action: 
-    params: search, page, size, sort
+    params:
     request data: 
     response data: 
     {
-        "id": 5,
+        "id": 1,
         "name": "Muji",
         "desc": null,
     }
@@ -79,12 +71,18 @@
     url: ~/v1/api/buyers/
     method: POST
     action: 
-    params: search, page, size, sort
+    params:
     request data: 
-        data structure - 
-  
+        {
+               "name": "Dressman",
+               "desc": "dressman",
+         } 
     response data: 
-        data structure - 
+          {
+               "id": 2,
+               "name": "Dressman",
+               "desc": "dressman",
+          } 
 ```
 
 4 . update 
@@ -93,11 +91,19 @@
     url: ~/v1/api/buyers/{buyerId}
     method: PUT
     action: 
-    params: search, page, size, sort
+    params:
     request data: 
-        data structure - 
+          {
+                "id": 2
+                "name": "Van Hausen",
+                "desc": "van hausen",
+          } 
     response data: 
-        data structure - 
+          {
+                "id": 2
+                "name": "Van Hausen",
+                "desc": "van hausen",
+          } 
 ```
 
 5 . Delete 
@@ -106,13 +112,9 @@
     url: ~/v1/api/buyers/{buyerId}
     method: DELETE
     action: 
-    params: search, page, size, sort
+    params:
     request data: 
     response data: 
-        data structure - 
-            {
-            
-            }
 ```
 
 **Season API**
@@ -126,11 +128,11 @@
     params: search, page, size, sort
     request data: 
     response data: 
-        data structure - 
+        data placeholder in fetch all -
             {
                 "id": 1,
                 "name": "Spring 2020",
-                "desc": "spring 2020",
+                "desc": "Spring 2020",
             }
 ```
 
@@ -140,10 +142,14 @@
     url: ~/v1/api/seasons/{seasonId}
     method: GET
     action: 
-    params: search, page, size, sort
+    params: 
     request data: 
     response data: 
-        data structure - 
+        {
+                "id": 1,
+                "name": "Spring 2020",
+                "desc": Spring 2020,
+        } 
 ```
 
 3 . Create
@@ -152,11 +158,18 @@
     url: ~/v1/api/seasons
     method: POST
     action: 
-    params: search, page, size, sort
+    params:
     request data: 
-        data structure - 
+         {
+                "name": "Spring 2020",
+                "desc": Spring 2020,
+         } 
     response data: 
-        data structure - 
+         {
+                "id": 2
+                "name": "Spring 2020",
+                "desc": Spring 2020,
+         } 
 ```
 
 4 . update 
@@ -165,9 +178,19 @@
     url: ~/v1/api/seasons/{seasonId}
     method: PUT
     action: 
-    params: search, page, size, sort
+    params:
     request data: 
+         {
+                "id": 2
+                "name": "Winter 2020",
+                "desc": winter 2020,
+         } 
     response data: 
+        {
+                "id": 2
+                "name": "Winter 2020",
+                "desc": winter 2020,
+         } 
 ```
 
 5 . Delete 
@@ -176,13 +199,9 @@
     url: ~/v1/api/seasons/{seasonId}
     method: DELETE
     action: 
-    params: search, page, size, sort
+    params:
     request data: 
     response data: 
-        data structure - 
-            {
-            
-            }
 ```
 
 **Garment type API**
@@ -196,32 +215,49 @@
     params: search, page, size, sort
     request data: 
     response data: 
-        data structure - 
+        data placeholder in fetch all -
+         {
+                "id": 2
+                "name": "Shirt",
+                "desc": "Shirt",
+         } 
+      
 ```
 
 2 . Fetch one
 
 ```$xslt
-    url: ~/v1/api/garmentTypes/{garmentTypeId}
-    method: GET
-    action: 
-    params: search, page, size, sort
-    request data: 
-    response data: 
-        data structure - 
+        url: ~/v1/api/garmentTypes/{garmentTypeId}
+        method: GET
+        action: 
+        params:
+        request data: 
+        response data: 
+            {
+                 "id": 2
+                 "name": "Shirt",
+                 "desc": "Shirt",
+            } 
 ```
 
 3 . Create
 
 ```$xslt
-url: ~/v1/api/garmentTypes
-method: POST
-action: 
-params: search, page, size, sort
-request data: 
-    data structure - 
-response data: 
-    data structure - 
+    url: ~/v1/api/garmentTypes
+    method: POST
+    action: 
+    params:
+    request data: 
+          {
+                     "name": "Shirt",
+                     "desc": "Shirt",
+          } 
+    response data: 
+          {
+                     "id": 2
+                     "name": "Shirt",
+                     "desc": "Shirt",
+          } 
 ```
 
 4 . update 
@@ -230,11 +266,19 @@ response data:
     url: ~/v1/api/garmentTypes/{garmentTypeId}
     method: PUT
     action: 
-    params: search, page, size, sort
+    params:
     request data: 
-        data structure - 
+         {
+                 "id": 2
+                 "name": "Women's Shirt",
+                 "desc": "Women's Shirt",
+         } 
     response data: 
-        data structure - 
+         {
+                 "id": 2
+                 "name": "Women's Shirt",
+                 "desc": "Women's Shirt",
+         } 
 ```
 
 5 . Delete 
@@ -243,13 +287,9 @@ response data:
     url: ~/v1/api/garmentTypes/{garmentTypeId}
     method: DELETE
     action: 
-    params: search, page, size, sort
+    params:
     request data: 
     response data: 
-        data structure - 
-            {
-            
-            }
 ```
 
 **Department API**
@@ -263,7 +303,12 @@ response data:
     params: search, page, size, sort
     request data: 
     response data: 
-        data structure - 
+        data placeholder in fetch all -
+         {
+                "id": 2
+                "name": "Cutting",
+                "desc": "cutting",
+         } 
 ```
 
 2 . Fetch one
@@ -272,10 +317,14 @@ response data:
     url: ~/v1/api/departments/{departmentId}
     method: GET
     action: 
-    params: search, page, size, sort
+    params:
     request data: 
     response data: 
-        data structure - 
+         {
+                "id": 2
+                "name": "Cutting",
+                "desc": "cutting",
+         } 
 ```
 
 3 . Create
@@ -284,9 +333,18 @@ response data:
     url: ~/v1/api/departments
     method: POST
     action: 
-    params: search, page, size, sort
+    params:
     request data: 
+          {
+                     "name": "CAD",
+                     "desc": "cad",
+          } 
     response data: 
+          {
+                     "id": 2
+                     "name": "CAD",
+                     "desc": "cad",
+          } 
 ```
 
 4 . update 
@@ -295,9 +353,19 @@ response data:
     url: ~/v1/api/departments/{departmentId}
     method: PUT
     action: 
-    params: search, page, size, sort
+    params:
     request data: 
+          {
+                     "id": 2
+                     "name": "Merchandiser",
+                     "desc": "merchandiser",
+          } 
     response data: 
+          {
+                     "id": 2
+                     "name": "Merchandiser",
+                     "desc": "merchandiser",
+          } 
 
 ```
 
@@ -307,53 +375,11 @@ response data:
     url: ~/v1/api/departments/{departmentId}
     method: DELETE
     action: 
-    params: search, page, size, sort
+    params:
     request data: 
     response data: 
 ```
 
-**FetchAll Response Structure**
-```$xslt
-    {
-        "content": [
-            {
-                "createdAt": "2019-12-24T07:01:31.888+0000",
-                "modifiedAt": "2019-12-24T07:01:31.888+0000",
-                "createdBy": "admin_tna",
-                "lastModifiedBy": "admin_tna",
-                "id": 2,
-                "name": "Team 1",
-                "desc": "team 1",
-                "departmentId": 1
-            }
-        ],
-        "pageable": {
-            "sort": {
-                "sorted": false,
-                "unsorted": true,
-                "empty": true
-            },
-            "offset": 0,
-            "pageSize": 20,
-            "pageNumber": 0,
-            "paged": true,
-            "unpaged": false
-        },
-        "last": true,
-        "totalElements": 1,
-        "totalPages": 1,
-        "size": 20,
-        "number": 0,
-        "sort": {
-            "sorted": false,
-            "unsorted": true,
-            "empty": true
-        },
-        "numberOfElements": 1,
-        "first": true,
-        "empty": false
-    }
-```
 
 **Team API**
 
@@ -366,6 +392,13 @@ response data:
     params: search, page, size, sort
     request data: 
     response data: 
+        data placeholder in fetch all -
+         {
+                "id": 2
+                "name": "Cutting",
+                "desc": "cutting",
+                "departmentId":1,
+         } 
 ```
 
 2 . Fetch one
@@ -374,11 +407,15 @@ response data:
     url: ~/v1/api/teams/{teamId}
     method: GET
     action: 
-    params: search, page, size, sort
+    params:
     request data: 
     response data: 
-        data structure - 
-
+         {
+                "id": 2
+                "name": "Test Team ",
+                "desc": "test team",
+                "departmentId":1,
+         } 
 ```
 
 3 . Create
@@ -387,9 +424,20 @@ response data:
     url: ~/v1/api/teams
     method: POST
     action: 
-    params: search, page, size, sort
+    params:
     request data: 
+          {
+                     "name": "Test team 2",
+                     "desc": "Test team 2",
+                     "departmentId":1,
+          } 
     response data: 
+          {
+                     "id": 2
+                     "name": "Test team 2",
+                     "desc": "Test team 2",
+                     "departmentId":1,
+          } 
 ```
 
 4 . update 
@@ -398,9 +446,21 @@ response data:
     url: ~/v1/api/teams/{teamId}
     method: PUT
     action: 
-    params: search, page, size, sort
+    params:
     request data: 
+          {
+                     "id": 2
+                     "name": "Test team 3",
+                     "desc": "Test team 3",
+                     "departmentId":1,
+          } 
     response data: 
+          {
+                     "id": 2
+                     "name": "Test team 3",
+                     "desc": "Test team 3",
+                     "departmentId":1,
+          } 
 ```
 
 5 . Delete 
@@ -409,64 +469,12 @@ response data:
     url: ~/v1/api/teams/{teamId}
     method: DELETE
     action: 
-    params: search, page, size, sort
+    params:
     request data: 
-    response data: 
+    response data:
 
 ```
 
-**FetchAll Response Structure**
-
-```$xslt
-    {
-        "content": [
-            {
-                "createdAt": "2019-12-24T06:21:56.005+0000",
-                "modifiedAt": "2019-12-24T06:21:56.005+0000",
-                "createdBy": "admin_tna",
-                "lastModifiedBy": "admin_tna",
-                "id": 11,
-                "name": "Activity 2",
-                "serialNo": 1,
-                "notify": "1",
-                "department": null,
-                "subActivityList": [
-                            {
-                                "name":"subActivity 1",
-                                "desc":"subActivity 1"
-                            }
-                        ],
-                "departmentId": 1,
-                "cLevel": true
-            },
-        ],
-        "pageable": {
-            "sort": {
-                "sorted": false,
-                "unsorted": true,
-                "empty": true
-            },
-            "offset": 0,
-            "pageSize": 20,
-            "pageNumber": 0,
-            "paged": true,
-            "unpaged": false
-        },
-        "last": true,
-        "totalElements": 4,
-        "totalPages": 1,
-        "size": 20,
-        "number": 0,
-        "sort": {
-            "sorted": false,
-            "unsorted": true,
-            "empty": true
-        },
-        "numberOfElements": 4,
-        "first": true,
-        "empty": false
-    }
-```
 
 
 **Activity API**
@@ -480,7 +488,68 @@ response data:
     params: search, page, size, sort
     request data: 
     response data: 
-        data structure - 
+       data placeholder in fetch all -
+            {
+                "id": 1
+                "name": "Activity 1",
+                "serialNo": "1",
+                "notify": "1",
+                "cLevel": true,
+                "departmentId":1,
+            }
+```
+
+2 . Fetch one
+
+```$xslt
+    url: ~/v1/api/activities/{activityId}
+    method: GET
+    action: 
+    params:
+    request data: 
+    response data: 
+            {
+                "id": 1
+                "name": "Activity 1",
+                "serialNo": "1",
+                "notify": "1",
+                "cLevel": true,
+                "departmentId":1,
+                "subActivityList": [
+                    {
+                        "name":"SubActivity 2",
+                        "desc":"sub activity 2",
+                        "activityId":1
+                    }
+                ]
+            }
+```
+
+3 . Create
+
+```$xslt
+    url: ~/v1/api/activities
+    method: POST
+    action: 
+    params:
+    request data: 
+            {
+                "id": 1
+                "name": "Activity 1",
+                "serialNo": "1",
+                "notify": "1",
+                "cLevel": true,
+                "departmentId":1,
+                "subActivityList": [
+                    {
+                        "name":"SubActivity 1",
+                        "desc":"sub activity 1",
+                        "activityId":1
+                    }
+                ]
+                
+            }
+    response data: 
             {
                 "id": 1
                 "name": "Activity 1",
@@ -499,37 +568,47 @@ response data:
             }
 ```
 
-2 . Fetch one
-
-```$xslt
-    url: ~/v1/api/activities/{activityId}
-    method: GET
-    action: 
-    params: search, page, size, sort
-    request data: 
-    response data: 
-```
-
-3 . Create
-
-```$xslt
-    url: ~/v1/api/activities
-    method: POST
-    action: 
-    params: search, page, size, sort
-    request data: 
-    response data: 
-```
-
 4 . update 
 
 ```$xslt
     url: ~/v1/api/activities/{activityId}
     method: PUT
     action: 
-    params: search, page, size, sort
+    params:
     request data: 
+            {
+                "id": 1
+                "name": "Activity 2",
+                "serialNo": "1",
+                "notify": "1",
+                "cLevel": true,
+                "departmentId":1,
+                "subActivityList": [
+                    {
+                        "name":"SubActivity 2",
+                        "desc":"sub activity 2",
+                        "activityId":1
+                    }
+                ]
+                
+            }
     response data: 
+            {
+                "id": 1
+                "name": "Activity 2",
+                "serialNo": "1",
+                "notify": "1",
+                "cLevel": true,
+                "departmentId":1,
+                "subActivityList": [
+                    {
+                        "name":"SubActivity 2",
+                        "desc":"sub activity 2",
+                        "activityId":1
+                    }
+                ]
+                
+            }
 ```
 
 5 . Delete 
@@ -538,7 +617,7 @@ response data:
     url: ~/v1/api/activities/{activityId}
     method: DELETE
     action: 
-    params: search, page, size, sort
+    params:
     request data: 
-    response data: 
+    response data:
 ```
