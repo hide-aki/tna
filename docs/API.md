@@ -9,41 +9,40 @@
     ?search=name=='*Dress*'&page=0&sort=id,desc
 
 **FetchAll Response Structure**
-
 ```$xslt
-{
-	"content": [{
-		"id": 5,
-		"modifiedAt": 1576391224503,
-		"lastModifiedBy": "super_user",
-		"name": "Muji",
-		"code": "MUJI",
-		"desc": null,
-		"uid": "Buyer-Muji"
-	}],
-	"last": true,
-	"totalPages": 1,
-	"totalElements": 5,
-	"size": 10,
-	"first": true,
-	"number": 0,
-	"sort": [{
-		"direction": "DESC",
-		"property": "id",
-		"ignoreCase": false,
-		"nullHandling": "NATIVE",
-		"ascending": false,
-		"descending": true
-	}],
-	"numberOfElements": 5
-}
+        {
+        "content": [{
+            "id": 5,
+            "modifiedAt": 1576391224503,
+            "lastModifiedBy": "super_user",
+            "name": "Muji",
+            "code": "MUJI",
+            "desc": null,
+            "uid": "Buyer-Muji"
+        }],
+        "last": true,
+        "totalPages": 1,
+        "totalElements": 5,
+        "size": 10,
+        "first": true,
+        "number": 0,
+        "sort": [{
+            "direction": "DESC",
+            "property": "id",
+            "ignoreCase": false,
+            "nullHandling": "NATIVE",
+            "ascending": false,
+            "descending": true
+        }],
+        "numberOfElements": 5
+        }
 ```
 
 **Buyer API**
 
 1. Fetch All
 
-    ```$xslt
+```$xslt
     url: ~/v1/api/buyers
     method: GET
     action: 
@@ -51,59 +50,495 @@
     request data: 
     response data: 
         data structure - 
-            {
-                "id": 5,
-                "name": "Muji",
-                "desc": null,
-            }
-
+    {
+        "id": 5,
+        "name": "Muji",
+        "desc": null,
+    }
 ```
 
+2 . Fetch one
 
-| Endpoint | method | action | params | data    | Description|
-| ---      | ---    | ---    | ---    | ---     | ---        |
-| ~/v1/api/buyers | GET   | |search, page, sort | |  fetch all buyers    |
-| ~/v1/api/buyers/{buyerId} | GET   | | |  | fetch one buyer    |
-| ~/v1/api/buyers | POST   | | | buyer data in JSON | create new buyer    |
-| ~/v1/api/buyers/{buyerId} | PUT   | | | buyer data in JSON | update one buyer   |
-| ~/v1/api/buyers/{buyerId} | DELETE   | | |  | delete one buyer    |
+```$xslt
+    url: ~/v1/api/buyers/{buyerId}
+    method: GET
+    action: 
+    params: search, page, size, sort
+    request data: 
+    response data: 
+    {
+        "id": 5,
+        "name": "Muji",
+        "desc": null,
+    }
+```
+
+3 . Create
+
+```$xslt
+    url: ~/v1/api/buyers/
+    method: POST
+    action: 
+    params: search, page, size, sort
+    request data: 
+        data structure - 
+  
+    response data: 
+        data structure - 
+```
+
+4 . update 
+
+```$xslt
+    url: ~/v1/api/buyers/{buyerId}
+    method: PUT
+    action: 
+    params: search, page, size, sort
+    request data: 
+        data structure - 
+    response data: 
+        data structure - 
+```
+
+5 . Delete 
+
+```$xslt
+    url: ~/v1/api/buyers/{buyerId}
+    method: DELETE
+    action: 
+    params: search, page, size, sort
+    request data: 
+    response data: 
+        data structure - 
+            {
+            
+            }
+```
 
 **Season API**
 
-| Endpoint | method | action | params | data    | Description|
-| ---      | ---    | ---    | ---    | ---     | ---        |
-| ~/v1/api/seasons | GET   | |search, page, sort | |  fetch all seasons    |
-| ~/v1/api/seasons/{seasonId} | GET   | | |  | fetch one season    |
-| ~/v1/api/seasons | POST   | | | season data in JSON | create new season    |
-| ~/v1/api/seasons/{seasonId} | PUT   | | | season data in JSON | update one season   |
-| ~/v1/api/seasons/{seasonId} | DELETE   | | |  | delete one season    |
+1 . Fetch All
+
+```$xslt
+    url: ~/v1/api/seasons
+    method: GET
+    action: 
+    params: search, page, size, sort
+    request data: 
+    response data: 
+        data structure - 
+            {
+                "id": 1,
+                "name": "Spring 2020",
+                "desc": "spring 2020",
+            }
+```
+
+2 . Fetch one
+
+```$xslt
+    url: ~/v1/api/seasons/{seasonId}
+    method: GET
+    action: 
+    params: search, page, size, sort
+    request data: 
+    response data: 
+        data structure - 
+```
+
+3 . Create
+
+```$xslt
+    url: ~/v1/api/seasons
+    method: POST
+    action: 
+    params: search, page, size, sort
+    request data: 
+        data structure - 
+    response data: 
+        data structure - 
+```
+
+4 . update 
+
+```$xslt
+    url: ~/v1/api/seasons/{seasonId}
+    method: PUT
+    action: 
+    params: search, page, size, sort
+    request data: 
+    response data: 
+```
+
+5 . Delete 
+
+```$xslt
+    url: ~/v1/api/seasons/{seasonId}
+    method: DELETE
+    action: 
+    params: search, page, size, sort
+    request data: 
+    response data: 
+        data structure - 
+            {
+            
+            }
+```
+
+**Garment type API**
+
+1 . Fetch All
+
+```$xslt
+    url: ~/v1/api/garmentTypes
+    method: GET
+    action: 
+    params: search, page, size, sort
+    request data: 
+    response data: 
+        data structure - 
+```
+
+2 . Fetch one
+
+```$xslt
+    url: ~/v1/api/garmentTypes/{garmentTypeId}
+    method: GET
+    action: 
+    params: search, page, size, sort
+    request data: 
+    response data: 
+        data structure - 
+```
+
+3 . Create
+
+```$xslt
+url: ~/v1/api/garmentTypes
+method: POST
+action: 
+params: search, page, size, sort
+request data: 
+    data structure - 
+response data: 
+    data structure - 
+```
+
+4 . update 
+
+```$xslt
+    url: ~/v1/api/garmentTypes/{garmentTypeId}
+    method: PUT
+    action: 
+    params: search, page, size, sort
+    request data: 
+        data structure - 
+    response data: 
+        data structure - 
+```
+
+5 . Delete 
+
+```$xslt
+    url: ~/v1/api/garmentTypes/{garmentTypeId}
+    method: DELETE
+    action: 
+    params: search, page, size, sort
+    request data: 
+    response data: 
+        data structure - 
+            {
+            
+            }
+```
 
 **Department API**
 
-| Endpoint | method | action | params | data    | Description|
-| ---      | ---    | ---    | ---    | ---     | ---        |
-| ~/v1/api/departments | GET   | |search, page, sort | |  fetch all departments    |
-| ~/v1/api/departments/{departmentId} | GET   | | |  | fetch one department    |
-| ~/v1/api/departments | POST   | | | department data in JSON | create new department    |
-| ~/v1/api/departments/{departmentId} | PUT   | | | department data in JSON | update one department   |
-| ~/v1/api/departments/{departmentId} | DELETE   | | |  | delete one department    |
+1 . Fetch All
+
+```$xslt
+    url: ~/v1/api/departments
+    method: GET
+    action: 
+    params: search, page, size, sort
+    request data: 
+    response data: 
+        data structure - 
+```
+
+2 . Fetch one
+
+```$xslt
+    url: ~/v1/api/departments/{departmentId}
+    method: GET
+    action: 
+    params: search, page, size, sort
+    request data: 
+    response data: 
+        data structure - 
+```
+
+3 . Create
+
+```$xslt
+    url: ~/v1/api/departments
+    method: POST
+    action: 
+    params: search, page, size, sort
+    request data: 
+    response data: 
+```
+
+4 . update 
+
+```$xslt
+    url: ~/v1/api/departments/{departmentId}
+    method: PUT
+    action: 
+    params: search, page, size, sort
+    request data: 
+    response data: 
+
+```
+
+5 . Delete 
+
+```$xslt
+    url: ~/v1/api/departments/{departmentId}
+    method: DELETE
+    action: 
+    params: search, page, size, sort
+    request data: 
+    response data: 
+```
+
+**FetchAll Response Structure**
+```$xslt
+    {
+        "content": [
+            {
+                "createdAt": "2019-12-24T07:01:31.888+0000",
+                "modifiedAt": "2019-12-24T07:01:31.888+0000",
+                "createdBy": "admin_tna",
+                "lastModifiedBy": "admin_tna",
+                "id": 2,
+                "name": "Team 1",
+                "desc": "team 1",
+                "departmentId": 1
+            }
+        ],
+        "pageable": {
+            "sort": {
+                "sorted": false,
+                "unsorted": true,
+                "empty": true
+            },
+            "offset": 0,
+            "pageSize": 20,
+            "pageNumber": 0,
+            "paged": true,
+            "unpaged": false
+        },
+        "last": true,
+        "totalElements": 1,
+        "totalPages": 1,
+        "size": 20,
+        "number": 0,
+        "sort": {
+            "sorted": false,
+            "unsorted": true,
+            "empty": true
+        },
+        "numberOfElements": 1,
+        "first": true,
+        "empty": false
+    }
+```
 
 **Team API**
 
-| Endpoint | method | action | params | data    | Description|
-| ---      | ---    | ---    | ---    | ---     | ---        |
-| ~/v1/api/teams | GET   | |search, page, sort | |  fetch all teams    |
-| ~/v1/api/teams/{teamId} | GET   | | |  | fetch one team    |
-| ~/v1/api/teams | POST   | | | team data in JSON | create new team    |
-| ~/v1/api/teams/{teamId} | PUT   | | | team data in JSON | update one team   |
-| ~/v1/api/teams/{teamId} | DELETE   | | |  | delete one team    |
+1 . Fetch All
 
-**Garment Type API**
+```$xslt
+    url: ~/v1/api/teams
+    method: GET
+    action: 
+    params: search, page, size, sort
+    request data: 
+    response data: 
+```
 
-| Endpoint | method | action | params | data    | Description|
-| ---      | ---    | ---    | ---    | ---     | ---        |
-| ~/v1/api/garmentTypes | GET   | |search, page, sort | |  fetch all garmentTypes    |
-| ~/v1/api/garmentTypes/{garmentTypId} | GET   | | |  | fetch one garmentType    |
-| ~/v1/api/garmentTypes | POST   | | | garmentType data in JSON | create new garmentType    |
-| ~/v1/api/garmentTypes/{garmentTypId} | PUT   | | | garmentType data in JSON | update one garmentType   |
-| ~/v1/api/garmentTypes/{garmentTypId} | DELETE   | | |  | delete one garmentType    |
+2 . Fetch one
+ 
+```$xslt
+    url: ~/v1/api/teams/{teamId}
+    method: GET
+    action: 
+    params: search, page, size, sort
+    request data: 
+    response data: 
+        data structure - 
+
+```
+
+3 . Create
+
+```$xslt
+    url: ~/v1/api/teams
+    method: POST
+    action: 
+    params: search, page, size, sort
+    request data: 
+    response data: 
+```
+
+4 . update 
+
+```$xslt
+    url: ~/v1/api/teams/{teamId}
+    method: PUT
+    action: 
+    params: search, page, size, sort
+    request data: 
+    response data: 
+```
+
+5 . Delete 
+
+```$xslt
+    url: ~/v1/api/teams/{teamId}
+    method: DELETE
+    action: 
+    params: search, page, size, sort
+    request data: 
+    response data: 
+
+```
+
+**FetchAll Response Structure**
+
+```$xslt
+    {
+        "content": [
+            {
+                "createdAt": "2019-12-24T06:21:56.005+0000",
+                "modifiedAt": "2019-12-24T06:21:56.005+0000",
+                "createdBy": "admin_tna",
+                "lastModifiedBy": "admin_tna",
+                "id": 11,
+                "name": "Activity 2",
+                "serialNo": 1,
+                "notify": "1",
+                "department": null,
+                "subActivityList": [
+                            {
+                                "name":"subActivity 1",
+                                "desc":"subActivity 1"
+                            }
+                        ],
+                "departmentId": 1,
+                "cLevel": true
+            },
+        ],
+        "pageable": {
+            "sort": {
+                "sorted": false,
+                "unsorted": true,
+                "empty": true
+            },
+            "offset": 0,
+            "pageSize": 20,
+            "pageNumber": 0,
+            "paged": true,
+            "unpaged": false
+        },
+        "last": true,
+        "totalElements": 4,
+        "totalPages": 1,
+        "size": 20,
+        "number": 0,
+        "sort": {
+            "sorted": false,
+            "unsorted": true,
+            "empty": true
+        },
+        "numberOfElements": 4,
+        "first": true,
+        "empty": false
+    }
+```
+
+
+**Activity API**
+
+1 . Fetch All
+
+```$xslt
+    url: ~/v1/api/activities
+    method: GET
+    action: 
+    params: search, page, size, sort
+    request data: 
+    response data: 
+        data structure - 
+            {
+                "id": 1
+                "name": "Activity 1",
+                "serialNo": "1",
+                "notify": "1",
+                "cLevel": true,
+                "departmentId":1,
+                "subActivityList": [
+                    {
+                        "name":"SubActivity 1",
+                        "desc":"sub activity 1",
+                        "activityId":1
+                    }
+                ]
+                
+            }
+```
+
+2 . Fetch one
+
+```$xslt
+    url: ~/v1/api/activities/{activityId}
+    method: GET
+    action: 
+    params: search, page, size, sort
+    request data: 
+    response data: 
+```
+
+3 . Create
+
+```$xslt
+    url: ~/v1/api/activities
+    method: POST
+    action: 
+    params: search, page, size, sort
+    request data: 
+    response data: 
+```
+
+4 . update 
+
+```$xslt
+    url: ~/v1/api/activities/{activityId}
+    method: PUT
+    action: 
+    params: search, page, size, sort
+    request data: 
+    response data: 
+```
+
+5 . Delete 
+
+```$xslt
+    url: ~/v1/api/activities/{activityId}
+    method: DELETE
+    action: 
+    params: search, page, size, sort
+    request data: 
+    response data: 
+```
