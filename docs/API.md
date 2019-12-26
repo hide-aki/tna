@@ -1,4 +1,64 @@
+**Search and Pagination**
+    
+   - `search`: [field]=='value'. RSQL parser link
+   - `page`: zero indexed page number
+   - `size`: 10, Page Size
+   - `sort`: [field],asc|desc. e.g- ?sort=name,desc
+   
+    combined example
+    ?search=name=='*Dress*'&page=0&sort=id,desc
+
+**FetchAll Response Structure**
+
+```$xslt
+{
+	"content": [{
+		"id": 5,
+		"modifiedAt": 1576391224503,
+		"lastModifiedBy": "super_user",
+		"name": "Muji",
+		"code": "MUJI",
+		"desc": null,
+		"uid": "Buyer-Muji"
+	}],
+	"last": true,
+	"totalPages": 1,
+	"totalElements": 5,
+	"size": 10,
+	"first": true,
+	"number": 0,
+	"sort": [{
+		"direction": "DESC",
+		"property": "id",
+		"ignoreCase": false,
+		"nullHandling": "NATIVE",
+		"ascending": false,
+		"descending": true
+	}],
+	"numberOfElements": 5
+}
+```
+
 **Buyer API**
+
+1. Fetch All
+
+    ```$xslt
+    url: ~/v1/api/buyers
+    method: GET
+    action: 
+    params: search, page, size, sort
+    request data: 
+    response data: 
+        data structure - 
+            {
+                "id": 5,
+                "name": "Muji",
+                "desc": null,
+            }
+
+```
+
 
 | Endpoint | method | action | params | data    | Description|
 | ---      | ---    | ---    | ---    | ---     | ---        |
