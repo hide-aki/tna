@@ -14,7 +14,7 @@ import {
   App as JApp,
   Resource,
   createAuthProvider,
-  createDataProvider,
+  createDataProvider
   // WithPermissions
 } from "jazasoft";
 
@@ -27,6 +27,19 @@ import hasPrivilege from "./utils/hasPrivilege";
 
 // Library Pages
 import { BuyerHome, CreateBuyer, EditBuyer } from "./pages/library/Buyer";
+import {
+  GarmentTypeHome,
+  CreateGarmentType,
+  EditGarmentType
+} from "./pages/library/GarmentType";
+import { SeasonHome, CreateSeason, EditSeason } from "./pages/library/Season";
+import {
+  DepartmentHome,
+  CreateDepartment,
+  EditDepartment
+} from "./pages/library/Department";
+import { TeamHome, CreateTeam, EditTeam } from "./pages/library/Team";
+
 // Setting Page
 import Settings from "./pages/setting/Settings";
 import Downloads from "./pages/downloads/Downloads";
@@ -34,6 +47,7 @@ import Downloads from "./pages/downloads/Downloads";
 // const rootUrl = window.location.protocol + "//" + window.location.hostname + (window.location.port ? ":" + window.location.port : "");
 const rootUrl = `http://${window.location.hostname}:8006`;
 // const rootUrl = "https://spms.jaza-soft.com";
+// const rootUrl = `http://192.168.0.4:8006`;
 
 const appId = "tna";
 const authServerUrl = "https://iam-dev.jaza-soft.com";
@@ -164,6 +178,37 @@ class App extends React.Component {
                   create={CreateBuyer}
                   edit={EditBuyer}
                   icon={MenuIcon}
+                />
+                <Resource
+                  name="garmentTypes"
+                  resource="garmentTypes"
+                  home={GarmentTypeHome}
+                  create={CreateGarmentType}
+                  edit={EditGarmentType}
+                  icon={MenuIcon}
+                />
+                <Resource
+                  name="seasons"
+                  resource="seasons"
+                  home={SeasonHome}
+                  create={CreateSeason}
+                  edit={EditSeason}
+                  icon={MenuIcon}
+                />
+                <Resource
+                  name="departments"
+                  resource="departments"
+                  home={DepartmentHome}
+                  create={CreateDepartment}
+                  edit={EditDepartment}
+                  icon={MenuIcon}
+                />
+                <Resource
+                  name="teams"
+                  resource="teams"
+                  home={TeamHome}
+                  create={CreateTeam}
+                  edit={EditTeam}
                 />
               </Resource>
             );
