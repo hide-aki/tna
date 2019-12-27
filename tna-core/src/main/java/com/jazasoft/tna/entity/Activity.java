@@ -1,7 +1,5 @@
 package com.jazasoft.tna.entity;
 
-
-import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.jazasoft.mtdb.entity.Auditable;
 import lombok.Data;
@@ -11,6 +9,20 @@ import javax.persistence.*;
 import javax.validation.constraints.NotEmpty;
 import java.util.*;
 
+@NamedEntityGraphs({
+        @NamedEntityGraph(
+                name = "activity.findAll",
+                attributeNodes = @NamedAttributeNode("department")
+        ),
+        @NamedEntityGraph(
+                name = "activity.findOne",
+                attributeNodes = {
+                        @NamedAttributeNode("department")
+//                        @NamedAttributeNode("subActivityList")
+                }
+        )
+    }
+)
 @NoArgsConstructor
 @Data
 @Entity
@@ -42,7 +54,7 @@ public class Activity extends Auditable {
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
     private Department department;
 
-    @OneToMany(mappedBy = "activity", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "activity", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private Set<SubActivity> subActivityList = new HashSet<>();
 
     @Transient

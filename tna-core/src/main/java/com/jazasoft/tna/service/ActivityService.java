@@ -4,6 +4,7 @@ import com.jazasoft.tna.entity.Activity;
 import com.jazasoft.tna.entity.SubActivity;
 import com.jazasoft.tna.repository.ActivityRepository;
 import com.jazasoft.tna.repository.DepartmentRepository;
+import org.hibernate.Hibernate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
@@ -12,11 +13,10 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Set;
-import java.util.stream.Collectors;
 
 
 @Service
+@Transactional(value = "tenantTransactionManager", readOnly = true)
 public class ActivityService {
     private final Logger logger = LoggerFactory.getLogger(ActivityService.class);
 
@@ -34,13 +34,20 @@ public class ActivityService {
     }
 
     public Page<Activity> findAll(Specification<Activity> spec, Pageable pageable) {
-        return activityRepository.findAll(spec, pageable);
+        Page<Activity> page = activityRepository.findAll(spec, pageable);
+//        page.forEach(activity -> Hibernate.initialize(activity.getDepartment()));
+        return page;
     }
 
     public Activity findOne(Long id) {
-        return activityRepository.findById(id).orElse(null);
+        Activity activity = activityRepository.findById(id).orElse(null);
+        if (activity != null) {
+            Hibernate.initialize(activity.getSubActivityList());
+        }
+        return activity;
     }
 
+//    @Transactional(value = "tenantTransactionManager")
 //    public Activity updateActivity(Activity activity){
 //        Activity mActivity = activityRepository.findById(activity.getId()).orElseThrow();
 //        mActivity.setName(activity.getName());
@@ -70,6 +77,7 @@ public class ActivityService {
         return activityRepository.save(activity);
     }
 
+    @Transactional(value = "tenantTransactionManager")
     public void deleteActivity(Long id) {
         activityRepository.deleteById(id);
     }

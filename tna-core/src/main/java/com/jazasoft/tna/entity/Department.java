@@ -1,18 +1,17 @@
 package com.jazasoft.tna.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.jazasoft.mtdb.entity.Auditable;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.BatchSize;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotEmpty;
-import java.util.HashSet;
-import java.util.Set;
 
 @NoArgsConstructor
 @Data
 @Entity
+@BatchSize(size = 10)
 public class Department extends Auditable {
 
     @Id

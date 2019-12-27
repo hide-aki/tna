@@ -36,7 +36,7 @@ public class ActivityRestController {
     }
 
     @GetMapping
-    public ResponseEntity<?> findAllOperationBulletins(@RequestParam(value = "search", defaultValue = "") String search, Pageable pageable) {
+    public ResponseEntity<?> findAll(@RequestParam(value = "search", defaultValue = "") String search, Pageable pageable) {
         Page<Activity> pages;
         if (search.trim().isEmpty()) {
             pages = activityService.findAll(pageable);
@@ -46,23 +46,18 @@ public class ActivityRestController {
             pages = activityService.findAll(spec, pageable);
         }
         pages.forEach(activity -> activity.setSubActivityList(null));
-        pages.forEach(activity -> activity.setDepartment(null));
+        pages.forEach(activity -> activity.setDepartmentId(activity.getDepartment() != null ? activity.getDepartment().getId() : null));
         return ResponseEntity.ok(pages);
     }
 
     @GetMapping(ApiUrls.URL_ACTIVITIES_ACTIVITY)
-    public ResponseEntity<?> findOneActivity(@PathVariable(value = "activityId") Long id,
-                                                      @RequestParam(value = "action", defaultValue = "default") String action) {
+    public ResponseEntity<?> findOne(@PathVariable(value = "activityId") Long id) {
         logger.trace("findOneActivity(): id = {}", id);
         Activity activity = activityService.findOne(id);
         if (activity == null) {
             return ResponseEntity.notFound().build();
         }
-        if (action.equalsIgnoreCase("default")) {
-            activity.setSubActivityList(null);
-            activity.setDepartment(null);
-            return ResponseEntity.ok(activity);
-        }
+        activity.setDepartmentId(activity.getDepartment() != null ? activity.getDepartment().getId() : null);
         return ResponseEntity.ok(activity);
     }
 
@@ -82,8 +77,8 @@ public class ActivityRestController {
 
     @DeleteMapping(ApiUrls.URL_ACTIVITIES_ACTIVITY)
     public ResponseEntity<?> deleteActivity(@PathVariable(value = "activityId") Long id) {
-        if (!activityService.exists(id)){
-         return ResponseEntity.notFound().build();
+        if (!activityService.exists(id)) {
+            return ResponseEntity.notFound().build();
         }
         activityService.deleteActivity(id);
         return ResponseEntity.noContent().build();
