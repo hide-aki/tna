@@ -75,6 +75,17 @@ public class ActivityRestController {
         return ResponseEntity.created(Location).body(activity);
     }
 
+    @PutMapping(ApiUrls.URL_ACTIVITIES_ACTIVITY)
+    public ResponseEntity<?> update(@PathVariable(value = "activityId") Long id, @Valid @RequestBody Activity activity) {
+        logger.trace("updateActivity(): id = {}", id); //?
+        if (!activityService.exists(id)) {
+            return ResponseEntity.notFound().build();
+        }
+        activity.setId(id);
+        return ResponseEntity.ok(activityService.updateActivity(activity));
+
+    }
+
     @DeleteMapping(ApiUrls.URL_ACTIVITIES_ACTIVITY)
     public ResponseEntity<?> deleteActivity(@PathVariable(value = "activityId") Long id) {
         if (!activityService.exists(id)) {

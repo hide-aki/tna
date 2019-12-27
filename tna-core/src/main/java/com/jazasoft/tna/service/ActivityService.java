@@ -13,6 +13,8 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Set;
+import java.util.stream.Collectors;
 
 
 @Service
@@ -47,22 +49,6 @@ public class ActivityService {
         return activity;
     }
 
-//    @Transactional(value = "tenantTransactionManager")
-//    public Activity updateActivity(Activity activity){
-//        Activity mActivity = activityRepository.findById(activity.getId()).orElseThrow();
-//        mActivity.setName(activity.getName());
-//        mActivity.setSerialNo(activity.getSerialNo());
-//        mActivity.setNotify(activity.getNotify());
-//        mActivity.setCLevel(activity.getCLevel());
-//
-//        Set<Long> existingIds = activity.getSubActivityList().stream().filter(subActivity -> subActivity.getId() != null).map(SubActivity::getId).collect(Collectors.toSet());
-//
-//        Set<SubActivity> removeSubActivityList = activity.getSubActivityList().stream().filter(subActivity -> existingIds.contains(subActivity.getId())).collect(Collectors.toSet());
-//
-//
-//
-//    }
-
     @Transactional(value = "tenantTransactionManager")
     public Activity saveActivity(Activity activity) {
         if (activity.getDepartmentId() != null) {
@@ -75,6 +61,33 @@ public class ActivityService {
             }
         }
         return activityRepository.save(activity);
+    }
+
+    @Transactional(value = "tenantTransactionManager")
+    public Activity updateActivity(Activity activity) {
+        Activity mActivity = activityRepository.findById(activity.getId()).orElseThrow();
+        mActivity.setName(activity.getName());
+        mActivity.setSerialNo(activity.getSerialNo());
+        mActivity.setNotify(activity.getNotify());
+        mActivity.setCLevel(activity.getCLevel());
+
+        mActivity.setDepartment(departmentRepository.findById(activity.getDepartmentId()).orElse(null));
+
+        Set<Long> existingIds = activity.getSubActivityList().stream().filter(subActivity -> subActivity.getId() != null).map(SubActivity::getId).collect(Collectors.toSet());
+        Set<SubActivity> removeSubActivityList = mActivity.getSubActivityList().stream().filter(subActivity -> !existingIds.contains(subActivity.getId())).collect(Collectors.toSet());
+        Set<SubActivity> newSubActivityList = activity.getSubActivityList().stream().filter(subActivity -> subActivity.getId() == null).collect(Collectors.toSet());
+
+        removeSubActivityList.forEach(mActivity::removeActivity);
+        newSubActivityList.forEach(mActivity::addSubActivity);
+        existingIds.forEach(id -> {
+            SubActivity subActivity = activity.getSubActivityList().stream().filter(p -> id.equals(p.getId())).findAny().orElse(null);
+            SubActivity mSubActivity = mActivity.getSubActivityList().stream().filter(p -> id.equals(p.getId())).findAny().orElse(null);
+            if (subActivity != null && mSubActivity != null) {
+                mSubActivity.setName(subActivity.getName());
+                mSubActivity.setDesc(subActivity.getDesc());
+            }
+        });
+        return mActivity;
     }
 
     @Transactional(value = "tenantTransactionManager")

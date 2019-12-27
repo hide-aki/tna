@@ -54,7 +54,7 @@ public class Activity extends Auditable {
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
     private Department department;
 
-    @OneToMany(mappedBy = "activity", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "activity", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<SubActivity> subActivityList = new HashSet<>();
 
     @Transient
@@ -68,10 +68,16 @@ public class Activity extends Auditable {
         this.departmentId = departmentId;
     }
 
-    private void AddSubActivity(SubActivity subActivity) {
 
+    public void addSubActivity(SubActivity subActivity) {
+        subActivityList.add(subActivity);
+        subActivity.setActivity(this);
     }
 
+    public void removeActivity(SubActivity subActivity) {
+        subActivityList.remove(subActivity);
+        subActivity.setActivity(null);
+    }
 
     @Override
     public boolean equals(Object o) {
