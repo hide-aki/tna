@@ -1,10 +1,15 @@
 package com.jazasoft.tna.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.jazasoft.mtdb.entity.Auditable;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.util.HashSet;
+import java.util.Objects;
+import java.util.Set;
 
 @NoArgsConstructor
 @Data
@@ -24,9 +29,43 @@ public class TActivity extends Auditable {
     @Column(nullable = false)
     private String timeFrom;
 
+    @JsonIgnore
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
-    private Timeline timeLine;
+    private Timeline timeline;
 
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
     private Activity activity;
+
+    @OneToMany(mappedBy = "tActivity", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonProperty("tSubActivityList")
+    private Set<TSubActivity> tSubActivityList = new HashSet<>();
+
+    @Transient
+    private Long activityId;
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof TActivity)) return false;
+        TActivity tActivity = (TActivity) o;
+        return id.equals(tActivity.id) &&
+                leadTimeNormal.equals(tActivity.leadTimeNormal) &&
+                leadTimeOptimal.equals(tActivity.leadTimeOptimal) &&
+                timeFrom.equals(tActivity.timeFrom);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, leadTimeNormal, leadTimeOptimal, timeFrom);
+    }
+
+    @Override
+    public String toString() {
+        return "TActivity{" +
+                "id=" + id +
+                ", leadTimeNormal=" + leadTimeNormal +
+                ", leadTimeOptimal=" + leadTimeOptimal +
+                ", timeFrom='" + timeFrom + '\'' +
+                '}';
+    }
 }

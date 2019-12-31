@@ -29,23 +29,18 @@ public class SubActivity extends Auditable {
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
     private Activity activity;
 
-    @Transient
-    private Long subActivityId;
-
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof SubActivity)) return false;
         SubActivity that = (SubActivity) o;
-        return id.equals(that.id) &&
-                name.equals(that.name) &&
-                desc.equals(that.desc);
+        return Objects.equals(id, that.id) &&
+                Objects.equals(name, that.name);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, desc);
+        return Objects.hash(id, name);
     }
 
     @Override

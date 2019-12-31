@@ -19,6 +19,9 @@ public interface ApiUrls {
   String ROOT_URL_ACTIVITIES="/api/activities";
   String URL_ACTIVITIES_ACTIVITY="/{activityId}";
 
+  String ROOT_URL_TIMELINES="/api/timelines";
+  String URL_TIMELINES_TIMELINE="/{timelineId}";
+
   String ROOT_URL_SETTINGS = "/api/settings";
   String URL_SETTINGS_SETTING = "/{key}";
 

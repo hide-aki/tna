@@ -52,7 +52,7 @@ public class ActivityRestController {
 
     @GetMapping(ApiUrls.URL_ACTIVITIES_ACTIVITY)
     public ResponseEntity<?> findOne(@PathVariable(value = "activityId") Long id) {
-        logger.trace("findOneActivity(): id = {}", id);
+        logger.trace("findOne(): id = {}", id);
         Activity activity = activityService.findOne(id);
         if (activity == null) {
             return ResponseEntity.notFound().build();
@@ -63,12 +63,12 @@ public class ActivityRestController {
 
     @PostMapping
     private ResponseEntity<?> saveActivity(@Valid @RequestBody Activity activity) {
-        Set<Long> list = new HashSet<>();
-        for (SubActivity subActivity : activity.getSubActivityList()) {
-            if (!list.add(subActivity.getSubActivityId())) {
-                return new ResponseEntity<>("Duplicate SubActivities. Each subActivityId must be unique", HttpStatus.CONFLICT);
-            }
-        }
+//        Set<String> list = new HashSet<>();
+//        for (SubActivity subActivity : activity.getSubActivityList()) {
+//            if (!list.add(subActivity.getName())) {
+//                return new ResponseEntity<>("Duplicate SubActivities. Each subActivity must be unique", HttpStatus.CONFLICT);
+//            }
+//        }
 //        activity.setId(null);
         activity = activityService.saveActivity(activity);
         URI Location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(activity.getId()).toUri();

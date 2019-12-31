@@ -534,7 +534,6 @@
     params:
     request data: 
             {
-                "id": 1
                 "name": "Activity 1",
                 "serialNo": "1",
                 "notify": "1",
@@ -615,6 +614,197 @@
 
 ```$xslt
     url: ~/v1/api/activities/{activityId}
+    method: DELETE
+    action: 
+    params:
+    request data: 
+    response data:
+```
+
+**Timeline API**
+
+1 . Fetch All
+
+```$xslt
+    url: ~/v1/api/timelines
+    method: GET
+    action: 
+    params: search, page, size, sort
+    request data: 
+    response data: 
+       data placeholder in fetch all -
+            {
+                "id": 1
+                "name": "Time line 1",
+                "tna_type":"forward",
+                "approved": true,
+                "approvedBy": "UserX",
+                "buyerId": 1
+            }
+```
+
+2 . Fetch one
+
+```$xslt
+    url: ~/v1/api/timelines/{timelineId}
+    method: GET
+    action: 
+    params:
+    request data: 
+    response data: 
+            {
+               "id": 1
+               "name": "Time line 1",
+               "tna_type":"forward",
+               "approved": true,
+               "approvedBy": "HOD",
+               "buyerId": 1,
+               "tActivityList":[
+                            {
+                                "leadTimeNormal":2,
+                                "leadTimeOptimal":1,
+                                "timeFrom":"0-2",
+                                "activityId": 1,
+                                "timlineId": 1,
+                                "tSubActivityList":[
+                                        {
+                                         "subActivityId":1,
+                                         "tActivityId": 1,
+                                         "leadTimeNormal":2,
+                                        }
+                                ]
+                            }
+                       ]
+            }
+```
+
+3 . Create
+
+```$xslt
+    url: ~/v1/api/timelines
+    method: POST
+    action: 
+    params:
+    request data: 
+            {
+               "name": "Time line 2",
+               "tna_type":"backward",
+               "approved": true,
+               "approvedBy": "HOD",
+               "buyerId": 1,
+               "tActivityList":[
+                            {
+                                "leadTimeNormal":2,
+                                "leadTimeOptimal":1,
+                                "timeFrom":"0-2"
+                                "activityId": 1,
+                                "tSubActivityList":[
+                                        {
+                                         "subActivityId":1,
+                                         "leadTimeNormal":2,
+                                        }
+                                ]
+                            }
+                       ]
+            }
+    response data: 
+            {
+               "id": 2
+               "name": "Time line 2",
+               "tna_type":"backward",
+               "approved": true,
+               "approvedBy": "HOD",
+               "buyerId": 1,
+               "tActivityList":[
+                            {
+                                "id": 1
+                                "leadTimeNormal":2,
+                                "leadTimeOptimal":1,
+                                "timeFrom":"0-2",
+                                "activityId": 1,
+                                "timlineId": 1
+                                "tSubActivityList":[
+                                        {
+                                         "id": 1
+                                         "subactivityId":1,
+                                         "tActivityId": 1,
+                                         "leadTimeNormal":2,
+                                        }
+                                ]
+                            }
+                       ]
+                    }
+               ]
+            }
+```
+
+4 . update 
+
+```$xslt
+    url: ~/v1/api/timelines/{timelineId}
+    method: PUT
+    action: 
+    params:
+    request data: 
+            {
+               "id": 2
+               "name": "Time line 3",
+               "tna_type":"Forward",
+               "approved": false,
+               "approvedBy": "",
+               "buyerId": 1,
+               "tActivityList":[
+                            {
+                                "id": 1
+                                "leadTimeNormal":2,
+                                "leadTimeOptimal":1,
+                                "timeFrom":"0-2",
+                                "activityId": 1,
+                                "timlineId": 1,
+                                "tSubActivityList":[
+                                        {
+                                         "id": 1
+                                         "subactivityId":1,
+                                         "tActivityId": 1,
+                                         "leadTimeNormal":2,
+                                        }
+                                ]
+                            }
+                       ]
+            }
+    response data: 
+ {
+               "id": 2
+               "name": "Time line 3",
+               "tna_type":"Forward",
+               "approved": false,
+               "approvedBy": "",
+               "buyerId": 1,
+               "tActivityList":[
+                            {
+                                "id": 1
+                                "leadTimeNormal":2,
+                                "leadTimeOptimal":1,
+                                "timeFrom":"0-2"
+                                "activityId": 1,
+                                "timlineId": 1,
+                                "tSubActivityList":[
+                                        {
+                                         "id": 1
+                                         "subactivityId":1,
+                                         "tActivityId": 1,
+                                         "leadTimeNormal":2,
+                                        }
+                                ]
+                            }
+                       ]
+            }
+```
+
+5 . Delete 
+
+```$xslt
+    url: ~/v1/api/timelines/{timelineId}
     method: DELETE
     action: 
     params:
