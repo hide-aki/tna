@@ -8,7 +8,8 @@ import avatar from "./asset/img/faces/avatar-male.png";
 import MenuIcon from "@material-ui/icons/Menu";
 import LibraryIcon from "@material-ui/icons/LibraryBooks";
 import SettingsIcon from "@material-ui/icons/Settings";
-import DeveloperBoardIcon from '@material-ui/icons/DeveloperBoard';
+import DeveloperBoardIcon from "@material-ui/icons/DeveloperBoard";
+import DownloadsIcon from "@material-ui/icons/GetApp";
 
 import {
   App as JApp,
@@ -39,7 +40,12 @@ import {
   EditDepartment
 } from "./pages/library/Department";
 import { TeamHome, CreateTeam, EditTeam } from "./pages/library/Team";
-import { ActivityHome, ActivityCreate } from "./pages/activity"
+import {
+  ActivityHome,
+  ActivityCreate,
+  ActivityView,
+  ActivityEdit
+} from "./pages/activity";
 
 // Setting Page
 import Settings from "./pages/setting/Settings";
@@ -171,12 +177,16 @@ class App extends React.Component {
 
           if (hasPrivilege(roles, hasAccess, "activity", "read")) {
             resourceList.push(
-              <Resource name="activities" 
-                resource="activities" 
+              <Resource
+                name="activities"
+                resource="activities"
                 home={ActivityHome}
-                create={ActivityCreate} 
-                icon={DeveloperBoardIcon} />
-            )
+                create={ActivityCreate}
+                view={ActivityView}
+                edit={ActivityEdit}
+                icon={DeveloperBoardIcon}
+              />
+            );
           }
 
           if (hasPrivilege(roles, hasAccess, "library", "read")) {

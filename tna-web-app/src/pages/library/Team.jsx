@@ -18,25 +18,32 @@ import {
 } from "jazasoft";
 
 export const EditTeam = ({ ...props }) => {
-    return (
-        <Edit { ...props }>
-            <SimpleForm>
-                <ReferenceInput source="departmentId" reference="departments">
-                    <SelectInput optionText="name" />
-                </ReferenceInput>
-                <TextInput source="name" validate={[required(), minLength(2)]} />
-                <TextInput source="desc" />
-            </SimpleForm>
-        </Edit>
-    )
-}
-
+  return (
+    <Edit {...props}>
+      <SimpleForm>
+        <ReferenceInput
+          source="departmentId"
+          reference="departments"
+          validate={required()}
+        >
+          <SelectInput optionText="name" />
+        </ReferenceInput>
+        <TextInput source="name" validate={[required(), minLength(2)]} />
+        <TextInput source="desc" />
+      </SimpleForm>
+    </Edit>
+  );
+};
 
 export const CreateTeam = ({ ...props }) => {
   return (
     <Create {...props}>
       <SimpleForm redirect="home">
-        <ReferenceInput source="departmentId" reference="departments">
+        <ReferenceInput
+          source="departmentId"
+          reference="departments"
+          validate={required()}
+        >
           <SelectInput optionText="name" />
         </ReferenceInput>
         <TextInput source="name" validate={[required(), minLength(2)]} />

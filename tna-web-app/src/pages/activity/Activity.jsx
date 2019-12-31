@@ -7,6 +7,7 @@ import {
   ReferenceField,
   ShowButton,
   EditButton,
+  DeleteButton
 } from "jazasoft";
 
 import hasPrivilege from "../../utils/hasPrivilege";
@@ -29,6 +30,9 @@ export default withStyles(homeStyle)(({ classes, ...props }) => {
         <ShowButton cellClassName={classes.button} />
         {hasPrivilege(roles, hasAccess, "activity", "update") && (
           <EditButton cellClassName={classes.button} />
+        )}
+        {hasPrivilege(roles, hasAccess, "activity", "delete") && (
+          <DeleteButton cellClassName={classes.button} />
         )}
       </Datagrid>
     </List>
