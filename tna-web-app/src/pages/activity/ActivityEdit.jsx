@@ -3,7 +3,7 @@ import React, { Component } from "react";
 import withStyles from "@material-ui/styles/withStyles";
 
 import {
-  Create,
+  Edit,
   MultiCardForm,
   FormCard,
   TextInput,
@@ -26,16 +26,11 @@ const inputOptions = sm => ({
 
 const styles = {};
 
-class ActivityCreate extends Component {
+class ActivityEdit extends Component {
   render() {
-    const { ...props } = this.props;
+    const { classes, dispatch, activity, ...props } = this.props;
     return (
-      <Create
-        title="Generate Activity and subactivities"
-        cardWrapper={false}
-        record={{ subActivityList: [{}] }}
-        {...props}
-      >
+      <Edit cardWrapper={false} record={{ subActivityList: [{}] }} {...props}>
         <MultiCardForm redirect="home">
           <FormCard title="Activity Details">
             <NumberInput
@@ -52,7 +47,6 @@ class ActivityCreate extends Component {
               source="departmentId"
               reference="departments"
               {...inputOptions(3)}
-              validate={required()}
             >
               <SelectInput optionText="name" />
             </ReferenceInput>
@@ -84,8 +78,9 @@ class ActivityCreate extends Component {
             </ArrayInput>
           </FormCard>
         </MultiCardForm>
-      </Create>
+      </Edit>
     );
   }
 }
-export default withStyles(styles)(ActivityCreate);
+
+export default withStyles(styles)(ActivityEdit);
