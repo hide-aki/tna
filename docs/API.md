@@ -811,3 +811,227 @@
     request data: 
     response data:
 ```
+
+**Order API**
+
+1 . Fetch All
+
+```$xslt
+    url: ~/v1/api/Orders
+    method: GET
+    action: 
+    params: search, page, size, sort
+    request data: 
+    response data: 
+       data placeholder in fetch all -
+            {
+                "id": 1
+                "poRef": "CT-123",
+                "orderDate": "2020-01-2",
+                "exFactoryData": "2020-01-3",
+                "buyerId": 1,
+                "timelineId": 1
+            }
+```
+
+2 . Fetch one
+
+```$xslt
+    url: ~/v1/api/orders/{orderId}
+    method: GET
+    action: 
+    params:
+    request data: 
+    response data: 
+            {
+                "id": 1
+                "poRef": "CT-123",
+                "orderQty":2000,
+                "style": "Style 1",
+                "orderDate": "2020-01-2",
+                "exFactoryData": "2020-01-3",
+                "buyerId": 1,
+                "timelineId": 1,
+                "garmentTypeId":1,
+                "seasonId":1
+                "oActivityList":[
+                            {
+                                "leadTime":2,
+                                "completedDate":"2020-01-3",
+                                "delayReason":"Some Reason",
+                                "remarks":"Delayed"
+                                "orderId": 1,
+                                "tActivityId":1
+                                "oSubActivityList":[
+                                        {
+                                         "oActivityId":1,
+                                         "tSubActivityId":1,
+                                         "leadTime":2,
+                                         "completedDate":"2020-01-3",
+                                         "remarks": "",
+                                        }
+                                ]
+                            }
+                       ]
+            }
+```
+
+3 . Create
+
+```$xslt
+    url: ~/v1/api/orders
+    method: POST
+    action: 
+    params:
+    request data: 
+            {
+                "poRef": "CT-123",
+                "orderQty":2000,
+                "style": "Style 1",
+                "orderDate": "2020-01-2",
+                "exFactoryData": "2020-01-3",
+                "buyerId": 1,
+                "timelineId": 1,
+                "garmentTypeId":1,
+                "seasonId":1
+                "oActivityList":[
+                            {
+                                "leadTime":2,
+                                "completedDate":"2020-01-3",
+                                "delayReason":"Some Reason",
+                                "remarks":"Delayed"
+                                "tActivityId":1
+                                "oSubActivityList":[
+                                        {
+                                         "tSubActivityId":1,
+                                         "leadTime":2,
+                                         "completedDate":"2020-01-3",
+                                         "remarks": 1,
+                                        }
+                                ]
+                            }
+                       ]
+            }
+    response data: 
+            {
+                "id":1,
+                "poRef": "CT-123",
+                "orderQty":2000,
+                "style": "Style 1",
+                "orderDate": "2020-01-2",
+                "exFactoryData": "2020-01-3",
+                "buyerId": 1,
+                "timelineId": 1,
+                "garmentTypeId":1,
+                "seasonId":1
+                "oActivityList":[
+                            {
+                                "id":1,
+                                "leadTime":2,
+                                "completedDate":"2020-01-3",
+                                "delayReason":"Some Reason",
+                                "remarks":"Delayed",
+                                "tActivityId":1,
+                                "oActivityId":1,
+                                "oSubActivityList":[
+                                        {
+                                         "id":1,
+                                         "oActivityId":1,
+                                         "tSubActivityId":1,
+                                         "leadTime":2,
+                                         "completedDate":"2020-01-3",
+                                         "remarks": 1,
+                                        }
+                                ]
+                            }
+                       ]
+            }
+```
+
+4 . update 
+
+```$xslt
+    url: ~/v1/api/orders/{orderId}
+    method: PUT
+    action: 
+    params:
+    request data: 
+            {
+                "id":1,
+                "poRef": "CT-125",
+                "orderQty":2500,
+                "style": "Style 4",
+                "orderDate": "2020-01-2",
+                "exFactoryData": "2020-01-3",
+                "buyerId": 1,
+                "timelineId": 1,
+                "garmentTypeId":1,
+                "seasonId":1
+                "oActivityList":[
+                            {
+                                "id":1,
+                                "leadTime":2,
+                                "completedDate":"2020-01-3",
+                                "delayReason":"Some Reason",
+                                "remarks":"Delayed",
+                                "tActivityId":1,
+                                "oActivityId":1,
+                                "oSubActivityList":[
+                                        {
+                                         "id":1,
+                                         "oActivityId":1,
+                                         "tSubActivityId":1,
+                                         "leadTime":2,
+                                         "completedDate":"2020-01-3",
+                                         "remarks": 1,
+                                        }
+                                ]
+                            }
+                       ]
+            }
+    response data: 
+            {
+                "id":1,
+                "poRef": "CT-125",
+                "orderQty":2500,
+                "style": "Style 4",
+                "orderDate": "2020-01-2",
+                "exFactoryData": "2020-01-3",
+                "buyerId": 1,
+                "timelineId": 1,
+                "garmentTypeId":1,
+                "seasonId":1
+                "oActivityList":[
+                            {
+                                "id":1,
+                                "leadTime":2,
+                                "completedDate":"2020-01-3",
+                                "delayReason":"Some Reason",
+                                "remarks":"Delayed",
+                                "tActivityId":1,
+                                "oActivityId":1,
+                                "oSubActivityList":[
+                                        {
+                                         "id":1,
+                                         "oActivityId":1,
+                                         "tSubActivityId":1,
+                                         "leadTime":2,
+                                         "completedDate":"2020-01-3",
+                                         "remarks": 1,
+                                        }
+                                ]
+                            }
+                       ]
+            }
+```
+
+5 . Delete 
+
+```$xslt
+    url: ~/v1/api/orders/{orderId}
+    method: DELETE
+    action: 
+    params:
+    request data: 
+    response data:
+```

@@ -32,8 +32,4 @@ public class Team extends Auditable {
 
     @Transient
     private Long departmentId;
-
-//    @OneToMany(mappedBy = "team", cascade = CascadeType.ALL)
-//    private Set<User> userList = new HashSet<>();
-//
 }

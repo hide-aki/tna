@@ -35,6 +35,10 @@ public class TSubActivity extends Auditable {
     @Transient
     private Long subActivityId;
 
+    @JsonProperty("tActivityId")
+    @Transient
+    private Long tActivityId;
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

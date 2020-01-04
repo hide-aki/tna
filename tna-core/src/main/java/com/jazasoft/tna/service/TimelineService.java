@@ -3,6 +3,7 @@ package com.jazasoft.tna.service;
 
 import com.jazasoft.tna.entity.TActivity;
 import com.jazasoft.tna.entity.TSubActivity;
+import com.jazasoft.tna.entity.Team;
 import com.jazasoft.tna.entity.Timeline;
 import com.jazasoft.tna.repository.ActivityRepository;
 import com.jazasoft.tna.repository.BuyerRepository;
@@ -16,6 +17,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional(value = "tenantTransactionManager", readOnly = true)
@@ -49,8 +53,10 @@ public class TimelineService {
 
     public Timeline findOne(Long id) {
         Timeline timeline = timelineRepository.findById(id).orElse(null);
-        Hibernate.initialize(timeline.getTActivityList());
         if (timeline != null) {
+            Hibernate.initialize(timeline.getTActivityList());
+            timeline.getTActivityList().forEach(tActivity -> Hibernate.initialize(tActivity.getTSubActivityList()));
+            timeline.getTActivityList().forEach(tActivity -> tActivity.getTSubActivityList().forEach(tSubActivity -> Hibernate.initialize(tSubActivity.getSubActivity())));
             Hibernate.initialize(timeline.getBuyer());
         }
         return timeline;
@@ -82,5 +88,90 @@ public class TimelineService {
             }
         }
         return timelineRepository.save(timeline);
+    }
+
+    @Transactional(value = "tenantTransactionManager")
+    public Timeline update(Timeline timeline) {
+        Timeline mTimeline = timelineRepository.findById(timeline.getId()).orElseThrow();
+
+        //update Own fields
+        mTimeline.setName(timeline.getName());
+        mTimeline.setTnaType(timeline.getTnaType());
+        mTimeline.setApproved(timeline.getApproved());
+        mTimeline.setApprovedBy(timeline.getApprovedBy());
+        mTimeline.setBuyer(buyerRepository.findById(timeline.getBuyerId()).orElse(null));
+        mTimeline.setBuyerId(timeline.getBuyerId());
+
+        //update Relational fields
+        Set<Long> existingTActivityIds = timeline.getTActivityList().stream().
+                filter(tActivity -> tActivity.getId() != null).map(TActivity::getId).
+                collect(Collectors.toSet());
+        Set<TActivity> removeTActivityList = mTimeline.getTActivityList().stream().
+                filter(tActivity -> !existingTActivityIds.contains(tActivity.getId())).
+                collect(Collectors.toSet());
+        Set<TActivity> newTActivityList = timeline.getTActivityList().stream().
+                filter(tActivity -> tActivity.getId() == null).
+                collect(Collectors.toSet());
+
+        removeTActivityList.forEach(mTimeline::removeTActivity);
+
+        newTActivityList.forEach(mTimeline::addTActivity);
+        for (TActivity tActivity: newTActivityList) {
+            tActivity.setActivity(activityRepository.findById(tActivity.getActivityId()).orElse(null));
+            tActivity.getTSubActivityList().forEach(tSubActivity -> {
+                tSubActivity.setSubActivity(subActivityRepository.findById(tSubActivity.getSubActivityId()).orElse(null));
+            });
+        }
+
+        existingTActivityIds.forEach(id -> {
+            TActivity tActivity = timeline.getTActivityList().stream().filter(d -> d.getId() != null && d.getId().equals(id)).findAny().get();
+            TActivity mTActivity = mTimeline.getTActivityList().stream().filter(d -> d.getId() != null && d.getId().equals(id)).findAny().get();
+
+            mTActivity.setLeadTimeNormal(tActivity.getLeadTimeNormal());
+            mTActivity.setLeadTimeOptimal(tActivity.getLeadTimeOptimal());
+            mTActivity.setTimeFrom(tActivity.getTimeFrom());
+
+            Set<Long> existingIds = tActivity.getTSubActivityList().stream().
+                    filter(tSubActivity -> tSubActivity.getId() != null).map(TSubActivity::getId).
+                    collect(Collectors.toSet());
+            Set<TSubActivity> removeList = mTActivity.getTSubActivityList().stream().
+                    filter(tSubActivity -> !existingIds.contains(tSubActivity.getId())).
+                    collect(Collectors.toSet());
+            Set<TSubActivity> newList = tActivity.getTSubActivityList().stream().
+                    filter(tSubActivity -> tSubActivity.getId() == null).
+                    collect(Collectors.toSet());
+
+            removeList.forEach(mTActivity::removeTSubActivity);
+
+            newList.forEach(mTActivity::addTSubActivity);
+            for (TSubActivity tSubActivity: newList) {
+                tSubActivity.setSubActivity(subActivityRepository.findById(tSubActivity.getSubActivityId()).orElse(null));
+            }
+
+            existingIds.forEach(subActivityId -> {
+                TSubActivity tSubActivity = tActivity.getTSubActivityList().stream().filter(o -> o.getId() != null && o.getId().equals(subActivityId)).findAny().get();
+                TSubActivity mTSubActivity = mTActivity.getTSubActivityList().stream().filter(o -> o.getId() != null && o.getId().equals(subActivityId)).findAny().get();
+
+                mTSubActivity.setLeadTimeNormal(tSubActivity.getLeadTimeNormal());
+                mTSubActivity.setSubActivity(subActivityRepository.findById(tSubActivity.getSubActivityId()).orElse(null));
+            });
+        });
+
+        Hibernate.initialize(mTimeline.getBuyer());
+        mTimeline.getTActivityList().forEach(tActivity -> {
+            Hibernate.initialize(tActivity.getActivity());
+            tActivity.getTSubActivityList().forEach(tSubActivity -> Hibernate.initialize(tSubActivity.getSubActivity()));
+        });
+
+        return mTimeline;
+    }
+
+    public boolean exists(Long id) {
+        return timelineRepository.existsById(id);
+    }
+
+    @Transactional(value = "tenantTransactionManager")
+    public void deleteTimeline(Long id) {
+        timelineRepository.deleteById(id);
     }
 }

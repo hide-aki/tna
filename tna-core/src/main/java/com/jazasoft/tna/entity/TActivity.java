@@ -43,6 +43,23 @@ public class TActivity extends Auditable {
     @Transient
     private Long activityId;
 
+    @Transient
+    private Long timelineId;
+
+    public void addTSubActivity(TSubActivity tSubActivity) {
+        this.tSubActivityList.add(tSubActivity);
+        tSubActivity.setTActivity(this);
+    }
+
+    public void removeTSubActivity(TSubActivity tSubActivity){
+        this.tSubActivityList.remove(tSubActivity);
+        tSubActivity.setTActivity(null);
+    }
+
+//    public void updateTSubActivity(TSubActivity tSubActivity, TSubActivity mTSubActivity){
+//        mTSubActivity.setLeadTimeNormal(tSubActivity.getLeadTimeNormal());
+//    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

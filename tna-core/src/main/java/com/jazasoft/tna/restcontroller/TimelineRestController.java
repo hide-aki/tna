@@ -2,6 +2,8 @@ package com.jazasoft.tna.restcontroller;
 
 import com.jazasoft.mtdb.specification.CustomRsqlVisitor;
 import com.jazasoft.tna.ApiUrls;
+import com.jazasoft.tna.entity.TActivity;
+import com.jazasoft.tna.entity.TSubActivity;
 import com.jazasoft.tna.entity.Timeline;
 import com.jazasoft.tna.service.TimelineService;
 import cz.jirutka.rsql.parser.RSQLParser;
@@ -31,7 +33,7 @@ public class TimelineRestController {
     }
 
     @GetMapping
-    public ResponseEntity<?> findAll(@RequestParam(value = "search", defaultValue = "")String search, Pageable pageable){
+    public ResponseEntity<?> findAll(@RequestParam(value = "search", defaultValue = "") String search, Pageable pageable) {
         Page<Timeline> pages;
         if (search.trim().isEmpty()) {
             pages = timelineService.findAll(pageable);
@@ -52,7 +54,26 @@ public class TimelineRestController {
         if (timeline == null) {
             return ResponseEntity.notFound().build();
         }
+        for (TActivity tActivity : timeline.getTActivityList()) {
+
+            tActivity.setActivityId(tActivity.getActivity() != null ? tActivity.getActivity().getId() : null);
+            tActivity.setTimelineId(tActivity.getTimeline() != null ? tActivity.getTimeline().getId() : null);
+
+            for (TSubActivity tSubActivity : tActivity.getTSubActivityList()) {
+                tSubActivity.setSubActivityId(tSubActivity.getSubActivity() != null ? tSubActivity.getSubActivity().getId() : null);
+                tSubActivity.setTActivityId(tSubActivity.getTActivity() !=null ? tSubActivity.getTActivity().getId():null);
+            }
+        }
         timeline.setBuyerId(timeline.getBuyer() != null ? timeline.getBuyer().getId() : null);
+
+        timeline.getTActivityList().forEach(tActivity -> tActivity.setActivity(null));
+//      timeline.getTActivityList().forEach(tActivity -> tActivity.setActivityId());
+
+
+        timeline.getTActivityList().forEach(tActivity -> {
+            tActivity.getTSubActivityList().forEach(tSubActivity -> tSubActivity.setTActivity(null));
+
+        });
         return ResponseEntity.ok(timeline);
     }
 
@@ -73,5 +94,38 @@ public class TimelineRestController {
 
         URI Location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(timeline.getId()).toUri();
         return ResponseEntity.created(Location).body(timeline);
+    }
+
+    @PutMapping(ApiUrls.URL_TIMELINES_TIMELINE)
+    private ResponseEntity<?> update(@PathVariable("timelineId") Long id, @RequestBody Timeline timeline) {
+        logger.trace("update(): id = {}", id);
+        if (!timelineService.exists(id)) {
+            return ResponseEntity.notFound().build();
+        }
+        timeline.setId(id);
+        Timeline mTimeline = timelineService.update(timeline);
+        timeline.getTActivityList().forEach(tActivity -> {
+            if (tActivity.getActivity() != null) {
+                tActivity.getActivity().setSubActivityList(null);
+                tActivity.getActivity().setDepartment(null);
+            }
+            tActivity.getTSubActivityList().forEach(tSubActivity -> {
+                tSubActivity.setTActivity(null);
+                tSubActivity.setSubActivityId(tSubActivity.getSubActivity() != null ? tSubActivity.getSubActivity().getId() : null);
+                tSubActivity.setTActivityId(tActivity.getId());
+            });
+            tActivity.setActivityId(tActivity.getActivity() != null ? tActivity.getId() : null);
+            tActivity.setTimelineId(mTimeline.getId());
+        });
+        return ResponseEntity.ok(mTimeline);
+    }
+
+    @DeleteMapping(ApiUrls.URL_TIMELINES_TIMELINE)
+    public ResponseEntity<?> deleteTimeline(@PathVariable("timelineId") Long id) {
+        if (!timelineService.exists(id)) {
+            return ResponseEntity.notFound().build();
+        }
+        timelineService.deleteTimeline(id);
+        return ResponseEntity.noContent().build();
     }
 }
