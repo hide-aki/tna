@@ -28,7 +28,7 @@ class ActivityView extends Component {
             />
           </ShowCard>
           <ShowCard
-            title="Sub Activities"
+            title="Subactivities"
             content={({ record = {} }) => {
               const data = record.subActivityList
                 ? record.subActivityList.reduce(

@@ -10,6 +10,7 @@ import LibraryIcon from "@material-ui/icons/LibraryBooks";
 import SettingsIcon from "@material-ui/icons/Settings";
 import DeveloperBoardIcon from "@material-ui/icons/DeveloperBoard";
 import DownloadsIcon from "@material-ui/icons/GetApp";
+import HourglassEmptyOutlinedIcon from "@material-ui/icons/HourglassEmptyOutlined";
 
 import {
   App as JApp,
@@ -46,6 +47,7 @@ import {
   ActivityView,
   ActivityEdit
 } from "./pages/activity";
+import { TimelineHome, TimelineCreate } from "./pages/timeline";
 
 // Setting Page
 import Settings from "./pages/setting/Settings";
@@ -174,6 +176,18 @@ class App extends React.Component {
           //     </Resource>
           //   );
           // }
+
+          if (hasPrivilege(roles, hasAccess, "timeline", "read")) {
+            resourceList.push(
+              <Resource
+                name="timelines"
+                resource="timelines"
+                home={TimelineHome}
+                create={TimelineCreate}
+                icon={HourglassEmptyOutlinedIcon}
+              />
+            );
+          }
 
           if (hasPrivilege(roles, hasAccess, "activity", "read")) {
             resourceList.push(

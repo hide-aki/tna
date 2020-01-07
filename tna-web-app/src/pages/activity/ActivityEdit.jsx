@@ -47,6 +47,7 @@ class ActivityEdit extends Component {
               source="departmentId"
               reference="departments"
               {...inputOptions(3)}
+              validate={required()}
             >
               <SelectInput optionText="name" />
             </ReferenceInput>
