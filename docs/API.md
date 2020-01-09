@@ -546,7 +546,12 @@
                         "activityId":1
                     }
                 ]
-                
+                "delayReasonList":[
+                    {
+                        "name": "delayed"
+                        "activityId": 1
+                    }
+                ]
             }
     response data: 
             {
@@ -561,6 +566,12 @@
                         "name":"SubActivity 1",
                         "desc":"sub activity 1",
                         "activityId":1
+                    }
+                ]
+                "delayReasonList":[
+                    {
+                        "name": "delayed"
+                        "activityId": 1
                     }
                 ]
                 
@@ -589,6 +600,12 @@
                         "activityId":1
                     }
                 ]
+                "delayReasonList":[
+                    {
+                        "name": "delayed"
+                        "activityId": 1
+                    }
+                ]
                 
             }
     response data: 
@@ -606,7 +623,12 @@
                         "activityId":1
                     }
                 ]
-                
+                "delayReasonList":[
+                    {
+                        "name": "delayed"
+                        "activityId": 1
+                    }
+                ]        
             }
 ```
 

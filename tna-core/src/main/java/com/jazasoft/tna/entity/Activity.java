@@ -51,6 +51,10 @@ public class Activity extends Auditable {
     @JsonProperty("cLevel")
     private Boolean cLevel;
 
+////    @Column(nullable = false)
+//    @JsonProperty("isDefault")
+//    private Boolean isDefault;
+
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
     private Department department;
 

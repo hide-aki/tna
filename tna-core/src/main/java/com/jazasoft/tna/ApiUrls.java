@@ -16,6 +16,9 @@ public interface ApiUrls {
   String ROOT_URL_TEAMS="/api/teams";
   String URL_TEAMS_TEAM="/{teamId}";
 
+  String ROOT_URL_DELAYREASONS="/api/delayReasons";
+  String URL_DELAYREASONS_DELAYREASON="/{delayReasonId}";
+
   String ROOT_URL_ACTIVITIES="/api/activities";
   String URL_ACTIVITIES_ACTIVITY="/{activityId}";
 
