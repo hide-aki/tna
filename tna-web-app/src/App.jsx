@@ -47,7 +47,17 @@ import {
   ActivityView,
   ActivityEdit
 } from "./pages/activity";
-import { TimelineHome, TimelineCreate } from "./pages/timeline";
+import {
+  DelayReasonHome,
+  CreateDelayReason,
+  EditDelayReason
+} from "./pages/library/DelayReason";
+import {
+  TimelineHome,
+  TimelineCreate,
+  TimelineView,
+  TimelineEdit
+} from "./pages/timeline";
 
 // Setting Page
 import Settings from "./pages/setting/Settings";
@@ -177,18 +187,6 @@ class App extends React.Component {
           //   );
           // }
 
-          if (hasPrivilege(roles, hasAccess, "timeline", "read")) {
-            resourceList.push(
-              <Resource
-                name="timelines"
-                resource="timelines"
-                home={TimelineHome}
-                create={TimelineCreate}
-                icon={HourglassEmptyOutlinedIcon}
-              />
-            );
-          }
-
           if (hasPrivilege(roles, hasAccess, "activity", "read")) {
             resourceList.push(
               <Resource
@@ -199,6 +197,20 @@ class App extends React.Component {
                 view={ActivityView}
                 edit={ActivityEdit}
                 icon={DeveloperBoardIcon}
+              />
+            );
+          }
+
+          if (hasPrivilege(roles, hasAccess, "timeline", "read")) {
+            resourceList.push(
+              <Resource
+                name="timelines"
+                resource="timelines"
+                home={TimelineHome}
+                create={TimelineCreate}
+                view={TimelineView}
+                edit={TimelineEdit}
+                icon={HourglassEmptyOutlinedIcon}
               />
             );
           }
@@ -244,6 +256,13 @@ class App extends React.Component {
                   home={TeamHome}
                   create={CreateTeam}
                   edit={EditTeam}
+                />
+                <Resource
+                  name="delayReasons"
+                  resource="delayReasons"
+                  home={DelayReasonHome}
+                  create={CreateDelayReason}
+                  edit={EditDelayReason}
                 />
               </Resource>
             );

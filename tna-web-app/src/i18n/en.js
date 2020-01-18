@@ -9,7 +9,8 @@ export default {
   dashboard: "Dashboard",
   forbidden: {
     title: "Forbidden",
-    message: "Access Denied. You do not have enough privilege for this operation",
+    message:
+      "Access Denied. You do not have enough privilege for this operation"
   },
   resources: {
     orders: {
@@ -151,6 +152,12 @@ export default {
       fields: {
         name: "Name",
         desc: "Description"
+      }
+    },
+    delayReasons: {
+      name: "Delay Reasons |||| Delay Reasons",
+      fields: {
+        name: "Name"
       }
     },
     designations: {

@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import { connect } from "react-redux";
 import isEqual from "lodash/isEqual";
 
+//Material-UI
 import { withStyles } from "@material-ui/styles";
 import {
   Typography,
@@ -38,84 +39,16 @@ import {
   BackButton,
   crudGetList,
   RestMethods,
+  minValue,
   SAVING_START,
   SAVING_END
 } from "jazasoft";
 import { SimpleForm } from "jazasoft/lib/mui/form/SimpleForm";
-
 import CardHeader from "../../components/CardHeader";
 import { dataProvider } from "../../App";
+import { Field, FieldArray } from "redux-form";
 
-const inputOptions = sm => ({
-  xs: 12,
-  sm,
-  fullWidth: true,
-  options: { fullWidth: true }
-});
-
-const keysActivity = [
-  "leadTimeNormal",
-  "leadTimeOptimal",
-  "timeFrom",
-  "subActivityList"
-];
-
-const parse = values => {
-  const { name, tnaType, buyerId, ...activity } = values;
-  let tActivityList = [];
-  console.log({ values });
-  Object.keys(activity).forEach(key => {
-    const activityId = key.split("-")[0];
-    const k = key.split("-")[1];
-    if (keysActivity.includes(k)) {
-      let tActivity = tActivityList.find(e => e.activityId === activityId);
-      let value = activity[key];
-      if (k === "subActivityList" && value) {
-        value = value.map(({ subActivityId, leadTimeNormal }) => ({
-          subActivityId,
-          leadTimeNormal
-        }));
-      }
-      if (tActivity) {
-        tActivity[k] = value;
-      } else {
-        tActivityList.push({ activityId, [k]: value });
-      }
-    }
-  });
-  const timeline = {
-    name,
-    buyerId,
-    tnaType,
-    tActivityList
-  };
-
-  return timeline;
-};
-
-const format = timeline => {
-  const { tActivityList, ...rest } = timeline;
-
-  let tActivities = {};
-  tActivityList.forEach(tActivity => {
-    tActivities = {
-      ...tActivities,
-      ...Object.keys(tActivity).reduce(
-        (acc, key) => ({
-          ...acc,
-          [`${tActivity.id}-${key}`]:
-            key === "subActivityList"
-              ? [...tActivity[key].map(e => ({ ...e, subActivityId: e.id }))]
-              : tActivity[key]
-        }),
-        {}
-      )
-    };
-  });
-
-  return { ...rest, ...tActivities };
-};
-
+// Styling
 const homeStyle = theme => ({
   container: {
     margin: theme.spacing(3)
@@ -158,30 +91,187 @@ const homeStyle = theme => ({
   }
 });
 
-const SelectDialog = ({ open, onClose, data, onSelect }) => (
-  <Dialog onClose={onClose} open={open} maxWidth="xs" fullWidth>
-    <DialogTitle>Activities</DialogTitle>
-    <Divider />
-    <List>
-      {data.map((activity, idx) => (
-        <ListItem divider button onClick={_ => onSelect(activity)} key={idx}>
-          <ListItemText primary={activity.name} />
-        </ListItem>
-      ))}
-      {data.length === 0 && (
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "center",
-            padding: "1em"
-          }}
-        >
-          No data available
-        </div>
-      )}
-    </List>
-  </Dialog>
+const inputOptions = sm => ({
+  xs: 12,
+  sm,
+  fullWidth: true
+});
+
+// Creating timeline structure for Redux-Fields
+const format = activityList => {
+  let timeline = {
+    tActivityList: activityList.map(({ id, name, subActivityList }) => ({
+      activityId: id,
+      name,
+      tSubActivityList: subActivityList.map(({ id, name }) => ({
+        subActivityId: id,
+        name
+      }))
+    }))
+  };
+
+  return timeline;
+};
+
+// To populate Activity name on Expansion Panel
+const TextField = ({ className, input: { value } }) => (
+  <Typography className={className}>{value}</Typography>
 );
+
+// Add Activity Dialog box Content
+const SelectDialog = ({ open, onClose, data, fields, onSelect }) => {
+  return (
+    <Dialog onClose={onClose} open={open} maxWidth="xs" fullWidth>
+      <DialogTitle>Activities</DialogTitle>
+      <Divider />
+      <List>
+        {data.map((activity, idx) => (
+          <ListItem
+            divider
+            button
+            onClick={_ => onSelect(fields, activity)}
+            key={idx}
+          >
+            <ListItemText primary={activity.name} />
+          </ListItem>
+        ))}
+        {data.length === 0 && (
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "center",
+              padding: "1em"
+            }}
+          >
+            No data available
+          </div>
+        )}
+      </List>
+    </Dialog>
+  );
+};
+
+// Activity Field Array
+const renderActivities = ({
+  fields,
+  activities,
+  classes,
+  expanded,
+  handleExpansionPanelChange,
+  onAddActivity,
+  onRemoveActivity
+}) => {
+  return (
+    <Card className={classes.card}>
+      <div className={classes.panelBtn}>
+        <CardHeader title="Activities" />
+        <Button
+          showLabel={false}
+          label="Add Activity"
+          className={classes.addBtn}
+          onClick={_ => onAddActivity(fields)}
+        >
+          <AddIcon />
+        </Button>
+      </div>
+      <Divider />
+      <Paper className={classes.activitiesField}>
+        {fields.map((activity, idx) => {
+          const activityObj =
+            activities &&
+            fields.get(idx) &&
+            activities[fields.get(idx).activityId];
+
+          return (
+            <ExpansionPanel
+              key={idx}
+              expanded={expanded === `${activity}.id`}
+              onChange={handleExpansionPanelChange(`${activity}.id`)}
+            >
+              <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
+                <div className={classes.panelBtn}>
+                  <Field
+                    name={`${activity}.name`}
+                    component={TextField}
+                    className={classes.heading}
+                  />
+
+                  <Button
+                    showLabel={false}
+                    label="Remove Activity"
+                    onClick={_ => onRemoveActivity(fields, idx, activity)}
+                  >
+                    <RemoveIcon />
+                  </Button>
+                </div>
+              </ExpansionPanelSummary>
+              <ExpansionPanelDetails>
+                <SimpleForm
+                  component="div"
+                  className={classes.form}
+                  footer={false}
+                >
+                  <NumberInput
+                    source={`${activity}.leadTimeNormal`}
+                    label="Lead Time Normal"
+                    {...inputOptions(4)}
+                    validate={[required(1), minValue(1)]}
+                  />
+                  <NumberInput
+                    source={`${activity}.leadTimeOptimal`}
+                    label="Lead Time Optimal"
+                    {...inputOptions(4)}
+                    validate={[required(), minValue(1)]}
+                  />
+                  <RadioButtonGroupInput
+                    className={classes.radioBtn}
+                    source={`${activity}.timeFrom`}
+                    label="Time From"
+                    choices={[
+                      { id: "O", name: "Order Date" },
+                      { id: "E", name: "Ex-Factory Date" }
+                    ]}
+                    {...inputOptions(4)}
+                    validate={required()}
+                  />
+                  <ArrayInput
+                    label="Subactivity List"
+                    source={`${activity}.tSubActivityList`}
+                    {...inputOptions(12)}
+                  >
+                    <SimpleFormIterator>
+                      {activityObj && activityObj.subActivityList && (
+                        <SelectInput
+                          source="subActivityId"
+                          label="Sub Activities"
+                          choices={activityObj.subActivityList.map(
+                            ({ id, name }) => ({
+                              id: id,
+                              name
+                            })
+                          )}
+                          {...inputOptions(6)}
+                          validate={required()}
+                        />
+                      )}
+
+                      <NumberInput
+                        source="leadTimeNormal"
+                        label="Lead Time Normal"
+                        {...inputOptions(6)}
+                        validate={[required(), minValue(1)]}
+                      />
+                    </SimpleFormIterator>
+                  </ArrayInput>
+                </SimpleForm>
+              </ExpansionPanelDetails>
+            </ExpansionPanel>
+          );
+        })}
+      </Paper>
+    </Card>
+  );
+};
 
 class TimelineCreate extends Component {
   state = {
@@ -193,8 +283,8 @@ class TimelineCreate extends Component {
   };
 
   componentDidMount() {
-    this.init();
     this.props.dispatch(crudGetList("activities"));
+    this.init();
   }
 
   componentWillReceiveProps(nextProps) {
@@ -205,22 +295,26 @@ class TimelineCreate extends Component {
 
   init = (props = this.props) => {
     const { activities } = props;
-
     const activityList = activities
-      ? Object.keys(activities).map(id => activities[id])
+      ? Object.keys(activities)
+          .map(id => activities[id])
+          .sort((a, b) => a.serialNo - b.serialNo)
       : [];
-    const initialValues = format({ tActivityList: activityList });
-    this.setState({ activityList, initialValues });
+    const initialValues = format(activityList);
+    this.setState({
+      activityList,
+      initialValues
+    });
   };
 
-  onRemoveActivity = activity => () => {
-    let activityList = this.state.activityList.filter(
-      e => e.id !== activity.id
-    );
-    this.setState({ activityList });
+  onRemoveActivity = (fields, index) => {
+    let activityList = this.state.activityList.slice();
+    activityList.splice(index, 1);
+    this.setState({ activityList: activityList });
+    fields.remove(index);
   };
 
-  onAddActivity = () => {
+  onAddActivity = fields => {
     const { activities } = this.props;
     const { activityList } = this.state;
     const totalActivityList = Object.keys(activities).map(id => activities[id]);
@@ -228,12 +322,12 @@ class TimelineCreate extends Component {
     const rActivityList = totalActivityList.filter(
       e => !selectedIds.includes(e.id)
     );
-    this.setState({ dialogActive: true, rActivityList });
+    this.setState({ dialogActive: true, rActivityList, fields });
   };
 
   onSubmit = handleSubmit => {
     handleSubmit(values => {
-      this.createTimeline(parse(values));
+      this.createTimeline(values);
     })();
   };
 
@@ -254,13 +348,64 @@ class TimelineCreate extends Component {
       });
   };
 
-  onValidate = (values, props) => {
+  onValidate = values => {
+    const errors = {};
+    const tActivityList = [];
+
+    values &&
+      Object.values(values)[0] &&
+      Object.values(values)[0].forEach((activity, activityIdx) => {
+        const tActivity = {};
+        if (activity.leadTimeOptimal >= activity.leadTimeNormal) {
+          tActivity.leadTimeOptimal =
+            "Value should be less than Lead Time Normal";
+          tActivityList[activityIdx] = tActivity;
+        }
+        const tSubActivityList = [];
+
+        let sortedSubActivityList =
+          activity.tSubActivityList &&
+          activity.tSubActivityList.map(a => a.subActivityId);
+        activity.tSubActivityList.forEach((subActivity, subActivityIdx) => {
+          const tSubActivity = {};
+          if (subActivity.leadTimeNormal > activity.leadTimeNormal) {
+            tSubActivity.leadTimeNormal =
+              "Value should be less than Activity's Lead Time Normal";
+            tSubActivityList[subActivityIdx] = tSubActivity;
+          } else if (
+            sortedSubActivityList.some(
+              (a, index) => sortedSubActivityList.indexOf(a) !== index
+            )
+          ) {
+            tSubActivity.subActivityId = "Subactivities should not be same";
+            tSubActivityList[subActivityIdx] = tSubActivity;
+          }
+        });
+        if (tSubActivityList.length) {
+          tActivity.tSubActivityList = tSubActivityList;
+          tActivityList[activityIdx] = tActivity;
+        }
+      });
+    if (tActivityList.length) {
+      errors.tActivityList = tActivityList;
+    }
+
+    return errors;
   };
 
-  onSelect = activity => {
+  onSelect = (fields, activity) => {
     let activityList = this.state.activityList.slice();
     activityList.push(activity);
     this.setState({ activityList, dialogActive: false });
+    let newActivity = {
+      activityId: activity.id,
+      name: activity.name,
+      tSubActivityList: activity.subActivityList.map(({ id, name }) => ({
+        subActivityId: id,
+        name
+      }))
+    };
+    fields.push(newActivity);
   };
 
   // Expansion bar control
@@ -269,11 +414,11 @@ class TimelineCreate extends Component {
   };
 
   render() {
-    const { classes } = this.props;
+    const { classes, activities } = this.props;
     const {
       dialogActive,
-      activityList,
       rActivityList,
+      fields,
       initialValues,
       expanded
     } = this.state;
@@ -281,18 +426,18 @@ class TimelineCreate extends Component {
     return (
       <div>
         <PageHeader title="Create Timeline" />
-
         <SelectDialog
           open={dialogActive}
-          onClose={() => this.setState({ dialogActive: false })}
+          onClose={() => this.setState({ dialogActive: false, fields: null })}
           data={rActivityList}
           onSelect={this.onSelect}
+          fields={fields}
         />
-
         <div className={classes.container}>
           <WithReduxForm
             initialValues={initialValues}
             validate={this.onValidate}
+            onChange={this.onChange}
           >
             {({ handleSubmit }) => (
               <div>
@@ -327,97 +472,17 @@ class TimelineCreate extends Component {
                     </SimpleForm>
                   </div>
                 </Card>
-                <Card className={classes.card}>
-                  <div className={classes.panelBtn}>
-                    <CardHeader title="Activities" />
-                    <Button
-                      showLabel={false}
-                      label="Add Activity"
-                      className={classes.addBtn}
-                      onClick={this.onAddActivity}
-                    >
-                      <AddIcon />
-                    </Button>
-                  </div>
 
-                  <Divider />
-
-                  <Paper className={classes.activitiesField}>
-                    {activityList
-                      .sort((a, b) => a.serialNo - b.serialNo)
-                      .map((activity, idx) => (
-                        <ExpansionPanel
-                          key={idx}
-                          expanded={expanded === activity.id}
-                          onChange={this.handleChange(activity.id)}
-                        >
-                          <ExpansionPanelSummary
-                            expandIcon={<ExpandMoreIcon />}
-                          >
-                            <div className={classes.panelBtn}>
-                              <Typography className={classes.heading}>
-                                {activity.name}
-                              </Typography>
-                              <Button
-                                showLabel={false}
-                                label="Remove Activity"
-                                onClick={this.onRemoveActivity(activity)}
-                              >
-                                <RemoveIcon />
-                              </Button>
-                            </div>
-                          </ExpansionPanelSummary>
-                          <ExpansionPanelDetails>
-                            <SimpleForm
-                              component="div"
-                              className={classes.form}
-                              footer={false}
-                            >
-                              <NumberInput
-                                source={`${activity.id}-leadTimeNormal`}
-                                label="Lead Time Normal"
-                                {...inputOptions(4)}
-                              />
-                              <NumberInput
-                                source={`${activity.id}-leadTimeOptimal`}
-                                label="Lead Time Optimal"
-                                {...inputOptions(4)}
-                              />
-                              <RadioButtonGroupInput
-                                className={classes.radioBtn}
-                                source={`${activity.id}-timeFrom`}
-                                label="Time From"
-                                choices={[
-                                  { id: "O", name: "Order Date" },
-                                  { id: "E", name: "Ex-Factory Date" }
-                                ]}
-                                {...inputOptions(4)}
-                              />
-                              <ArrayInput
-                                label="Subactivity List"
-                                source={`${activity.id}-subActivityList`}
-                                {...inputOptions(12)}
-                              >
-                                <SimpleFormIterator>
-                                  <SelectInput
-                                    source="subActivityId"
-                                    label="Sub Activities"
-                                    choices={activity.subActivityList}
-                                    {...inputOptions(6)}
-                                  />
-                                  <NumberInput
-                                    source="leadTimeNormal"
-                                    label="Lead Time Normal"
-                                    {...inputOptions(6)}
-                                  />
-                                </SimpleFormIterator>
-                              </ArrayInput>
-                            </SimpleForm>
-                          </ExpansionPanelDetails>
-                        </ExpansionPanel>
-                      ))}
-                  </Paper>
-                </Card>
+                <FieldArray
+                  name="tActivityList"
+                  component={renderActivities}
+                  activities={activities}
+                  classes={classes}
+                  expanded={expanded}
+                  handleExpansionPanelChange={this.handleChange}
+                  onAddActivity={this.onAddActivity}
+                  onRemoveActivity={this.onRemoveActivity}
+                />
 
                 <PageFooter>
                   <Button
