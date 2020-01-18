@@ -254,9 +254,9 @@
     </changeSet>
 
     <changeSet id="shahrukh" author="v2.0.x-id10">
-        <createTable tableName="order">
+        <createTable tableName="orders">
             <column autoIncrement="true" name="id" type="BIGSERIAL">
-                <constraints primaryKey="true" primaryKeyName="order_pkey"/>
+                <constraints primaryKey="true" primaryKeyName="orders_pkey"/>
             </column>
             <column name="created_at" type="TIMESTAMP WITHOUT TIME ZONE"/>
             <column name="modified_at" type="TIMESTAMP WITHOUT TIME ZONE"/>
@@ -294,26 +294,26 @@
             </column>
         </createTable>
 
-        <createIndex indexName="uk_order_po_ref" tableName="order" unique="true">
+        <createIndex indexName="uk_order_po_ref" tableName="orders" unique="true">
             <column name="lower((po_ref)::text)"/>
         </createIndex>
 
-        <addForeignKeyConstraint baseColumnNames="buyer_id" baseTableName="order"
+        <addForeignKeyConstraint baseColumnNames="buyer_id" baseTableName="orders"
                                  constraintName="fk_order_buyer_id" deferrable="false"
                                  initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
                                  referencedColumnNames="id" referencedTableName="buyer"/>
 
-        <addForeignKeyConstraint baseColumnNames="season_id" baseTableName="order"
+        <addForeignKeyConstraint baseColumnNames="season_id" baseTableName="orders"
                                  constraintName="fk_order_season_id" deferrable="false"
                                  initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
                                  referencedColumnNames="id" referencedTableName="season"/>
 
-        <addForeignKeyConstraint baseColumnNames="timeline_id" baseTableName="order"
+        <addForeignKeyConstraint baseColumnNames="timeline_id" baseTableName="orders"
                                  constraintName="fk_order_timeline_id" deferrable="false"
                                  initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
                                  referencedColumnNames="id" referencedTableName="timeline"/>
 
-        <addForeignKeyConstraint baseColumnNames="garment_type_id" baseTableName="order"
+        <addForeignKeyConstraint baseColumnNames="garment_type_id" baseTableName="orders"
                                  constraintName="fk_order_garment_type_id" deferrable="false"
                                  initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
                                  referencedColumnNames="id" referencedTableName="garment_type"/>
@@ -382,7 +382,7 @@
         <addForeignKeyConstraint baseColumnNames="order_id" baseTableName="o_activity"
                                  constraintName="fk_o_activity_order_id" deferrable="false"
                                  initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
-                                 referencedColumnNames="id" referencedTableName="order"/>
+                                 referencedColumnNames="id" referencedTableName="orders"/>
         <addForeignKeyConstraint baseColumnNames="t_activity_id" baseTableName="o_activity"
                                  constraintName="fk_o_activity_t_activity_id" deferrable="false"
                                  initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
@@ -411,7 +411,7 @@
         <addForeignKeyConstraint baseColumnNames="order_id" baseTableName="order_log"
                                  constraintName="fk_order_log_order_id" deferrable="false"
                                  initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
-                                 referencedColumnNames="id" referencedTableName="order"/>
+                                 referencedColumnNames="id" referencedTableName="orders"/>
 
         <addForeignKeyConstraint baseColumnNames="o_activity_id" baseTableName="order_log"
                                  constraintName="fk_order_log_o_activity_id" deferrable="false"

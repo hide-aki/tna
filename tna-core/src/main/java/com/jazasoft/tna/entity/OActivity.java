@@ -1,13 +1,16 @@
 package com.jazasoft.tna.entity;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.jazasoft.mtdb.entity.Auditable;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotEmpty;
-import java.util.Date;
+import java.util.*;
 
 @NoArgsConstructor
 @Data
@@ -25,16 +28,73 @@ public class OActivity extends Auditable {
     @Temporal(value = TemporalType.TIMESTAMP)
     private Date completedDate;
 
-    @NotEmpty
     private String delayReason;
 
     @Column(columnDefinition = "TEXT")
     private String remarks;
 
+    @NotEmpty
+    private String activityName;
+
+    private String timeFrom;
+
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
+    @JsonIgnore
     private Order order;
 
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
-    @JoinColumn(name = "t_activity")
+    @JsonProperty("tActivity")
+    @JoinColumn(name = "t_activity_id")
     private TActivity tActivity;
+
+    @OneToMany(mappedBy = "oActivity", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonProperty("oSubActivityList")
+    @JsonIgnore
+    private Set<OSubActivity> oSubActivityList = new HashSet<>();
+
+    @Transient
+    private Long orderId;
+
+    @Transient
+    @JsonProperty("tActivityId")
+    private Long tActivityId;
+
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof OActivity)) return false;
+        OActivity oActivity = (OActivity) o;
+        return Objects.equals(id, oActivity.id) &&
+                Objects.equals(leadTime, oActivity.leadTime) &&
+                Objects.equals(completedDate, oActivity.completedDate) &&
+                Objects.equals(delayReason, oActivity.delayReason) &&
+                Objects.equals(remarks, oActivity.remarks) &&
+                Objects.equals(activityName, oActivity.activityName) &&
+                Objects.equals(timeFrom, oActivity.timeFrom) &&
+                Objects.equals(order, oActivity.order) &&
+                Objects.equals(tActivity, oActivity.tActivity) &&
+                Objects.equals(orderId, oActivity.orderId) &&
+                Objects.equals(tActivityId, oActivity.tActivityId);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, leadTime, completedDate, delayReason, remarks, activityName, timeFrom, order, tActivity, orderId, tActivityId);
+    }
+
+    @Override
+    public String toString() {
+        return "OActivity{" +
+                "id=" + id +
+                ", leadTime=" + leadTime +
+                ", completedDate=" + completedDate +
+                ", delayReason='" + delayReason + '\'' +
+                ", remarks='" + remarks + '\'' +
+                ", activityName='" + activityName + '\'' +
+                ", timeFrom='" + timeFrom + '\'' +
+                ", order=" + order +
+                ", tActivity=" + tActivity +
+                '}';
+    }
 }

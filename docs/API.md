@@ -475,6 +475,93 @@
 
 ```
 
+**DelayReason API**
+
+1 . Fetch All
+
+```$xslt
+    url: ~/v1/api/delayReasons
+    method: GET
+    action: 
+    params: search, page, size, sort
+    request data: 
+    response data: 
+        data placeholder in fetch all -
+         {
+                "id": 2
+                "name": "delay reason",
+                "activityId":11,
+         } 
+```
+
+2 . Fetch one
+ 
+```$xslt
+    url: ~/v1/api/delayReasons/{delayReasonId}
+    method: GET
+    action: 
+    params:
+    request data: 
+    response data: 
+         {
+                "id": 2
+                "name": "Delay Reason 1",
+                "activityId":11,
+         } 
+```
+
+3 . Create
+
+```$xslt
+    url: ~/v1/api/delayReasons
+    method: POST
+    action: 
+    params:
+    request data: 
+          {
+                     "name": "Test team 2",
+                     "activityId":11,
+          } 
+    response data: 
+          {
+                     "id": 2
+                     "name": "Test team 2",
+                     "activityId":11,
+          } 
+```
+
+4 . update 
+
+```$xslt
+    url: ~/v1/api/delayReasons/{delayReasonId}
+    method: PUT
+    action: 
+    params:
+    request data: 
+          {
+                     "id": 2
+                     "name": "Test team 5",
+                     "activityId":13,
+          } 
+    response data: 
+          {
+                     "id": 2
+                     "name": "Test team 5",
+                     "activityId":13,
+          } 
+```
+
+5 . Delete 
+
+```$xslt
+    url: ~/v1/api/delayReasons/{delayReasonId}
+    method: DELETE
+    action: 
+    params:
+    request data: 
+    response data:
+
+```
 
 
 **Activity API**
@@ -658,7 +745,7 @@
             {
                 "id": 1
                 "name": "Time line 1",
-                "tna_type":"forward",
+                "tnaType":"forward",
                 "approved": true,
                 "approvedBy": "UserX",
                 "buyerId": 1
@@ -677,7 +764,7 @@
             {
                "id": 1
                "name": "Time line 1",
-               "tna_type":"forward",
+               "tnaType":"forward",
                "approved": true,
                "approvedBy": "HOD",
                "buyerId": 1,
@@ -710,9 +797,7 @@
     request data: 
             {
                "name": "Time line 2",
-               "tna_type":"backward",
-               "approved": true,
-               "approvedBy": "HOD",
+               "tnaType":"backward",
                "buyerId": 1,
                "tActivityList":[
                             {
@@ -733,9 +818,7 @@
             {
                "id": 2
                "name": "Time line 2",
-               "tna_type":"backward",
-               "approved": true,
-               "approvedBy": "HOD",
+               "tnaType":"backward",
                "buyerId": 1,
                "tActivityList":[
                             {
@@ -771,7 +854,7 @@
             {
                "id": 2
                "name": "Time line 3",
-               "tna_type":"Forward",
+               "tnaType":"Forward",
                "approved": false,
                "approvedBy": "",
                "buyerId": 1,
@@ -798,7 +881,7 @@
  {
                "id": 2
                "name": "Time line 3",
-               "tna_type":"Forward",
+               "tnaType":"Forward",
                "approved": false,
                "approvedBy": "",
                "buyerId": 1,
@@ -850,7 +933,7 @@
                 "id": 1
                 "poRef": "CT-123",
                 "orderDate": "2020-01-2",
-                "exFactoryData": "2020-01-3",
+                "exFactoryDate": "2020-01-3",
                 "buyerId": 1,
                 "timelineId": 1
             }
@@ -916,23 +999,6 @@
                 "timelineId": 1,
                 "garmentTypeId":1,
                 "seasonId":1
-                "oActivityList":[
-                            {
-                                "leadTime":2,
-                                "completedDate":"2020-01-3",
-                                "delayReason":"Some Reason",
-                                "remarks":"Delayed"
-                                "tActivityId":1
-                                "oSubActivityList":[
-                                        {
-                                         "tSubActivityId":1,
-                                         "leadTime":2,
-                                         "completedDate":"2020-01-3",
-                                         "remarks": 1,
-                                        }
-                                ]
-                            }
-                       ]
             }
     response data: 
             {
@@ -946,27 +1012,6 @@
                 "timelineId": 1,
                 "garmentTypeId":1,
                 "seasonId":1
-                "oActivityList":[
-                            {
-                                "id":1,
-                                "leadTime":2,
-                                "completedDate":"2020-01-3",
-                                "delayReason":"Some Reason",
-                                "remarks":"Delayed",
-                                "tActivityId":1,
-                                "oActivityId":1,
-                                "oSubActivityList":[
-                                        {
-                                         "id":1,
-                                         "oActivityId":1,
-                                         "tSubActivityId":1,
-                                         "leadTime":2,
-                                         "completedDate":"2020-01-3",
-                                         "remarks": 1,
-                                        }
-                                ]
-                            }
-                       ]
             }
 ```
 
@@ -989,27 +1034,6 @@
                 "timelineId": 1,
                 "garmentTypeId":1,
                 "seasonId":1
-                "oActivityList":[
-                            {
-                                "id":1,
-                                "leadTime":2,
-                                "completedDate":"2020-01-3",
-                                "delayReason":"Some Reason",
-                                "remarks":"Delayed",
-                                "tActivityId":1,
-                                "oActivityId":1,
-                                "oSubActivityList":[
-                                        {
-                                         "id":1,
-                                         "oActivityId":1,
-                                         "tSubActivityId":1,
-                                         "leadTime":2,
-                                         "completedDate":"2020-01-3",
-                                         "remarks": 1,
-                                        }
-                                ]
-                            }
-                       ]
             }
     response data: 
             {
@@ -1023,29 +1047,64 @@
                 "timelineId": 1,
                 "garmentTypeId":1,
                 "seasonId":1
-                "oActivityList":[
-                            {
-                                "id":1,
-                                "leadTime":2,
-                                "completedDate":"2020-01-3",
-                                "delayReason":"Some Reason",
-                                "remarks":"Delayed",
-                                "tActivityId":1,
-                                "oActivityId":1,
-                                "oSubActivityList":[
-                                        {
-                                         "id":1,
-                                         "oActivityId":1,
-                                         "tSubActivityId":1,
-                                         "leadTime":2,
-                                         "completedDate":"2020-01-3",
-                                         "remarks": 1,
-                                        }
-                                ]
-                            }
-                       ]
             }
 ```
+
+3 . update specific activity in order
+
+```$xslt
+    url: ~/v1/api/orders/{orderId}/activities/{activityId}
+    method: Put
+    action: 
+    params:
+    request data: 
+            {
+                "id": 1,
+                "tActicityId": 7688,
+                "activityName": ,
+                "leadTime": ,
+                "timeFrom": "O",
+                "completedDate": ,
+                "delayReason": ,
+                "remarks": ,
+                "oSubActivityList": [
+                    {
+                        "id": ,
+                        "oActivityId": ,
+                        "tSubActivityId": ,
+                        "subActivityName": ,
+                        "leadTime": ,
+                        "completedDate": ,
+                        "remarks": ,
+                    }
+                ]
+            }
+    response data: 
+            {
+                "id": 1,
+                "tActicityId": 7688,
+                "activityName": ,
+                "leadTime": ,
+                "timeFrom": "O",
+                "completedDate": ,
+                "delayReason": ,
+                "remarks": ,
+                "oSubActivityList": [
+                    {
+                        "id": ,
+                        "oActivityId": ,
+                        "tSubActivityId": ,
+                        "subActivityName": ,
+                        "leadTime": ,
+                        "completedDate": ,
+                        "remarks": ,
+                    }
+                ]
+            }
+```
+
+
+
 
 5 . Delete 
 

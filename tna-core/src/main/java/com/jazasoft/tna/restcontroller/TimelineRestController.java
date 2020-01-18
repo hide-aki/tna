@@ -58,6 +58,7 @@ public class TimelineRestController {
 
             tActivity.setActivityId(tActivity.getActivity() != null ? tActivity.getActivity().getId() : null);
             tActivity.setTimelineId(tActivity.getTimeline() != null ? tActivity.getTimeline().getId() : null);
+        //    tActivity.setActivity(tActivity.getActivity());
 
             for (TSubActivity tSubActivity : tActivity.getTSubActivityList()) {
                 tSubActivity.setSubActivityId(tSubActivity.getSubActivity() != null ? tSubActivity.getSubActivity().getId() : null);
@@ -66,7 +67,9 @@ public class TimelineRestController {
         }
         timeline.setBuyerId(timeline.getBuyer() != null ? timeline.getBuyer().getId() : null);
 
-        timeline.getTActivityList().forEach(tActivity -> tActivity.setActivity(null));
+
+        timeline.getTActivityList().forEach(tActivity -> tActivity.getActivity().setDepartment(null));
+        timeline.getTActivityList().forEach(tActivity -> tActivity.getActivity().setSubActivityList(null));
 //      timeline.getTActivityList().forEach(tActivity -> tActivity.setActivityId());
 
 
@@ -107,7 +110,6 @@ public class TimelineRestController {
         timeline.getTActivityList().forEach(tActivity -> {
             if (tActivity.getActivity() != null) {
                 tActivity.getActivity().setSubActivityList(null);
-                tActivity.getActivity().setDepartment(null);
             }
             tActivity.getTSubActivityList().forEach(tSubActivity -> {
                 tSubActivity.setTActivity(null);

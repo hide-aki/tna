@@ -3,7 +3,6 @@ package com.jazasoft.tna.service;
 
 import com.jazasoft.tna.entity.TActivity;
 import com.jazasoft.tna.entity.TSubActivity;
-import com.jazasoft.tna.entity.Team;
 import com.jazasoft.tna.entity.Timeline;
 import com.jazasoft.tna.repository.ActivityRepository;
 import com.jazasoft.tna.repository.BuyerRepository;
@@ -58,6 +57,7 @@ public class TimelineService {
             timeline.getTActivityList().forEach(tActivity -> Hibernate.initialize(tActivity.getTSubActivityList()));
             timeline.getTActivityList().forEach(tActivity -> tActivity.getTSubActivityList().forEach(tSubActivity -> Hibernate.initialize(tSubActivity.getSubActivity())));
             Hibernate.initialize(timeline.getBuyer());
+            timeline.getTActivityList().forEach(tActivity -> Hibernate.initialize(tActivity.getActivity()));
         }
         return timeline;
     }
@@ -93,6 +93,8 @@ public class TimelineService {
     @Transactional(value = "tenantTransactionManager")
     public Timeline update(Timeline timeline) {
         Timeline mTimeline = timelineRepository.findById(timeline.getId()).orElseThrow();
+        mTimeline.getTActivityList().forEach(tActivity -> Hibernate.initialize(tActivity.getActivity().getDepartment()));
+        mTimeline.getTActivityList().forEach(tActivity -> Hibernate.initialize(tActivity.getTSubActivityList()));
 
         //update Own fields
         mTimeline.setName(timeline.getName());

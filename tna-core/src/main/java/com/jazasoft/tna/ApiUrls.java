@@ -28,5 +28,8 @@ public interface ApiUrls {
   String ROOT_URL_SETTINGS = "/api/settings";
   String URL_SETTINGS_SETTING = "/{key}";
 
+  String ROOT_URL_OREDRS = "api/orders";
+  String URL_ORDERS_ORDERS="/{orderId}";
+
   public static final String ROOT_URL_TEMPLATES = "/api/templates";
 }
