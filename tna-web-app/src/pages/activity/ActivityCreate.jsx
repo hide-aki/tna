@@ -58,7 +58,7 @@ class ActivityCreate extends Component {
             </ReferenceInput>
 
             <TextInput source="notify" {...inputOptions(3)} />
-            <BooleanInput source="cLevel" />
+            <BooleanInput defaultValue={false} source="cLevel" />
           </FormCard>
           <FormCard title="Subactivities">
             <ArrayInput

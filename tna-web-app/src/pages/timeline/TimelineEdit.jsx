@@ -38,8 +38,12 @@ import {
   Button,
   BackButton,
   crudGetList,
+  crudGetOne,
   RestMethods,
   minValue,
+  showNotification,
+  FETCH_START,
+  FETCH_END,
   SAVING_START,
   SAVING_END
 } from "jazasoft";
@@ -47,7 +51,8 @@ import { SimpleForm } from "jazasoft/lib/mui/form/SimpleForm";
 import CardHeader from "../../components/CardHeader";
 import { dataProvider } from "../../App";
 import { Field, FieldArray } from "redux-form";
-
+import handleError from "../../utils/handleError";
+// import { getDistinctValues } from "../../utils/helpers";
 // Styling
 const homeStyle = theme => ({
   container: {
@@ -98,28 +103,28 @@ const inputOptions = sm => ({
 });
 
 // Creating timeline structure for Redux-Fields
-const format = activityList => {
-  let timeline = {
-    tActivityList:
-      activityList &&
-      activityList.map(({ id, name, subActivityList }) => ({
-        activityId: id,
-        name,
-        tSubActivityList:
-          subActivityList &&
-          subActivityList.map(({ id, name }) => ({
-            subActivityId: id,
-            name
-          }))
-      }))
-  };
-  return timeline;
-};
+// const format = activityList => {
+//   let timeline = {
+//     tActivityList:
+//       activityList &&
+//       activityList.map(({ id, name, subActivityList }) => ({
+//         activityId: id,
+//         name,
+//         tSubActivityList:
+//           subActivityList &&
+//           subActivityList.map(({ id, name }) => ({
+//             subActivityId: id,
+//             name
+//           }))
+//       }))
+//   };
+//   return timeline;
+// };
 
 // To populate Activity name on Expansion Panel
-const TextField = ({ className, input: { value } }) => (
-  <Typography className={className}>{value}</Typography>
-);
+const TextField = ({ className, input: { value } }) => {
+  return <Typography className={className}>{value}</Typography>;
+};
 
 // Add Activity Dialog box Content
 const SelectDialog = ({ open, onClose, data, fields, onSelect }) => {
@@ -154,7 +159,7 @@ const SelectDialog = ({ open, onClose, data, fields, onSelect }) => {
   );
 };
 
-// Activity Field Array
+// Render Activity Field Panels
 const renderActivities = ({
   fields,
   activities,
@@ -184,12 +189,11 @@ const renderActivities = ({
             activities &&
             fields.get(idx) &&
             activities[fields.get(idx).activityId];
-
           return (
             <ExpansionPanel
               key={idx}
-              expanded={expanded === `${activity}.id`}
-              onChange={handleExpansionPanelChange(`${activity}.id`)}
+              expanded={expanded === idx}
+              onChange={handleExpansionPanelChange(idx)}
             >
               <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
                 <div className={classes.panelBtn}>
@@ -198,7 +202,6 @@ const renderActivities = ({
                     component={TextField}
                     className={classes.heading}
                   />
-
                   <Button
                     showLabel={false}
                     label="Remove Activity"
@@ -243,21 +246,22 @@ const renderActivities = ({
                     {...inputOptions(12)}
                   >
                     <SimpleFormIterator>
-                      {activityObj && activityObj.subActivityList && (
-                        <SelectInput
-                          key={idx}
-                          source="subActivityId"
-                          label="Sub Activities"
-                          choices={activityObj.subActivityList.map(
-                            ({ id, name }) => ({
-                              id: id,
-                              name
-                            })
-                          )}
-                          {...inputOptions(6)}
-                          validate={required()}
-                        />
-                      )}
+                      {activityObj &&
+                        activityObj.subActivityList &&
+                        activityObj.subActivityList.length && (
+                          <SelectInput
+                            source="subActivityId"
+                            label="Sub Activities"
+                            choices={activityObj.subActivityList.map(
+                              ({ id, name }) => ({
+                                id: id,
+                                name
+                              })
+                            )}
+                            {...inputOptions(6)}
+                            validate={required()}
+                          />
+                        )}
 
                       <NumberInput
                         source="leadTimeNormal"
@@ -277,36 +281,61 @@ const renderActivities = ({
   );
 };
 
-class TimelineCreate extends Component {
+class TimelineEdit extends Component {
   state = {
     activityList: [], // Selected activity List
     rActivityList: [], // Remaining activity List
     initialValues: {},
     dialogActive: false,
-    expanded: false
+    expanded: false,
+    errors: null
   };
 
   componentDidMount() {
+    this.props.dispatch(crudGetOne("timelines", this.props.id));
     this.props.dispatch(crudGetList("activities"));
     this.init();
   }
 
   componentWillReceiveProps(nextProps) {
-    if (!isEqual(this.props.activities, nextProps.activities)) {
+    if (
+      !isEqual(this.props.timeline, nextProps.timeline) &&
+      nextProps.timeline
+    ) {
+      this.init(nextProps);
+    }
+    if (
+      this.state.activityList.length === 0 &&
+      Object.keys(nextProps.activities).length > 0
+    ) {
       this.init(nextProps);
     }
   }
 
   init = (props = this.props) => {
-    const { activities } = props;
-    const activityList = activities // Transforming whole activities Object to activityList
-      ? Object.keys(activities)
-          .map(id => activities[id])
+    const { timeline = {}, activities } = props;
+    if (!timeline) return;
+    const selectedIds = timeline.tActivityList // Ids of activities present in the current timeline
+      ? timeline.tActivityList.map(el => el.activityId)
+      : [];
+    const activityList = activities // Transforming whole activities Object to activityList, filtering that are not present in the current timeline
+      ? Object.values(activities)
+          .filter(e => selectedIds.includes(e.id))
           .sort((a, b) => a.serialNo - b.serialNo)
       : [];
-    const initialValues = format(activityList); // Formatting activityList for Redux-form pre-filling
+    const { tActivityList, ...rest } = timeline;
+    const initialValues = {
+      ...rest,
+      tActivityList: tActivityList
+        ? tActivityList.map(({ activity, ...tActivity }) => ({
+            ...tActivity,
+            activity,
+            name: activity.name
+          }))
+        : []
+    };
     this.setState({
-      activityList, // keeping track of activities present on Redux-form
+      activityList,
       initialValues
     });
   };
@@ -321,9 +350,12 @@ class TimelineCreate extends Component {
   onAddActivity = fields => {
     const { activities } = this.props;
     const { activityList } = this.state;
-    const totalActivityList = Object.keys(activities).map(id => activities[id]);
-    const selectedIds = activityList.map(e => e.id);
+    const totalActivityList = activities
+      ? Object.keys(activities).map(id => activities[id])
+      : [];
+    const selectedIds = activityList.map(e => e.id); // Ids of activities present in the current state and Redux-form
     const rActivityList = totalActivityList.filter(
+      // Remaining activities after filtering out state/current activities from whole activity list
       e => !selectedIds.includes(e.id)
     );
     this.setState({ dialogActive: true, rActivityList, fields });
@@ -331,23 +363,32 @@ class TimelineCreate extends Component {
 
   onSubmit = handleSubmit => {
     handleSubmit(values => {
-      this.createTimeline(values);
+      this.updateTimeline(values);
     })();
   };
 
-  createTimeline = timeline => {
+  updateTimeline = timeline => {
     const options = {
-      url: "timelines",
-      method: "post",
+      url: `timelines/${this.props.id}`,
+      method: "put",
       data: timeline
     };
+    this.props.dispatch({ type: FETCH_START });
     this.props.dispatch({ type: SAVING_START });
     dataProvider(RestMethods.CUSTOM, null, options)
       .then(response => {
+        if (response.status === 200 || response.status === 201) {
+          this.props.dispatch(
+            showNotification("Timeline updated successfully.")
+          );
+          this.props.history.push("/timelines");
+        }
+        this.props.dispatch({ type: FETCH_END });
         this.props.dispatch({ type: SAVING_END });
-        this.props.history.push("/timelines");
       })
       .catch(error => {
+        handleError(error, this.props.dispatch);
+        this.props.dispatch({ type: FETCH_END });
         this.props.dispatch({ type: SAVING_END });
       });
   };
@@ -404,13 +445,10 @@ class TimelineCreate extends Component {
     let newActivity = {
       activityId: activity.id,
       name: activity.name,
-      tSubActivityList:
-        activity &&
-        activity.subActivityList &&
-        activity.subActivityList.map(({ id, name }) => ({
-          subActivityId: id,
-          name
-        }))
+      tSubActivityList: activity.subActivityList.map(({ id, name }) => ({
+        subActivityId: id,
+        name
+      }))
     };
     fields.push(newActivity);
   };
@@ -432,7 +470,7 @@ class TimelineCreate extends Component {
 
     return (
       <div>
-        <PageHeader title="Create Timeline" />
+        <PageHeader title="Edit Timeline" />
         <SelectDialog
           open={dialogActive}
           onClose={() => this.setState({ dialogActive: false, fields: null })}
@@ -514,11 +552,15 @@ class TimelineCreate extends Component {
   }
 }
 
-const mapStateToProps = state => ({
+const mapStateToProps = (state, props) => ({
+  timeline:
+    state.jazasoft.resources[props.resource] &&
+    state.jazasoft.resources[props.resource].data &&
+    state.jazasoft.resources[props.resource].data[props.id],
   activities:
     state.jazasoft.resources["activities"] &&
     state.jazasoft.resources["activities"].data,
   saving: state.jazasoft.saving
 });
 
-export default connect(mapStateToProps)(withStyles(homeStyle)(TimelineCreate));
+export default connect(mapStateToProps)(withStyles(homeStyle)(TimelineEdit));
