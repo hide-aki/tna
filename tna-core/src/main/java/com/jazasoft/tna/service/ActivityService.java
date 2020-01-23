@@ -31,13 +31,19 @@ public class ActivityService {
     }
 
 
-    public Page<Activity> findAll(Pageable pageable) {
-        return activityRepository.findAll(pageable);
+    public Page<Activity> findAll(Pageable pageable, String action) {
+        Page<Activity> page = activityRepository.findAll(pageable);
+        if (action.equalsIgnoreCase("timeline")) {
+            page.forEach(activity -> Hibernate.initialize(activity.getSubActivityList()));
+        }
+        return page;
     }
 
-    public Page<Activity> findAll(Specification<Activity> spec, Pageable pageable) {
+    public Page<Activity> findAll(Specification<Activity> spec, Pageable pageable, String action) {
         Page<Activity> page = activityRepository.findAll(spec, pageable);
-//        page.forEach(activity -> Hibernate.initialize(activity.getDepartment()));
+        if (action.equalsIgnoreCase("timeline")) {
+            page.forEach(activity -> Hibernate.initialize(activity.getSubActivityList()));
+        }
         return page;
     }
 

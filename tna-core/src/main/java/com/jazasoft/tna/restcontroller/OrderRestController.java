@@ -41,6 +41,8 @@ public class OrderRestController {
             pages = orderService.findAll(spec, pageable);
         }
         pages.forEach(order -> order.getTimeline().setTActivityList(null));
+        pages.forEach(order -> order.setBuyerId(order.getBuyer() !=null ? order.getBuyer().getId(): null));
+        pages.forEach(order -> order.getTimeline().setBuyer(null));
         pages.forEach(order -> order.setOActivityList(null));
         return ResponseEntity.ok(pages);
     }
@@ -72,6 +74,31 @@ public class OrderRestController {
         });
         URI Location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(order.getId()).toUri();
         return ResponseEntity.created(Location).body(order);
+    }
+
+    @PutMapping(ApiUrls.URL_ORDERS_ORDERS)
+    private ResponseEntity<?> update(@PathVariable("orderId") Long id, @RequestBody Order order) {
+        logger.trace("update(): id = {}", id);
+        if (!orderService.exists(id)) {
+            return ResponseEntity.notFound().build();
+        }
+        order.setId(id);
+        Order mOrder = orderService.update(order);
+
+        //setting relational fields
+        mOrder.setBuyerId(order.getBuyerId());
+        mOrder.setTimelineId(order.getTimelineId());
+        mOrder.setGarmentTypeId(order.getGarmentTypeId());
+        mOrder.setSeasonId(order.getSeasonId());
+
+        mOrder.getTimeline().getTActivityList().forEach(tActivity -> tActivity.getActivity().setSubActivityList(null));
+        mOrder.getTimeline().getTActivityList().forEach(tActivity -> tActivity.getActivity().setDepartment(null));
+        mOrder.getTimeline().getTActivityList().forEach(tActivity -> tActivity.getTSubActivityList().forEach(tSubActivity -> tSubActivity.setTActivity(null)));
+        mOrder.getOActivityList().forEach(oActivity -> oActivity.getOSubActivityList().forEach(oSubActivity -> oSubActivity.setOActivity(null)));
+        mOrder.getTimeline().getTActivityList().forEach(tActivity -> tActivity.getTSubActivityList().forEach(tSubActivity -> tSubActivity.setSubActivity(null)));
+        mOrder.getOActivityList().forEach(oActivity -> oActivity.getOSubActivityList().forEach(oSubActivity -> oSubActivity.setTSubActivity(null)));
+        mOrder.getOActivityList().forEach(oActivity -> oActivity.setTActivity(null));
+        return ResponseEntity.ok(mOrder);
     }
 
     @DeleteMapping(ApiUrls.URL_ORDERS_ORDERS)

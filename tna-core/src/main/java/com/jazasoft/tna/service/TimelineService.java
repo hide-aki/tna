@@ -93,8 +93,8 @@ public class TimelineService {
     @Transactional(value = "tenantTransactionManager")
     public Timeline update(Timeline timeline) {
         Timeline mTimeline = timelineRepository.findById(timeline.getId()).orElseThrow();
-        mTimeline.getTActivityList().forEach(tActivity -> Hibernate.initialize(tActivity.getActivity().getDepartment()));
-        mTimeline.getTActivityList().forEach(tActivity -> Hibernate.initialize(tActivity.getTSubActivityList()));
+//        mTimeline.getTActivityList().forEach(tActivity -> Hibernate.initialize(tActivity.getActivity().getDepartment()));
+//        mTimeline.getTActivityList().forEach(tActivity -> Hibernate.initialize(tActivity.getTSubActivityList()));
 
         //update Own fields
         mTimeline.setName(timeline.getName());
@@ -159,11 +159,11 @@ public class TimelineService {
             });
         });
 
-        Hibernate.initialize(mTimeline.getBuyer());
-        mTimeline.getTActivityList().forEach(tActivity -> {
-            Hibernate.initialize(tActivity.getActivity());
-            tActivity.getTSubActivityList().forEach(tSubActivity -> Hibernate.initialize(tSubActivity.getSubActivity()));
-        });
+//        Hibernate.initialize(mTimeline.getBuyer());
+//        mTimeline.getTActivityList().forEach(tActivity -> {
+//            Hibernate.initialize(tActivity.getActivity());
+//            tActivity.getTSubActivityList().forEach(tSubActivity -> Hibernate.initialize(tSubActivity.getSubActivity()));
+//        });
 
         return mTimeline;
     }

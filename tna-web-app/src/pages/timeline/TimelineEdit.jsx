@@ -102,25 +102,6 @@ const inputOptions = sm => ({
   fullWidth: true
 });
 
-// Creating timeline structure for Redux-Fields
-// const format = activityList => {
-//   let timeline = {
-//     tActivityList:
-//       activityList &&
-//       activityList.map(({ id, name, subActivityList }) => ({
-//         activityId: id,
-//         name,
-//         tSubActivityList:
-//           subActivityList &&
-//           subActivityList.map(({ id, name }) => ({
-//             subActivityId: id,
-//             name
-//           }))
-//       }))
-//   };
-//   return timeline;
-// };
-
 // To populate Activity name on Expansion Panel
 const TextField = ({ className, input: { value } }) => {
   return <Typography className={className}>{value}</Typography>;
@@ -240,37 +221,39 @@ const renderActivities = ({
                     {...inputOptions(4)}
                     validate={required()}
                   />
-                  <ArrayInput
-                    label="Subactivity List"
-                    source={`${activity}.tSubActivityList`}
-                    {...inputOptions(12)}
-                  >
-                    <SimpleFormIterator>
-                      {activityObj &&
-                        activityObj.subActivityList &&
-                        activityObj.subActivityList.length && (
-                          <SelectInput
-                            source="subActivityId"
-                            label="Sub Activities"
-                            choices={activityObj.subActivityList.map(
-                              ({ id, name }) => ({
-                                id: id,
-                                name
-                              })
-                            )}
-                            {...inputOptions(6)}
-                            validate={required()}
-                          />
-                        )}
+                  {activityObj && activityObj.subActivityList && (
+                    <ArrayInput
+                      label="Subactivity List"
+                      source={`${activity}.tSubActivityList`}
+                      {...inputOptions(12)}
+                    >
+                      <SimpleFormIterator>
+                        {activityObj &&
+                          activityObj.subActivityList &&
+                          activityObj.subActivityList.length && (
+                            <SelectInput
+                              source="subActivityId"
+                              label="Sub Activities"
+                              choices={activityObj.subActivityList.map(
+                                ({ id, name }) => ({
+                                  id: id,
+                                  name
+                                })
+                              )}
+                              {...inputOptions(6)}
+                              validate={required()}
+                            />
+                          )}
 
-                      <NumberInput
-                        source="leadTimeNormal"
-                        label="Lead Time Normal"
-                        {...inputOptions(6)}
-                        validate={[required(), minValue(1)]}
-                      />
-                    </SimpleFormIterator>
-                  </ArrayInput>
+                        <NumberInput
+                          source="leadTimeNormal"
+                          label="Lead Time Normal"
+                          {...inputOptions(6)}
+                          validate={[required(), minValue(1)]}
+                        />
+                      </SimpleFormIterator>
+                    </ArrayInput>
+                  )}
                 </SimpleForm>
               </ExpansionPanelDetails>
             </ExpansionPanel>
@@ -293,7 +276,11 @@ class TimelineEdit extends Component {
 
   componentDidMount() {
     this.props.dispatch(crudGetOne("timelines", this.props.id));
-    this.props.dispatch(crudGetList("activities"));
+    this.props.dispatch(
+      crudGetList("activities", null, null, null, null, {
+        params: { action: "timeline" }
+      })
+    );
     this.init();
   }
 

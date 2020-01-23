@@ -47,6 +47,7 @@ public class OrderService {
         page.forEach(order -> Hibernate.initialize(order.getBuyer()));
         page.forEach(order -> Hibernate.initialize(order.getGarmentType()));
         page.forEach(order -> Hibernate.initialize(order.getTimeline()));
+        page.forEach(order -> Hibernate.initialize(order.getBuyerId()));
         return page;
     }
 
@@ -56,12 +57,13 @@ public class OrderService {
         page.forEach(order -> Hibernate.initialize(order.getBuyer()));
         page.forEach(order -> Hibernate.initialize(order.getGarmentType()));
         page.forEach(order -> Hibernate.initialize(order.getTimeline()));
+        page.forEach(order -> Hibernate.initialize(order.getBuyerId()));
         return page;
     }
 
-    public Order findOne(Long id){
+    public Order findOne(Long id) {
         Order order = orderRepository.findById(id).orElse(null);
-        if(order != null){
+        if (order != null) {
             Hibernate.initialize(order.getOActivityList());
             order.getOActivityList().forEach(oActivity -> Hibernate.initialize(oActivity.getOSubActivityList()));
             Hibernate.initialize(order.getTimeline().getTActivityList());
@@ -142,12 +144,47 @@ public class OrderService {
         return leadTimeNormal;
     }
 
-    public boolean exists(Long id){
+    @Transactional(value = "tenantTransactionManager")
+    public Order update(Order order) {
+        Order mOrder = orderRepository.findById(order.getId()).orElseThrow();
+
+        mOrder.setPoRef(order.getPoRef());
+        mOrder.setOrderQty(order.getOrderQty());
+        mOrder.setStyle(order.getStyle());
+        mOrder.setOrderDate(order.getOrderDate());
+        mOrder.setRemarks(order.getRemarks());
+        mOrder.setExFactoryDate(order.getExFactoryDate());
+
+        if (order.getBuyerId() != null) {
+            mOrder.setBuyer(buyerRepository.findById(order.getBuyerId()).orElse(null));
+        }
+        if (order.getTimelineId() != null) {
+            mOrder.setTimeline(timelineRepository.findById(order.getTimelineId()).orElse(null));
+        }
+        if (order.getGarmentTypeId() != null) {
+            mOrder.setGarmentType(garmentTypeRepository.findById(order.getGarmentTypeId()).orElse(null));
+        }
+        if (order.getSeasonId() != null) {
+            mOrder.setSeason(seasonRepository.findById(order.getSeasonId()).orElse(null));
+
+        }
+
+        Hibernate.initialize(mOrder.getTimeline().getBuyer());
+        Hibernate.initialize(mOrder.getTimeline().getTActivityList());
+        mOrder.getTimeline().getTActivityList().forEach(tActivity -> Hibernate.initialize(tActivity.getActivity()));
+        mOrder.getTimeline().getTActivityList().forEach(tActivity -> Hibernate.initialize(tActivity.getTSubActivityList()));
+        Hibernate.initialize(mOrder.getOActivityList());
+        mOrder.getOActivityList().forEach(oActivity -> Hibernate.initialize(oActivity.getOSubActivityList()));
+
+        return mOrder;
+    }
+
+    public boolean exists(Long id) {
         return orderRepository.existsById(id);
     }
 
     @Transactional(value = "tenantTransactionManager")
-    public void delete(Long id){
+    public void delete(Long id) {
         orderRepository.deleteById(id);
     }
 }

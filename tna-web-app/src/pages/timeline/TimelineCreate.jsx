@@ -287,7 +287,11 @@ class TimelineCreate extends Component {
   };
 
   componentDidMount() {
-    this.props.dispatch(crudGetList("activities"));
+    this.props.dispatch(
+      crudGetList("activities", null, null, null, null, {
+        params: { action: "timeline" }
+      })
+    );
     this.init();
   }
 

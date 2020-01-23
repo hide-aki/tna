@@ -1,28 +1,24 @@
 package com.jazasoft.tna.restcontroller;
 
+import com.jazasoft.mtdb.dto.RestError;
 import com.jazasoft.mtdb.specification.CustomRsqlVisitor;
 import com.jazasoft.tna.ApiUrls;
 import com.jazasoft.tna.entity.Activity;
-import com.jazasoft.tna.entity.SubActivity;
 import com.jazasoft.tna.service.ActivityService;
 import cz.jirutka.rsql.parser.RSQLParser;
 import cz.jirutka.rsql.parser.ast.Node;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import javax.validation.Valid;
 import java.net.URI;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.regex.Pattern;
 
 @RestController
 @RequestMapping(ApiUrls.ROOT_URL_ACTIVITIES)
@@ -36,16 +32,24 @@ public class ActivityRestController {
     }
 
     @GetMapping
-    public ResponseEntity<?> findAll(@RequestParam(value = "search", defaultValue = "") String search, Pageable pageable) {
+    public ResponseEntity<?> findAll(@RequestParam(value = "action", defaultValue = "default") String action,
+            @RequestParam(value = "search", defaultValue = "") String search, Pageable pageable) {
+        Pattern pattern = Pattern.compile("default|timeline", Pattern.CASE_INSENSITIVE);
+        if (!pattern.matcher(action).matches()) {
+            RestError error = new RestError(400, 40000, "Unsupported action - " + action + ". accepted values for action are: " + pattern.pattern());
+            return ResponseEntity.badRequest().body(error);
+        }
         Page<Activity> pages;
         if (search.trim().isEmpty()) {
-            pages = activityService.findAll(pageable);
+            pages = activityService.findAll(pageable, action);
         } else {
             Node rootNode = new RSQLParser().parse(search);
             Specification<Activity> spec = rootNode.accept(new CustomRsqlVisitor<>());
-            pages = activityService.findAll(spec, pageable);
+            pages = activityService.findAll(spec, pageable, action);
         }
-        pages.forEach(activity -> activity.setSubActivityList(null));
+        if (action.equalsIgnoreCase("default")) {
+            pages.forEach(activity -> activity.setSubActivityList(null));
+        }
         pages.forEach(activity -> activity.setDepartmentId(activity.getDepartment() != null ? activity.getDepartment().getId() : null));
         return ResponseEntity.ok(pages);
     }

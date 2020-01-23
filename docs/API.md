@@ -572,7 +572,8 @@
     url: ~/v1/api/activities
     method: GET
     action: 
-    params: search, page, size, sort
+    params: search, page, size, sort, 
+            action = 'default', 'timeline'
     request data: 
     response data: 
        data placeholder in fetch all -
@@ -803,12 +804,12 @@
                             {
                                 "leadTimeNormal":2,
                                 "leadTimeOptimal":1,
-                                "timeFrom":"0-2"
+                                "timeFrom":"0-2",
                                 "activityId": 1,
                                 "tSubActivityList":[
                                         {
                                          "subActivityId":1,
-                                         "leadTimeNormal":2,
+                                         "leadTimeNormal":2
                                         }
                                 ]
                             }
@@ -994,7 +995,7 @@
                 "orderQty":2000,
                 "style": "Style 1",
                 "orderDate": "2020-01-2",
-                "exFactoryData": "2020-01-3",
+                "exFactoryDate": "2020-01-3",
                 "buyerId": 1,
                 "timelineId": 1,
                 "garmentTypeId":1,

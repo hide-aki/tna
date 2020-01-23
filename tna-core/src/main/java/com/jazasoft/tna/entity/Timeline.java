@@ -11,6 +11,37 @@ import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
+@NamedEntityGraphs({
+//        @NamedEntityGraph(
+//                name = "activity.findAll",
+//                attributeNodes = @NamedAttributeNode("department")
+//        ),
+        @NamedEntityGraph(
+                name = "timeline.findOne",
+                attributeNodes = {
+                        @NamedAttributeNode("buyer"),
+                        @NamedAttributeNode(value = "tActivityList", subgraph = "timeline.tActivityList")
+                },
+                subgraphs = {
+                        @NamedSubgraph(
+                                name = "timeline.tActivityList",
+                                attributeNodes = {
+                                        @NamedAttributeNode("activity"),
+                                        @NamedAttributeNode(value = "tSubActivityList", subgraph = "timeline.tActivityList.tSubActivityList")
+                                }
+
+                        ),
+                        @NamedSubgraph(
+                                name = "timeline.tActivityList.tSubActivityList",
+                                attributeNodes = {
+                                        @NamedAttributeNode("subActivity")
+                                }
+                        )
+                }
+
+        )
+}
+)
 @NoArgsConstructor
 @Data
 @Entity

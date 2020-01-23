@@ -107,9 +107,10 @@ public class TimelineRestController {
         }
         timeline.setId(id);
         Timeline mTimeline = timelineService.update(timeline);
-        timeline.getTActivityList().forEach(tActivity -> {
+        mTimeline.getTActivityList().forEach(tActivity -> {
             if (tActivity.getActivity() != null) {
                 tActivity.getActivity().setSubActivityList(null);
+                tActivity.getActivity().setDepartment(null);
             }
             tActivity.getTSubActivityList().forEach(tSubActivity -> {
                 tSubActivity.setTActivity(null);
