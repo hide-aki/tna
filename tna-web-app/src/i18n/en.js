@@ -14,7 +14,7 @@ export default {
   },
   resources: {
     orders: {
-      name: "Bundle & Ticket |||| Bundle & Ticket",
+      name: "Orders |||| Orders",
       fields: {
         internalPo: "Internal PO",
         garmentType: "Garment Type",

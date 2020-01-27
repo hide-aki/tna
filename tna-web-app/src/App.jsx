@@ -11,6 +11,7 @@ import SettingsIcon from "@material-ui/icons/Settings";
 import DeveloperBoardIcon from "@material-ui/icons/DeveloperBoard";
 import DownloadsIcon from "@material-ui/icons/GetApp";
 import HourglassEmptyOutlinedIcon from "@material-ui/icons/HourglassEmptyOutlined";
+import TicketIcon from "@material-ui/icons/ConfirmationNumber";
 
 import {
   App as JApp,
@@ -42,22 +43,29 @@ import {
 } from "./pages/library/Department";
 import { TeamHome, CreateTeam, EditTeam } from "./pages/library/Team";
 import {
+  DelayReasonHome,
+  CreateDelayReason,
+  EditDelayReason
+} from "./pages/library/DelayReason";
+
+// Activity Pages
+import {
   ActivityHome,
   ActivityCreate,
   ActivityView,
   ActivityEdit
 } from "./pages/activity";
-import {
-  DelayReasonHome,
-  CreateDelayReason,
-  EditDelayReason
-} from "./pages/library/DelayReason";
+
+// Timeline Pages
 import {
   TimelineHome,
   TimelineCreate,
   TimelineView,
   TimelineEdit
 } from "./pages/timeline";
+
+// Order Pages
+import { OrderHome, OrderCreate, OrderEdit, OrderView } from "./pages/order";
 
 // Setting Page
 import Settings from "./pages/setting/Settings";
@@ -145,19 +153,6 @@ class App extends React.Component {
       >
         {({ roles, hasAccess, hasPermission, getPermissions }) => {
           let resourceList = [];
-          // if (hasPrivilege(roles, hasAccess, "order", "read")) {
-          //   resourceList.push(
-          //     <Resource
-          //       name="orders"
-          //       resource="orders"
-          //       home={OrderHome}
-          //       create={OrderCreate}
-          //       edit={OrderEdit}
-          //       view={OrderView}
-          //       icon={TicketIcon}
-          //     />
-          //   );
-          // }
 
           // if (roles && (roles.includes(Role.SUPER_USER) || roles.includes(Role.ADMIN_USER))) {
           //   resourceList.push(
@@ -211,6 +206,20 @@ class App extends React.Component {
                 view={TimelineView}
                 edit={TimelineEdit}
                 icon={HourglassEmptyOutlinedIcon}
+              />
+            );
+          }
+
+          if (hasPrivilege(roles, hasAccess, "order", "read")) {
+            resourceList.push(
+              <Resource
+                name="orders"
+                resource="orders"
+                home={OrderHome}
+                create={OrderCreate}
+                edit={OrderEdit}
+                view={OrderView}
+                icon={TicketIcon}
               />
             );
           }
