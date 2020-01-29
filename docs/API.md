@@ -601,6 +601,8 @@
                 "name": "Activity 1",
                 "serialNo": "1",
                 "notify": "1",
+                "isDefault": true,
+                "delayReason":"Some reason",
                 "cLevel": true,
                 "departmentId":1,
                 "subActivityList": [
@@ -625,6 +627,8 @@
                 "name": "Activity 1",
                 "serialNo": "1",
                 "notify": "1",
+                "isDefault": true,
+                "delayReason":" ",
                 "cLevel": true,
                 "departmentId":1,
                 "subActivityList": [
@@ -632,12 +636,6 @@
                         "name":"SubActivity 1",
                         "desc":"sub activity 1",
                         "activityId":1
-                    }
-                ]
-                "delayReasonList":[
-                    {
-                        "name": "delayed"
-                        "activityId": 1
                     }
                 ]
             }
@@ -647,6 +645,8 @@
                 "name": "Activity 1",
                 "serialNo": "1",
                 "notify": "1",
+                "isDefault": true,
+                "delayReason":"Some reason",
                 "cLevel": true,
                 "departmentId":1,
                 "subActivityList": [
@@ -656,13 +656,6 @@
                         "activityId":1
                     }
                 ]
-                "delayReasonList":[
-                    {
-                        "name": "delayed"
-                        "activityId": 1
-                    }
-                ]
-                
             }
 ```
 
@@ -679,6 +672,8 @@
                 "name": "Activity 2",
                 "serialNo": "1",
                 "notify": "1",
+                "isDefault": true,
+                "delayReason":"Some reason",
                 "cLevel": true,
                 "departmentId":1,
                 "subActivityList": [
@@ -688,13 +683,6 @@
                         "activityId":1
                     }
                 ]
-                "delayReasonList":[
-                    {
-                        "name": "delayed"
-                        "activityId": 1
-                    }
-                ]
-                
             }
     response data: 
             {
@@ -702,6 +690,8 @@
                 "name": "Activity 2",
                 "serialNo": "1",
                 "notify": "1",
+                "isDefault": true,
+                "delayReason":"Some reason",
                 "cLevel": true,
                 "departmentId":1,
                 "subActivityList": [
@@ -710,13 +700,7 @@
                         "desc":"sub activity 2",
                         "activityId":1
                     }
-                ]
-                "delayReasonList":[
-                    {
-                        "name": "delayed"
-                        "activityId": 1
-                    }
-                ]        
+                ]       
             }
 ```
 
@@ -1054,56 +1038,65 @@
 3 . update specific activity in order
 
 ```$xslt
-    url: ~/v1/api/orders/{orderId}/activities/{activityId}
+    url: ~/v1/api/orders/{orderId}/activities/{activityId}/
     method: Put
     action: 
     params:
     request data: 
             {
-                "id": 1,
-                "tActicityId": 7688,
-                "activityName": ,
-                "leadTime": ,
-                "timeFrom": "O",
-                "completedDate": ,
-                "delayReason": ,
-                "remarks": ,
-                "oSubActivityList": [
-                    {
-                        "id": ,
-                        "oActivityId": ,
-                        "tSubActivityId": ,
-                        "subActivityName": ,
-                        "leadTime": ,
-                        "completedDate": ,
-                        "remarks": ,
-                    }
-                ]
+                  "id": 1,
+                   "orderId": ,
+                   "tActicityId": 2,
+                   "tActivity": {},
+                   "activityName": ,
+                   "leadTime": ,
+                   "timeFrom": "O",
+                   "completedDate": ,
+                   "delayReason": ,
+                   "remarks": ,
             }
     response data: 
             {
                 "id": 1,
-                "tActicityId": 7688,
+                "tActicityId": 2,
+                "tActivity": {},
                 "activityName": ,
                 "leadTime": ,
                 "timeFrom": "O",
                 "completedDate": ,
                 "delayReason": ,
                 "remarks": ,
-                "oSubActivityList": [
-                    {
-                        "id": ,
-                        "oActivityId": ,
-                        "tSubActivityId": ,
-                        "subActivityName": ,
-                        "leadTime": ,
-                        "completedDate": ,
-                        "remarks": ,
-                    }
-                ]
             }
 ```
 
+3 . update specific subActivity in order
+
+```$xslt
+    url: ~/v1/api/orders/{orderId}/activities/{activityId}/suActivities/{subActivityId}
+    method: Put
+    action: 
+    params:
+    request data: 
+                    {
+                        "id": 1,
+                        "oActivityId": 1,
+                        "tSubActivityId": 1,
+                        "subActivityName": "",
+                        "leadTime": ,
+                        "completedDate": "",
+                        "remarks": "",
+                    }
+    response data: 
+                    {
+                        "id": 1,
+                        "oActivityId": 1,
+                        "tSubActivityId": 1,
+                        "subActivityName": "",
+                        "leadTime": ,
+                        "completedDate": "",
+                        "remarks": ,
+                    }
+```
 
 
 

@@ -133,6 +133,10 @@
                 <constraints nullable="false"/>
             </column>
             <column name="notify" type="TEXT"/>
+            <column name="delay_reason" type="VARCHAR(255)"/>
+            <column name="is_default" type="BOOL">
+                <constraints nullable="false"/>
+            </column>
             <column name="c_level" type="BOOL">
                 <constraints nullable="false"/>
             </column>
@@ -149,33 +153,33 @@
                                  initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
                                  referencedColumnNames="id" referencedTableName="department"/>
     </changeSet>
-    <changeSet id="shahrukh" author="v2.0.x-id7">
-        <createTable tableName="delay_reason">
-            <column autoIncrement="true" name="id" type="BIGSERIAL">
-                <constraints primaryKey="true" primaryKeyName="delay_reason_pkey"/>
-            </column>
-            <column name="created_at" type="TIMESTAMP WITHOUT TIME ZONE"/>
-            <column name="modified_at" type="TIMESTAMP WITHOUT TIME ZONE"/>
-            <column name="created_by" type="VARCHAR(255)"/>
-            <column name="last_modified_by" type="VARCHAR(255)"/>
+<!--    <changeSet id="shahrukh" author="v2.0.x-id7">-->
+<!--        <createTable tableName="delay_reason">-->
+<!--            <column autoIncrement="true" name="id" type="BIGSERIAL">-->
+<!--                <constraints primaryKey="true" primaryKeyName="delay_reason_pkey"/>-->
+<!--            </column>-->
+<!--            <column name="created_at" type="TIMESTAMP WITHOUT TIME ZONE"/>-->
+<!--            <column name="modified_at" type="TIMESTAMP WITHOUT TIME ZONE"/>-->
+<!--            <column name="created_by" type="VARCHAR(255)"/>-->
+<!--            <column name="last_modified_by" type="VARCHAR(255)"/>-->
 
-            <column name="name" type="VARCHAR(255)">
-                <constraints nullable="false"/>
-            </column>
-            <column name="activity_id" type="BIGINT">
-                <constraints nullable="false"/>
-            </column>
-        </createTable>
-        <createIndex indexName="uk_delay_reason_name" tableName="delay_reason" unique="true">
-            <column name="lower((name)::text)"/>
-            <column name="activity_id"/>
-        </createIndex>
+<!--            <column name="name" type="VARCHAR(255)">-->
+<!--                <constraints nullable="false"/>-->
+<!--            </column>-->
+<!--            <column name="activity_id" type="BIGINT">-->
+<!--                <constraints nullable="false"/>-->
+<!--            </column>-->
+<!--        </createTable>-->
+<!--        <createIndex indexName="uk_delay_reason_name" tableName="delay_reason" unique="true">-->
+<!--            <column name="lower((name)::text)"/>-->
+<!--            <column name="activity_id"/>-->
+<!--        </createIndex>-->
 
-        <addForeignKeyConstraint baseColumnNames="activity_id" baseTableName="delay_reason"
-                                 constraintName="fk_delay_reason_activity_id" deferrable="false"
-                                 initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
-                                 referencedColumnNames="id" referencedTableName="activity"/>
-    </changeSet>
+<!--        <addForeignKeyConstraint baseColumnNames="activity_id" baseTableName="delay_reason"-->
+<!--                                 constraintName="fk_delay_reason_activity_id" deferrable="false"-->
+<!--                                 initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"-->
+<!--                                 referencedColumnNames="id" referencedTableName="activity"/>-->
+<!--    </changeSet>-->
     <changeSet id="shahrukh" author="v2.0.x-id8">
         <createTable tableName="users">
             <column autoIncrement="true" name="id" type="BIGSERIAL">
@@ -368,7 +372,10 @@
 
             <column name="lead_time" type="INT"/>
             <column name="completed_date" type="TIMESTAMP WITHOUT TIME ZONE"/>
+            <column name="due_date" type="TIMESTAMP WITHOUT TIME ZONE"/>
             <column name="delay_reason" type="VARCHAR(255)"/>
+            <column name="activity_name" type="VARCHAR(255)"/>
+            <column name="time_from" type="VARCHAR(255)"/>
             <column name="remarks" type="VARCHAR(255)"/>
 
             <column name="order_id" type="BIGINT">
@@ -493,6 +500,7 @@
 
             <column name="lead_time" type="INT"/>
             <column name="completed_date" type="TIMESTAMP WITHOUT TIME ZONE"/>
+            <column name="sub_activity_name" type="VARCHAR(255)"/>
             <column name="remarks" type="VARCHAR(255)"/>
 
             <column name="o_activity_id" type="BIGINT">

@@ -23,7 +23,7 @@ public class OSubActivity extends Auditable {
     @Column(nullable = false)
     private Integer leadTime;
 
-    @Temporal(value = TemporalType.TIME)
+    @Temporal(value = TemporalType.TIMESTAMP)
     private Date completedDate;
 
     private String remarks;

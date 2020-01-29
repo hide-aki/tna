@@ -28,8 +28,10 @@ public interface ApiUrls {
   String ROOT_URL_SETTINGS = "/api/settings";
   String URL_SETTINGS_SETTING = "/{key}";
 
-  String ROOT_URL_OREDRS = "api/orders";
-  String URL_ORDERS_ORDERS="/{orderId}";
+  String ROOT_URL_ORDERS = "api/orders";
+  String URL_ORDERS_ORDER ="/{orderId}";
+  String URL_ORDERS_ORDER_ACTIVITIES_ACTIVITY= "/activities/{activityId}";
+  String URL_ORDERS_ORDER_SUBACTIVITIES_SUBACTIVITY= "/subActivities/{subActivityId}";
 
   public static final String ROOT_URL_TEMPLATES = "/api/templates";
 }

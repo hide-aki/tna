@@ -51,9 +51,12 @@ public class Activity extends Auditable {
     @JsonProperty("cLevel")
     private Boolean cLevel;
 
-////    @Column(nullable = false)
-//    @JsonProperty("isDefault")
-//    private Boolean isDefault;
+    @Column(nullable = false)
+    @JsonProperty("isDefault")
+    private Boolean isDefault;
+
+    @Column(nullable = false)
+    private String delayReason;
 
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
     private Department department;
@@ -88,17 +91,19 @@ public class Activity extends Auditable {
         if (this == o) return true;
         if (!(o instanceof Activity)) return false;
         Activity activity = (Activity) o;
-        return id.equals(activity.id) &&
-                name.equals(activity.name) &&
-                serialNo.equals(activity.serialNo) &&
-                notify.equals(activity.notify) &&
-                cLevel.equals(activity.cLevel) &&
-                department.equals(activity.department);
+        return Objects.equals(id, activity.id) &&
+                Objects.equals(name, activity.name) &&
+                Objects.equals(serialNo, activity.serialNo) &&
+                Objects.equals(notify, activity.notify) &&
+                Objects.equals(cLevel, activity.cLevel) &&
+                Objects.equals(isDefault, activity.isDefault) &&
+                Objects.equals(delayReason, activity.delayReason) &&
+                Objects.equals(department, activity.department);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, serialNo, notify, cLevel, department);
+        return Objects.hash(id, name, serialNo, notify, cLevel, isDefault, delayReason, department);
     }
 
     @Override
@@ -109,6 +114,8 @@ public class Activity extends Auditable {
                 ", serialNo=" + serialNo +
                 ", notify='" + notify + '\'' +
                 ", cLevel=" + cLevel +
+                ", isDefault=" + isDefault +
+                ", delayReason='" + delayReason + '\'' +
                 ", department=" + department +
                 '}';
     }

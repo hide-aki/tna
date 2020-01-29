@@ -13,6 +13,7 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -57,6 +58,13 @@ public class ActivityService {
 
     @Transactional(value = "tenantTransactionManager")
     public Activity saveActivity(Activity activity) {
+       List<Activity> activityList = activityRepository.findAll();
+       int numberOfActivity = activityList.size();
+
+       //set serial number
+       activity.setSerialNo(++numberOfActivity);
+        //System.out.println("Number of activity is : "+numberOfActivity);
+
         if (activity.getDepartmentId() != null) {
             activity.setDepartment(departmentRepository.findById(activity.getDepartmentId()).orElse(null));
         }
@@ -94,6 +102,17 @@ public class ActivityService {
             }
         });
         return mActivity;
+    }
+
+    public List<Activity> updateActivities(List<Activity> activityList){
+        List<Activity> mActivityList = activityRepository.findAll();
+
+        for (Activity mActivity: mActivityList){
+            for (Activity activity: activityList){
+                mActivity.setSerialNo(activity.getSerialNo());
+            }
+        }
+        return mActivityList;
     }
 
     @Transactional(value = "tenantTransactionManager")

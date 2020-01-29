@@ -18,6 +18,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import javax.validation.Valid;
 import java.net.URI;
+import java.util.List;
 import java.util.regex.Pattern;
 
 @RestController
@@ -89,6 +90,14 @@ public class ActivityRestController {
         return ResponseEntity.ok(activityService.updateActivity(activity));
 
     }
+
+    @PutMapping()
+    public ResponseEntity<?> updateActivities(@RequestBody List<Activity> activityList){
+        activityService.updateActivities(activityList);
+
+        return ResponseEntity.ok(activityList);
+    }
+
 
     @DeleteMapping(ApiUrls.URL_ACTIVITIES_ACTIVITY)
     public ResponseEntity<?> deleteActivity(@PathVariable(value = "activityId") Long id) {

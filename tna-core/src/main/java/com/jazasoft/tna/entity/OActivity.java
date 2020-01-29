@@ -28,6 +28,10 @@ public class OActivity extends Auditable {
     @Temporal(value = TemporalType.TIMESTAMP)
     private Date completedDate;
 
+    @Temporal(value = TemporalType.TIMESTAMP)
+    private Date dueDate;
+
+
     private String delayReason;
 
     @Column(columnDefinition = "TEXT")
@@ -68,19 +72,18 @@ public class OActivity extends Auditable {
         return Objects.equals(id, oActivity.id) &&
                 Objects.equals(leadTime, oActivity.leadTime) &&
                 Objects.equals(completedDate, oActivity.completedDate) &&
+                Objects.equals(dueDate, oActivity.dueDate) &&
                 Objects.equals(delayReason, oActivity.delayReason) &&
                 Objects.equals(remarks, oActivity.remarks) &&
                 Objects.equals(activityName, oActivity.activityName) &&
                 Objects.equals(timeFrom, oActivity.timeFrom) &&
                 Objects.equals(order, oActivity.order) &&
-                Objects.equals(tActivity, oActivity.tActivity) &&
-                Objects.equals(orderId, oActivity.orderId) &&
-                Objects.equals(tActivityId, oActivity.tActivityId);
+                Objects.equals(tActivity, oActivity.tActivity);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, leadTime, completedDate, delayReason, remarks, activityName, timeFrom, order, tActivity, orderId, tActivityId);
+        return Objects.hash(id, leadTime, completedDate, dueDate, delayReason, remarks, activityName, timeFrom, order, tActivity);
     }
 
     @Override
@@ -89,6 +92,7 @@ public class OActivity extends Auditable {
                 "id=" + id +
                 ", leadTime=" + leadTime +
                 ", completedDate=" + completedDate +
+                ", dueDate=" + dueDate +
                 ", delayReason='" + delayReason + '\'' +
                 ", remarks='" + remarks + '\'' +
                 ", activityName='" + activityName + '\'' +

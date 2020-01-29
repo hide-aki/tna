@@ -25,20 +25,17 @@ public class OrderService {
     private final TimelineRepository timelineRepository;
     private final GarmentTypeRepository garmentTypeRepository;
     private final SeasonRepository seasonRepository;
-    private final TActivityRepository tActivityRepository;
     private final OActivityRepository oActivityRepository;
-    private final TSubActivityRepository tSubActivityRepository;
+    private final OSubActivityRepository oSubActivityRepository;
 
-
-    public OrderService(OrderRepository orderRepository, BuyerRepository buyerRepository, TimelineRepository timelineRepository, GarmentTypeRepository garmentTypeRepository, SeasonRepository seasonRepository, TActivityRepository tActivityRepository, OActivityRepository oActivityRepository, TSubActivityRepository tSubActivityRepository) {
+    public OrderService(OrderRepository orderRepository, BuyerRepository buyerRepository, TimelineRepository timelineRepository, GarmentTypeRepository garmentTypeRepository, SeasonRepository seasonRepository, OActivityRepository oActivityRepository, OSubActivityRepository oSubActivityRepository) {
         this.orderRepository = orderRepository;
         this.buyerRepository = buyerRepository;
         this.timelineRepository = timelineRepository;
         this.garmentTypeRepository = garmentTypeRepository;
         this.seasonRepository = seasonRepository;
-        this.tActivityRepository = tActivityRepository;
         this.oActivityRepository = oActivityRepository;
-        this.tSubActivityRepository = tSubActivityRepository;
+        this.oSubActivityRepository = oSubActivityRepository;
     }
 
     public Page<Order> findAll(Pageable pageable) {
@@ -136,7 +133,7 @@ public class OrderService {
     }
 
     public int getActivityLeadTime(int leadTimeNormal, int leadTimeOptimal) {
-        int leadTime = leadTimeNormal + leadTimeOptimal / 2;
+        int leadTime = (leadTimeNormal + leadTimeOptimal) / 2;
         return leadTime;
     }
 
@@ -177,6 +174,32 @@ public class OrderService {
         mOrder.getOActivityList().forEach(oActivity -> Hibernate.initialize(oActivity.getOSubActivityList()));
 
         return mOrder;
+    }
+
+    @Transactional(value = "tenantTransactionManager")
+    public OActivity updateOrderActivity(Long orderId, OActivity oActivity) {
+
+        Order mOrder = orderRepository.getOne(orderId);
+
+        OActivity mOActivity = oActivityRepository.findOneByOrderAndId(mOrder, oActivity.getId()).orElseThrow(() -> new RuntimeException("Activity with id = " + oActivity.getId() + " not found for orderId = " + orderId));
+        mOActivity.setCompletedDate(oActivity.getCompletedDate());
+        mOActivity.setDelayReason(oActivity.getDelayReason());
+        mOActivity.setRemarks(oActivity.getRemarks());
+
+        return mOActivity;
+    }
+
+    @Transactional(value = "tenantTransactionManager")
+    public OSubActivity updateOrderOSubActivity(Long oActivityId, OSubActivity oSubActivity) {
+
+        OActivity mOActivity = oActivityRepository.getOne(oActivityId);
+
+        OSubActivity mOSubActivity = oSubActivityRepository.findOneByOActivityAndId(mOActivity, oSubActivity.getId()).orElseThrow(() -> new RuntimeException("SubActivity with id = " + oSubActivity.getId() + " not found for activityId = " + oActivityId));
+        mOSubActivity.setCompletedDate(oSubActivity.getCompletedDate());
+        mOSubActivity.setRemarks(oSubActivity.getRemarks());
+
+        return mOSubActivity;
+
     }
 
     public boolean exists(Long id) {
