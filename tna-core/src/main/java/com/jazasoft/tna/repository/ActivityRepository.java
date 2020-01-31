@@ -12,6 +12,8 @@ import java.util.Optional;
 
 public interface ActivityRepository extends JpaRepository<Activity,Long> , JpaSpecificationExecutor<Activity> {
 
+    Activity findTopByOrderBySerialNoDesc();
+
     @Override
     @EntityGraph("activity.findAll")
     Page<Activity> findAll(Pageable pageable);

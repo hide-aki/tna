@@ -7,6 +7,7 @@ import com.jazasoft.tna.entity.Activity;
 import com.jazasoft.tna.service.ActivityService;
 import cz.jirutka.rsql.parser.RSQLParser;
 import cz.jirutka.rsql.parser.ast.Node;
+import org.hibernate.Hibernate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
@@ -91,11 +92,14 @@ public class ActivityRestController {
 
     }
 
-    @PutMapping()
+    @PutMapping
     public ResponseEntity<?> updateActivities(@RequestBody List<Activity> activityList){
-        activityService.updateActivities(activityList);
+       List<Activity> mActivityList =  activityService.updateActivities(activityList);
 
-        return ResponseEntity.ok(activityList);
+       mActivityList.forEach(activity -> activity.setSubActivityList(null));
+       activityList.forEach(activity -> activity.setDepartment(null));
+
+        return ResponseEntity.ok(mActivityList);
     }
 
 

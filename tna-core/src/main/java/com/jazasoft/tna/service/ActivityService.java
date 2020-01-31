@@ -13,6 +13,7 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -58,12 +59,14 @@ public class ActivityService {
 
     @Transactional(value = "tenantTransactionManager")
     public Activity saveActivity(Activity activity) {
-       List<Activity> activityList = activityRepository.findAll();
-       int numberOfActivity = activityList.size();
 
-       //set serial number
-       activity.setSerialNo(++numberOfActivity);
-        //System.out.println("Number of activity is : "+numberOfActivity);
+         Activity mActivity = activityRepository.findTopByOrderBySerialNoDesc();
+
+        System.out.println("Activity from database.........................................."+mActivity);
+
+        int lastSerialNumber = mActivity.getSerialNo();
+
+        activity.setSerialNo(++lastSerialNumber);
 
         if (activity.getDepartmentId() != null) {
             activity.setDepartment(departmentRepository.findById(activity.getDepartmentId()).orElse(null));
@@ -82,6 +85,7 @@ public class ActivityService {
         Activity mActivity = activityRepository.findById(activity.getId()).orElseThrow();
         mActivity.setName(activity.getName());
         mActivity.setSerialNo(activity.getSerialNo());
+        mActivity.setDelayReason(activity.getDelayReason());
         mActivity.setNotify(activity.getNotify());
         mActivity.setCLevel(activity.getCLevel());
 
@@ -104,14 +108,26 @@ public class ActivityService {
         return mActivity;
     }
 
-    public List<Activity> updateActivities(List<Activity> activityList){
+    public List<Activity> updateActivities(List<Activity> activityList) {
         List<Activity> mActivityList = activityRepository.findAll();
 
-        for (Activity mActivity: mActivityList){
-            for (Activity activity: activityList){
+        for (Activity mActivity: mActivityList) {
+            Activity activity = activityList.stream().filter(a -> mActivity.getId().equals(a.getId())).findAny().orElse(null);
+            if (activity != null) {
                 mActivity.setSerialNo(activity.getSerialNo());
             }
         }
+//
+//        List<Long> existingIds = mActivityList.stream().map(Activity::getId).collect(Collectors.toList());
+//
+//        existingIds.forEach(id ->{
+//             Activity mActivity = mActivityList.stream().filter(activity -> activity.getId() !=null && activity.getId().equals(id)).findAny().get();
+//            Activity activity = activityList.stream().filter(activity1 -> activity1.getId() !=null && activity1.getId().equals(id)).findAny().get();
+//
+//            mActivity.setSerialNo(activity.getSerialNo());
+//        });
+
+
         return mActivityList;
     }
 
