@@ -42,11 +42,11 @@ import {
   EditDepartment
 } from "./pages/library/Department";
 import { TeamHome, CreateTeam, EditTeam } from "./pages/library/Team";
-import {
-  DelayReasonHome,
-  CreateDelayReason,
-  EditDelayReason
-} from "./pages/library/DelayReason";
+// import {
+//   DelayReasonHome,
+//   CreateDelayReason,
+//   EditDelayReason
+// } from "./pages/library/DelayReason";
 
 // Activity Pages
 import {
@@ -266,13 +266,13 @@ class App extends React.Component {
                   create={CreateTeam}
                   edit={EditTeam}
                 />
-                <Resource
+                {/*<Resource
                   name="delayReasons"
                   resource="delayReasons"
                   home={DelayReasonHome}
                   create={CreateDelayReason}
                   edit={EditDelayReason}
-                />
+                />*/}
               </Resource>
             );
           }

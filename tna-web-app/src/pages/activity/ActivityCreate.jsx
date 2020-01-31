@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import { connect } from "react-redux";
 
 import withStyles from "@material-ui/styles/withStyles";
 
@@ -7,14 +8,15 @@ import {
   MultiCardForm,
   FormCard,
   TextInput,
-  NumberInput,
   ReferenceInput,
   SelectInput,
   BooleanInput,
   ArrayInput,
   SimpleFormIterator,
   required,
-  minLength
+  minLength,
+  FormDataConsumer,
+  SelectArrayInput
 } from "jazasoft";
 
 const inputOptions = sm => ({
@@ -27,38 +29,93 @@ const inputOptions = sm => ({
 const styles = {};
 
 class ActivityCreate extends Component {
+  parse = record => {
+    const { notify, ...rest } = record;
+    return { ...rest, notify: notify && notify.join() }; // Parsing modified record to the API
+  };
+
   render() {
-    const { ...props } = this.props;
+    const { departments, ...props } = this.props;
     return (
       <Create
         title="Generate Activity and subactivities"
         cardWrapper={false}
         record={{ subActivityList: [{}] }}
+        parse={this.parse}
         {...props}
       >
         <MultiCardForm redirect="home">
           <FormCard title="Activity Details">
-            <NumberInput
-              source="serialNo"
-              validate={[required()]}
-              {...inputOptions(3)}
-            />
             <TextInput
               source="name"
               validate={[required(), minLength(2)]}
               {...inputOptions(3)}
             />
+
             <ReferenceInput
               source="departmentId"
               reference="departments"
-              {...inputOptions(3)}
+              {...inputOptions(4)}
               validate={required()}
             >
               <SelectInput optionText="name" />
             </ReferenceInput>
+            <FormDataConsumer {...inputOptions(5)}>
+              {({ formData }) => {
+                if (formData.departmentId) {
+                  let selectedDeptId = formData && formData.departmentId;
+                  let totalDepartmentList = Object.keys(departments).map(
+                    e => departments[e]
+                  );
+                  const rDepartments =
+                    formData.departmentId &&
+                    totalDepartmentList.filter(e => selectedDeptId !== e.id);
+                  const choices =
+                    rDepartments &&
+                    Object.values(rDepartments).map(({ id, name }) => ({
+                      id,
+                      name
+                    }));
 
-            <TextInput source="notify" {...inputOptions(3)} />
-            <BooleanInput defaultValue={false} source="cLevel" />
+                  return (
+                    <SelectArrayInput
+                      source="notify"
+                      label="Notify Departments"
+                      optionText="name"
+                      choices={choices}
+                      {...inputOptions(5)}
+                    />
+                  );
+                } else {
+                  return (
+                    <SelectArrayInput
+                      source="notify"
+                      label="Notify Departments"
+                      optionText="name"
+                      choices={[]}
+                      {...inputOptions(5)}
+                    />
+                  );
+                }
+              }}
+            </FormDataConsumer>
+            <TextInput
+              source="delayReason"
+              validate={[minLength(2)]}
+              {...inputOptions(4)}
+            />
+            <BooleanInput
+              defaultValue={false}
+              source="cLevel"
+              label="C Level"
+              style={{ marginLeft: "2em", marginTop: "1.5em" }}
+            />
+            <BooleanInput
+              defaultValue={false}
+              source="isDefault"
+              label="Default Activity"
+              style={{ marginTop: "1.5em", marginLeft: "-5em" }}
+            />
           </FormCard>
           <FormCard title="Subactivities">
             <ArrayInput
@@ -66,7 +123,6 @@ class ActivityCreate extends Component {
               source="subActivityList"
               xs={12}
               fullWidth={true}
-              validate={required()}
             >
               <SimpleFormIterator>
                 <TextInput
@@ -88,4 +144,11 @@ class ActivityCreate extends Component {
     );
   }
 }
-export default withStyles(styles)(ActivityCreate);
+
+const mapStateToProps = state => ({
+  departments:
+    state.jazasoft.resources["departments"] &&
+    state.jazasoft.resources["departments"].data
+});
+
+export default connect(mapStateToProps)(withStyles(styles)(ActivityCreate));

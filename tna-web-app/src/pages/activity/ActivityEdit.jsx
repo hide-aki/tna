@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-
+import { connect } from "react-redux";
 import withStyles from "@material-ui/styles/withStyles";
 
 import {
@@ -7,14 +7,15 @@ import {
   MultiCardForm,
   FormCard,
   TextInput,
-  NumberInput,
   ReferenceInput,
   SelectInput,
   BooleanInput,
   ArrayInput,
   SimpleFormIterator,
   required,
-  minLength
+  minLength,
+  FormDataConsumer,
+  SelectArrayInput
 } from "jazasoft";
 
 const inputOptions = sm => ({
@@ -27,33 +28,99 @@ const inputOptions = sm => ({
 const styles = {};
 
 class ActivityEdit extends Component {
+  format = record => {
+    if (record && record.notify !== null) {
+      const { notify, ...rest } = record;
+      return { ...rest, notify: notify.split(",").map(Number) };
+    } else {
+      return record;
+    }
+  };
+
+  parse = record => {
+    if (record && record.notify !== null) {
+      const { notify, ...rest } = record;
+      return { ...rest, notify: notify.join() }; // Parsing modified record to the API
+    } else {
+      return record;
+    }
+  };
   render() {
-    const { classes, dispatch, activity, ...props } = this.props;
+    const { departments, classes, dispatch, activity, ...props } = this.props;
+
     return (
-      <Edit cardWrapper={false} record={{ subActivityList: [{}] }} {...props}>
+      <Edit
+        cardWrapper={false}
+        record={{ subActivityList: [{}] }}
+        parse={this.parse}
+        format={this.format}
+        {...props}
+      >
         <MultiCardForm redirect="home">
           <FormCard title="Activity Details">
-            <NumberInput
-              source="serialNo"
-              validate={[required()]}
-              {...inputOptions(3)}
-            />
             <TextInput
               source="name"
               validate={[required(), minLength(2)]}
               {...inputOptions(3)}
             />
-            <ReferenceInput
-              source="departmentId"
-              reference="departments"
-              {...inputOptions(3)}
-              validate={required()}
-            >
-              <SelectInput optionText="name" />
-            </ReferenceInput>
+            {
+              <ReferenceInput
+                source="departmentId"
+                reference="departments"
+                {...inputOptions(4)}
+                validate={required()}
+              >
+                <SelectInput optionText="name" />
+              </ReferenceInput>
+            }
 
-            <TextInput source="notify" {...inputOptions(3)} />
-            <BooleanInput source="cLevel" />
+            <FormDataConsumer {...inputOptions(5)}>
+              {({ formData }) => {
+                if (formData.departmentId) {
+                  let selectedDeptId = formData && formData.departmentId;
+                  let totalDepartmentList = Object.keys(departments).map(
+                    e => departments[e]
+                  );
+                  const rDepartments =
+                    formData.departmentId &&
+                    totalDepartmentList.filter(e => selectedDeptId !== e.id);
+                  const choices =
+                    rDepartments &&
+                    Object.values(rDepartments).map(({ id, name }) => ({
+                      id,
+                      name
+                    }));
+
+                  return (
+                    <SelectArrayInput
+                      source="notify"
+                      label="Notify Departments"
+                      optionText="name"
+                      choices={choices}
+                      {...inputOptions(5)}
+                    />
+                  );
+                } else {
+                  return null;
+                }
+              }}
+            </FormDataConsumer>
+            <TextInput
+              source="delayReason"
+              validate={[minLength(2)]}
+              {...inputOptions(4)}
+            />
+            <BooleanInput
+              defaultValue={false}
+              source="cLevel"
+              style={{ marginLeft: "0.5em", marginTop: "1.5em" }}
+            />
+            <BooleanInput
+              defaultValue={false}
+              source="isDefault"
+              label="Default Activity"
+              style={{ marginTop: "1.5em", marginLeft: "-6em" }}
+            />
           </FormCard>
           <FormCard title="Subactivities">
             <ArrayInput
@@ -61,7 +128,6 @@ class ActivityEdit extends Component {
               source="subActivityList"
               xs={12}
               fullWidth={true}
-              validate={required()}
             >
               <SimpleFormIterator>
                 <TextInput
@@ -84,4 +150,10 @@ class ActivityEdit extends Component {
   }
 }
 
-export default withStyles(styles)(ActivityEdit);
+const mapStateToProps = state => ({
+  departments:
+    state.jazasoft.resources["departments"] &&
+    state.jazasoft.resources["departments"].data
+});
+
+export default connect(mapStateToProps)(withStyles(styles)(ActivityEdit));

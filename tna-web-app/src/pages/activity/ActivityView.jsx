@@ -7,14 +7,27 @@ import {
   ShowCard,
   TextField,
   Datagrid,
-  ReferenceField
+  ReferenceField,
+  ReferenceArrayField,
+  SingleFieldList,
+  ChipField
 } from "jazasoft";
 
 class ActivityView extends Component {
+  format = record => {
+    if (record && record.notify !== null) {
+      const { notify, ...rest } = record;
+      return { ...rest, notify: notify.split(",") };
+    } else {
+      return record;
+    }
+  };
+
   render() {
     const { classes, ...props } = this.props;
+
     return (
-      <Show cardWrapper={false} {...props}>
+      <Show format={this.format} cardWrapper={false} {...props}>
         <MultiCardShowLayout>
           <ShowCard title="Activity Details">
             <TextField source="serialNo" />
@@ -22,10 +35,26 @@ class ActivityView extends Component {
             <ReferenceField source="departmentId" reference="departments">
               <TextField source="name" />
             </ReferenceField>
+
+            <ReferenceArrayField
+              label="Notify Departments"
+              reference="departments"
+              source="notify"
+            >
+              <SingleFieldList>
+                <ChipField allowEmpty={true} source="name" />
+              </SingleFieldList>
+            </ReferenceArrayField>
+
             <FunctionField
               label="C-Level"
               render={record => (record.cLevel ? "Yes" : "No")}
             />
+            <FunctionField
+              label="Default Activity"
+              render={record => (record.isDefault ? "Yes" : "No")}
+            />
+            <TextField source="delayReason" label="Delay Reason" />
           </ShowCard>
           <ShowCard
             title="Subactivities"
