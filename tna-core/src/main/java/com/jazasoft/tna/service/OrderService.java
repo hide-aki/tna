@@ -98,9 +98,8 @@ public class OrderService {
             oActivity.setTActivityId(tActivity.getId());
 
             //setting leadTime in oActivity
-            int leadTimeNormal = tActivity.getLeadTimeNormal();
-            int leadTimeOptimal = tActivity.getLeadTimeOptimal();
-            int leadTime = getActivityLeadTime(leadTimeNormal, leadTimeOptimal);
+            int leadTimeNormal = tActivity.getLeadTime();
+            int leadTime = getActivityLeadTime(leadTimeNormal);
 
             oActivity.setLeadTime(leadTime);
             oActivity.setActivityName(tActivity.getActivity().getName());
@@ -114,7 +113,7 @@ public class OrderService {
                 oSubActivity.setOActivityId(oActivity.getId());
 
                 //setting leadTime in oSubActivity
-                int leadTimeNormalSub = tSubActivity.getLeadTimeNormal();
+                int leadTimeNormalSub = tSubActivity.getLeadTime();
                 int leadTimeSub = getSubActivityLeadTime(leadTimeNormalSub);
                 oSubActivity.setLeadTime(leadTimeSub);
                 oSubActivity.setSubActivityName(tSubActivity.getSubActivity().getName());
@@ -132,8 +131,7 @@ public class OrderService {
         return orderRepository.save(order);
     }
 
-    public int getActivityLeadTime(int leadTimeNormal, int leadTimeOptimal) {
-        int leadTime = (leadTimeNormal + leadTimeOptimal) / 2;
+    public int getActivityLeadTime(int leadTime) {
         return leadTime;
     }
 

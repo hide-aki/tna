@@ -55,6 +55,8 @@ public class Activity extends Auditable {
     @JsonProperty("isDefault")
     private Boolean isDefault;
 
+    private Boolean overridable;
+
     @Column(nullable = false)
     private String delayReason;
 
@@ -89,7 +91,7 @@ public class Activity extends Auditable {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof Activity)) return false;
+        if (o == null || getClass() != o.getClass()) return false;
         Activity activity = (Activity) o;
         return Objects.equals(id, activity.id) &&
                 Objects.equals(name, activity.name) &&
@@ -97,13 +99,13 @@ public class Activity extends Auditable {
                 Objects.equals(notify, activity.notify) &&
                 Objects.equals(cLevel, activity.cLevel) &&
                 Objects.equals(isDefault, activity.isDefault) &&
-                Objects.equals(delayReason, activity.delayReason) &&
-                Objects.equals(department, activity.department);
+                Objects.equals(overridable, activity.overridable) &&
+                Objects.equals(delayReason, activity.delayReason);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, serialNo, notify, cLevel, isDefault, delayReason, department);
+        return Objects.hash(id, name, serialNo, notify, cLevel, isDefault, overridable, delayReason);
     }
 
     @Override
@@ -115,8 +117,8 @@ public class Activity extends Auditable {
                 ", notify='" + notify + '\'' +
                 ", cLevel=" + cLevel +
                 ", isDefault=" + isDefault +
+                ", overridable=" + overridable +
                 ", delayReason='" + delayReason + '\'' +
-                ", department=" + department +
                 '}';
     }
 }

@@ -628,6 +628,7 @@
                 "serialNo": "1",
                 "notify": "1",
                 "isDefault": true,
+                "overridable": true,
                 "delayReason":" ",
                 "cLevel": true,
                 "departmentId":1,

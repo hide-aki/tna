@@ -21,7 +21,8 @@ public class TSubActivity extends Auditable {
     private Long id;
 
     @NotNull
-    private Integer leadTimeNormal;
+    private Integer leadTime;
+    //private Integer leadTimeNormal;
 
     @JsonIgnore
     @JsonProperty("tActivity")
@@ -45,20 +46,20 @@ public class TSubActivity extends Auditable {
         if (!(o instanceof TSubActivity)) return false;
         TSubActivity that = (TSubActivity) o;
         return Objects.equals(id, that.id) &&
-                Objects.equals(leadTimeNormal, that.leadTimeNormal) &&
+                Objects.equals(leadTime, that.leadTime) &&
                 Objects.equals(subActivityId, that.subActivityId);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, leadTimeNormal, subActivityId);
+        return Objects.hash(id, leadTime, subActivityId);
     }
 
     @Override
     public String toString() {
         return "TSubActivity{" +
                 "id=" + id +
-                ", leadTimeNormal=" + leadTimeNormal +
+                ", leadTime=" + leadTime +
                 ", subActivityId=" + subActivityId +
                 '}';
     }

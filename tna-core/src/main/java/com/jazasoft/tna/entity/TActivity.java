@@ -22,9 +22,7 @@ public class TActivity extends Auditable {
     private Long id;
 
     @Column(nullable = false)
-    private Integer leadTimeNormal;
-
-    private Integer leadTimeOptimal;
+    private Integer leadTime;
 
     @Column(nullable = false)
     private String timeFrom;
@@ -56,33 +54,31 @@ public class TActivity extends Auditable {
         tSubActivity.setTActivity(null);
     }
 
-//    public void updateTSubActivity(TSubActivity tSubActivity, TSubActivity mTSubActivity){
-//        mTSubActivity.setLeadTimeNormal(tSubActivity.getLeadTimeNormal());
-//    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof TActivity)) return false;
+        if (o == null || getClass() != o.getClass()) return false;
         TActivity tActivity = (TActivity) o;
-        return id.equals(tActivity.id) &&
-                leadTimeNormal.equals(tActivity.leadTimeNormal) &&
-                leadTimeOptimal.equals(tActivity.leadTimeOptimal) &&
-                timeFrom.equals(tActivity.timeFrom);
+        return Objects.equals(id, tActivity.id) &&
+                Objects.equals(leadTime, tActivity.leadTime) &&
+                Objects.equals(timeFrom, tActivity.timeFrom) &&
+                Objects.equals(timeline, tActivity.timeline) &&
+                Objects.equals(activity, tActivity.activity);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, leadTimeNormal, leadTimeOptimal, timeFrom);
+        return Objects.hash(id, leadTime, timeFrom, timeline, activity);
     }
 
     @Override
     public String toString() {
         return "TActivity{" +
                 "id=" + id +
-                ", leadTimeNormal=" + leadTimeNormal +
-                ", leadTimeOptimal=" + leadTimeOptimal +
+                ", leadTime=" + leadTime +
                 ", timeFrom='" + timeFrom + '\'' +
+                ", timeline=" + timeline +
+                ", activity=" + activity +
                 '}';
     }
 }

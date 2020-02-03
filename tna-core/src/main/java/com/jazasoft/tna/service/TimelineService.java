@@ -93,8 +93,6 @@ public class TimelineService {
     @Transactional(value = "tenantTransactionManager")
     public Timeline update(Timeline timeline) {
         Timeline mTimeline = timelineRepository.findById(timeline.getId()).orElseThrow();
-//        mTimeline.getTActivityList().forEach(tActivity -> Hibernate.initialize(tActivity.getActivity().getDepartment()));
-//        mTimeline.getTActivityList().forEach(tActivity -> Hibernate.initialize(tActivity.getTSubActivityList()));
 
         //update Own fields
         mTimeline.setName(timeline.getName());
@@ -129,8 +127,7 @@ public class TimelineService {
             TActivity tActivity = timeline.getTActivityList().stream().filter(d -> d.getId() != null && d.getId().equals(id)).findAny().get();
             TActivity mTActivity = mTimeline.getTActivityList().stream().filter(d -> d.getId() != null && d.getId().equals(id)).findAny().get();
 
-            mTActivity.setLeadTimeNormal(tActivity.getLeadTimeNormal());
-            mTActivity.setLeadTimeOptimal(tActivity.getLeadTimeOptimal());
+            mTActivity.setLeadTime(tActivity.getLeadTime());
             mTActivity.setTimeFrom(tActivity.getTimeFrom());
 
             Set<Long> existingIds = tActivity.getTSubActivityList().stream().
@@ -149,23 +146,15 @@ public class TimelineService {
             for (TSubActivity tSubActivity: newList) {
                 tSubActivity.setSubActivity(subActivityRepository.findById(tSubActivity.getSubActivityId()).orElse(null));
             }
-
             existingIds.forEach(subActivityId -> {
                 TSubActivity tSubActivity = tActivity.getTSubActivityList().stream().filter(o -> o.getId() != null && o.getId().equals(subActivityId)).findAny().get();
                 TSubActivity mTSubActivity = mTActivity.getTSubActivityList().stream().filter(o -> o.getId() != null && o.getId().equals(subActivityId)).findAny().get();
 
-                mTSubActivity.setLeadTimeNormal(tSubActivity.getLeadTimeNormal());
+                mTSubActivity.setLeadTime(tSubActivity.getLeadTime());
                 mTSubActivity.setSubActivity(subActivityRepository.findById(tSubActivity.getSubActivityId()).orElse(null));
             });
         });
-
-//        Hibernate.initialize(mTimeline.getBuyer());
-//        mTimeline.getTActivityList().forEach(tActivity -> {
-//            Hibernate.initialize(tActivity.getActivity());
-//            tActivity.getTSubActivityList().forEach(tSubActivity -> Hibernate.initialize(tSubActivity.getSubActivity()));
-//        });
-
-        return mTimeline;
+   return mTimeline;
     }
 
     public boolean exists(Long id) {
