@@ -787,14 +787,13 @@
                "buyerId": 1,
                "tActivityList":[
                             {
-                                "leadTimeNormal":2,
-                                "leadTimeOptimal":1,
-                                "timeFrom":"0-2",
+                                "leadTime":2,
+                                "timeFrom":"1,2,3",
                                 "activityId": 1,
                                 "tSubActivityList":[
                                         {
                                          "subActivityId":1,
-                                         "leadTimeNormal":2
+                                         "leadTime":2
                                         }
                                 ]
                             }
@@ -809,9 +808,8 @@
                "tActivityList":[
                             {
                                 "id": 1
-                                "leadTimeNormal":2,
-                                "leadTimeOptimal":1,
-                                "timeFrom":"0-2",
+                                "leadTime":2,
+                                "timeFrom":"1,2,3",
                                 "activityId": 1,
                                 "timlineId": 1
                                 "tSubActivityList":[
@@ -819,7 +817,7 @@
                                          "id": 1
                                          "subactivityId":1,
                                          "tActivityId": 1,
-                                         "leadTimeNormal":2,
+                                         "leadTime":2,
                                         }
                                 ]
                             }
@@ -847,9 +845,8 @@
                "tActivityList":[
                             {
                                 "id": 1
-                                "leadTimeNormal":2,
-                                "leadTimeOptimal":1,
-                                "timeFrom":"0-2",
+                                "leadTime":2,
+                                "timeFrom":"1,2,3",
                                 "activityId": 1,
                                 "timlineId": 1,
                                 "tSubActivityList":[
@@ -857,7 +854,7 @@
                                          "id": 1
                                          "subactivityId":1,
                                          "tActivityId": 1,
-                                         "leadTimeNormal":2,
+                                         "leadTime":2,
                                         }
                                 ]
                             }
@@ -874,9 +871,8 @@
                "tActivityList":[
                             {
                                 "id": 1
-                                "leadTimeNormal":2,
-                                "leadTimeOptimal":1,
-                                "timeFrom":"0-2"
+                                "leadTime":2,
+                                "timeFrom":"1,2,3"
                                 "activityId": 1,
                                 "timlineId": 1,
                                 "tSubActivityList":[
@@ -884,7 +880,7 @@
                                          "id": 1
                                          "subactivityId":1,
                                          "tActivityId": 1,
-                                         "leadTimeNormal":2,
+                                         "leadTime":2,
                                         }
                                 ]
                             }
