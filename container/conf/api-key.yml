@@ -11,7 +11,12 @@ api-keys:
         scopeActionList:
           - 'read'
       - !com.jazasoft.mtdb.dto.UrlInterceptor
-        url: /api/activities
-        resourceId: activity
+        url: /api/departments
+        resourceId: department
+        scopeActionList:
+          - 'read'
+      - !com.jazasoft.mtdb.dto.UrlInterceptor
+        url: /api/teams
+        resourceId: team
         scopeActionList:
           - 'read'

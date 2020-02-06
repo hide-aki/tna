@@ -1006,7 +1006,7 @@
 ```$xslt
     url: ~/v1/api/orders/{orderId}
     method: PUT
-    action: 
+    action: default, timeline
     params:
     request data: 
             {
@@ -1035,71 +1035,6 @@
                 "seasonId":1
             }
 ```
-
-3 . update specific activity in order
-
-```$xslt
-    url: ~/v1/api/orders/{orderId}/activities/{activityId}/
-    method: Put
-    action: 
-    params:
-    request data: 
-            {
-                  "id": 1,
-                   "orderId": ,
-                   "tActicityId": 2,
-                   "tActivity": {},
-                   "activityName": ,
-                   "leadTime": ,
-                   "timeFrom": "O",
-                   "completedDate": ,
-                   "delayReason": ,
-                   "remarks": ,
-            }
-    response data: 
-            {
-                "id": 1,
-                "tActicityId": 2,
-                "tActivity": {},
-                "activityName": ,
-                "leadTime": ,
-                "timeFrom": "O",
-                "completedDate": ,
-                "delayReason": ,
-                "remarks": ,
-            }
-```
-
-3 . update specific subActivity in order
-
-```$xslt
-    url: ~/v1/api/orders/{orderId}/activities/{activityId}/suActivities/{subActivityId}
-    method: Put
-    action: 
-    params:
-    request data: 
-                    {
-                        "id": 1,
-                        "oActivityId": 1,
-                        "tSubActivityId": 1,
-                        "subActivityName": "",
-                        "leadTime": ,
-                        "completedDate": "",
-                        "remarks": "",
-                    }
-    response data: 
-                    {
-                        "id": 1,
-                        "oActivityId": 1,
-                        "tSubActivityId": 1,
-                        "subActivityName": "",
-                        "leadTime": ,
-                        "completedDate": "",
-                        "remarks": ,
-                    }
-```
-
-
 
 5 . Delete 
 
@@ -1109,5 +1044,47 @@
     action: 
     params:
     request data: 
+    response data:
+```
+
+6. update activities and sub activities collectively
+
+```$xslt
+    url: ~/v1/api/orders
+    method: PUT
+    action: 
+    params:
+    request data: 
+        [
+            {
+                "id":1,
+                "poRef": "CT-125",
+                "orderQty":2500,
+                "style": "Style 4",
+                "orderDate": "2020-01-2",
+                "exFactoryData": "2020-01-3",
+                "buyerId": 1,
+                "timelineId": 1,
+                "garmentTypeId":1,
+                "seasonId":1,
+                "oActivityList": [
+                    "id": 2,
+                    "orderId": 1,
+                    "tActivityId": 10,
+                    "completedDate": ,
+                    "delayReason": ,
+                    "remarks",
+                    "oSubActivityList": [
+                        {
+                            "id": 20,
+                            "oActivityId": 2,
+                            "tSubActivityId": 30,
+                            "completedDate": ,
+                            "remarks": ,
+                        }
+                    ]
+                ]
+            }
+        ]
     response data:
 ```

@@ -498,6 +498,39 @@
                                  initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
                                  referencedColumnNames="id" referencedTableName="o_activity"/>
     </changeSet>
+
+    <changeSet author="razamd" id="v2.0.x-id16">
+        <dropIndex tableName="team" indexName="uk_team_name"/>
+
+        <createIndex indexName="uk_team_name" tableName="team" unique="true">
+            <column name="lower((name)::text)"/>
+            <column name="department_id"/>
+        </createIndex>
+
+        <rollback>
+            <dropIndex tableName="team" indexName="uk_team_name"/>
+            <createIndex indexName="uk_team_name" tableName="team" unique="true">
+                <column name="lower((name)::text)"/>
+            </createIndex>
+        </rollback>
+    </changeSet>
+
+    <changeSet author="razamd" id="v2.0.x-id17">
+        <dropColumn tableName="users" columnName="team_id"/>
+        <rollback>
+            <addColumn tableName="users">
+                <column name="team_id" type="BIGINT"/>
+            </addColumn>
+        </rollback>
+    </changeSet>
+
+    <changeSet author="razamd" id="v2.0.x-id18">
+        <dropColumn tableName="users" columnName="id"/>
+        <addColumn tableName="users">
+            <column name="id" type="BIGINT"/>
+        </addColumn>
+        <rollback/>
+    </changeSet>
 </databaseChangeLog>
 
 

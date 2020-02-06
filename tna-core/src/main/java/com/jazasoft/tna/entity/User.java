@@ -16,7 +16,6 @@ import java.util.Set;
 public class User extends Auditable {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @NotEmpty
@@ -44,6 +43,4 @@ public class User extends Auditable {
     @Column(nullable = false, columnDefinition = "TEXT")
     private String roles;
 
-    @ManyToOne(optional = false, fetch = FetchType.LAZY)
-    private Team team;
 }
