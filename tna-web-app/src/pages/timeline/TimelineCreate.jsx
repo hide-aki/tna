@@ -16,7 +16,8 @@ import {
   DialogTitle,
   List,
   ListItem,
-  ListItemText
+  ListItemText,
+  FormControlLabel
 } from "@material-ui/core";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import RemoveIcon from "@material-ui/icons/HighlightOff";
@@ -25,7 +26,6 @@ import AddIcon from "@material-ui/icons/Add";
 
 import {
   PageHeader,
-  RadioButtonGroupInput,
   PageFooter,
   TextInput,
   NumberInput,
@@ -40,8 +40,13 @@ import {
   crudGetList,
   RestMethods,
   minValue,
+  SelectArrayInput,
+  showNotification,
+  FormDataConsumer,
   SAVING_START,
-  SAVING_END
+  SAVING_END,
+  FETCH_START,
+  FETCH_END
 } from "jazasoft";
 import { SimpleForm } from "jazasoft/lib/mui/form/SimpleForm";
 import CardHeader from "../../components/CardHeader";
@@ -97,14 +102,15 @@ const inputOptions = sm => ({
   fullWidth: true
 });
 
-// Creating timeline structure for Redux-Fields
+// Formatting structure for Redux-Fields
 const format = activityList => {
   let timeline = {
     tActivityList:
       activityList &&
-      activityList.map(({ id, name, subActivityList }) => ({
+      activityList.map(({ id, name, serialNo, subActivityList }) => ({
         activityId: id,
         name,
+        serialNo,
         tSubActivityList:
           subActivityList &&
           subActivityList.map(({ id, name }) => ({
@@ -154,7 +160,7 @@ const SelectDialog = ({ open, onClose, data, fields, onSelect }) => {
   );
 };
 
-// Activity Field Array
+// Render Activity Field Panels
 const renderActivities = ({
   fields,
   activities,
@@ -181,15 +187,15 @@ const renderActivities = ({
       <Paper className={classes.activitiesField}>
         {fields.map((activity, idx) => {
           const activityObj =
-            activities &&
-            fields.get(idx) &&
-            activities[fields.get(idx).activityId];
-
+            (activities &&
+              fields.get(idx) &&
+              activities[fields.get(idx).activityId]) ||
+            {};
           return (
             <ExpansionPanel
               key={idx}
-              expanded={expanded === `${activity}.id`}
-              onChange={handleExpansionPanelChange(`${activity}.id`)}
+              expanded={expanded === activityObj.id}
+              onChange={handleExpansionPanelChange(activityObj.id)}
             >
               <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
                 <div className={classes.panelBtn}>
@@ -198,14 +204,19 @@ const renderActivities = ({
                     component={TextField}
                     className={classes.heading}
                   />
-
-                  <Button
-                    showLabel={false}
-                    label="Remove Activity"
-                    onClick={_ => onRemoveActivity(fields, idx, activity)}
-                  >
-                    <RemoveIcon />
-                  </Button>
+                  <FormControlLabel
+                    onClick={event => event.stopPropagation()}
+                    onFocus={event => event.stopPropagation()}
+                    control={
+                      <Button
+                        showLabel={false}
+                        label="Remove Activity"
+                        onClick={_ => onRemoveActivity(fields, idx, activity)}
+                      >
+                        <RemoveIcon />
+                      </Button>
+                    }
+                  />
                 </div>
               </ExpansionPanelSummary>
               <ExpansionPanelDetails>
@@ -215,28 +226,41 @@ const renderActivities = ({
                   footer={false}
                 >
                   <NumberInput
-                    source={`${activity}.leadTimeNormal`}
-                    label="Lead Time Normal"
-                    {...inputOptions(4)}
+                    source={`${activity}.leadTime`}
+                    label="Lead Time"
+                    {...inputOptions(6)}
                     validate={[required(1), minValue(1)]}
                   />
-                  <NumberInput
-                    source={`${activity}.leadTimeOptimal`}
-                    label="Lead Time Optimal"
-                    {...inputOptions(4)}
-                    validate={[required(), minValue(1)]}
-                  />
-                  <RadioButtonGroupInput
-                    className={classes.radioBtn}
-                    source={`${activity}.timeFrom`}
-                    label="Time From"
-                    choices={[
-                      { id: "O", name: "Order Date" },
-                      { id: "E", name: "Ex-Factory Date" }
-                    ]}
-                    {...inputOptions(4)}
-                    validate={required()}
-                  />
+                  <FormDataConsumer {...inputOptions(6)}>
+                    {({ formData }) => {
+                      const formActList = formData.tActivityList;
+                      const currentId = activityObj.id;
+                      const filteredActList = formActList.filter(
+                        e => e.activityId < currentId
+                      );
+                      const choices = filteredActList.map(
+                        ({ activityId, name }) => {
+                          return {
+                            id: activityId,
+                            name
+                          };
+                        }
+                      );
+                      choices.unshift(
+                        { id: "O", name: "Order Date" },
+                        { id: "E", name: "Ex-Factory Date" }
+                      );
+                      return (
+                        <SelectArrayInput
+                          source={`${activity}.timeFrom`}
+                          label="From"
+                          choices={choices}
+                          {...inputOptions(6)}
+                          validate={required()}
+                        />
+                      );
+                    }}
+                  </FormDataConsumer>
                   <ArrayInput
                     label="Subactivity List"
                     source={`${activity}.tSubActivityList`}
@@ -260,8 +284,8 @@ const renderActivities = ({
                       )}
 
                       <NumberInput
-                        source="leadTimeNormal"
-                        label="Lead Time Normal"
+                        source="leadTime"
+                        label="Lead Time"
                         {...inputOptions(6)}
                         validate={[required(), minValue(1)]}
                       />
@@ -283,7 +307,7 @@ class TimelineCreate extends Component {
     rActivityList: [], // Remaining activity List
     initialValues: {},
     dialogActive: false,
-    expanded: false
+    expanded: null
   };
 
   componentDidMount() {
@@ -303,14 +327,17 @@ class TimelineCreate extends Component {
 
   init = (props = this.props) => {
     const { activities } = props;
-    const activityList = activities // Transforming whole activities Object to activityList
-      ? Object.keys(activities)
+
+    const defaultActivityList = activities // Filtering Default Activities
+      ? activities &&
+        Object.keys(activities)
           .map(id => activities[id])
+          .filter(e => e.isDefault)
           .sort((a, b) => a.serialNo - b.serialNo)
       : [];
-    const initialValues = format(activityList); // Formatting activityList for Redux-form pre-filling
+    const initialValues = format(defaultActivityList);
     this.setState({
-      activityList, // keeping track of activities present on Redux-form
+      activityList: defaultActivityList, // Activities present on Redux-form Expansion Panel
       initialValues
     });
   };
@@ -325,18 +352,35 @@ class TimelineCreate extends Component {
   onAddActivity = fields => {
     const { activities } = this.props;
     const { activityList } = this.state;
-    const totalActivityList = Object.keys(activities).map(id => activities[id]);
+    const totalActivityList = activities
+      ? Object.keys(activities).map(id => activities[id])
+      : [];
+    // Ids of activities present in the current state and Redux-form
     const selectedIds = activityList.map(e => e.id);
-    const rActivityList = totalActivityList.filter(
-      e => !selectedIds.includes(e.id)
-    );
+    // Remaining activities after filtering out state/current activities from whole activity list
+    const rActivityList = totalActivityList
+      .filter(e => !selectedIds.includes(e.id))
+      .sort((a, b) => a.serialNo - b.serialNo);
     this.setState({ dialogActive: true, rActivityList, fields });
   };
 
   onSubmit = handleSubmit => {
     handleSubmit(values => {
-      this.createTimeline(values);
+      this.parse(values);
     })();
+  };
+
+  // Parsing submission values to convert timeFrom values to CSV
+  parse = values => {
+    const { tActivityList, ...rest } = values;
+    let parsedValue = {
+      ...rest,
+      tActivityList: tActivityList.map(activity => ({
+        ...activity,
+        timeFrom: activity.timeFrom.join()
+      }))
+    };
+    this.createTimeline(parsedValue);
   };
 
   createTimeline = timeline => {
@@ -345,13 +389,21 @@ class TimelineCreate extends Component {
       method: "post",
       data: timeline
     };
+    this.props.dispatch({ type: FETCH_START });
     this.props.dispatch({ type: SAVING_START });
     dataProvider(RestMethods.CUSTOM, null, options)
       .then(response => {
+        if (response.status === 200 || response.status === 201) {
+          this.props.dispatch(
+            showNotification("Timeline created successfully.")
+          );
+          this.props.history.push("/timelines");
+        }
+        this.props.dispatch({ type: FETCH_END });
         this.props.dispatch({ type: SAVING_END });
-        this.props.history.push("/timelines");
       })
       .catch(error => {
+        this.props.dispatch({ type: FETCH_END });
         this.props.dispatch({ type: SAVING_END });
       });
   };
@@ -363,22 +415,33 @@ class TimelineCreate extends Component {
       values.tActivityList &&
       values.tActivityList.forEach((activity, activityIdx) => {
         const tActivity = {};
-        if (activity.leadTimeOptimal >= activity.leadTimeNormal) {
-          tActivity.leadTimeOptimal =
-            "Value should be less than Lead Time Normal";
-          tActivityList[activityIdx] = tActivity;
+        let timeFromLength = activity.timeFrom ? activity.timeFrom.length : 0;
+        for (let i = 0; i < timeFromLength; i++) {
+          for (let j = 1; j < timeFromLength; j++) {
+            if (typeof activity.timeFrom[i] !== typeof activity.timeFrom[j]) {
+              tActivity.timeFrom =
+                "Value should be either single selection out of Order date, Ex-Factory date, Activity or multi-selection of activities";
+              tActivityList[activityIdx] = tActivity;
+            } else if (
+              typeof activity.timeFrom[i] === "string" &&
+              typeof activity.timeFrom[j] === "string"
+            ) {
+              tActivity.timeFrom =
+                "Value should be either single selection out of Order date, Ex-Factory date, Activity or multi-selection of activities";
+              tActivityList[activityIdx] = tActivity;
+            }
+          }
         }
         const tSubActivityList = [];
-
         let sortedSubActivityList =
           activity.tSubActivityList &&
           activity.tSubActivityList.map(a => a.subActivityId);
         activity.tSubActivityList &&
           activity.tSubActivityList.forEach((subActivity, subActivityIdx) => {
             const tSubActivity = {};
-            if (subActivity.leadTimeNormal > activity.leadTimeNormal) {
-              tSubActivity.leadTimeNormal =
-                "Value should be less than Activity's Lead Time Normal";
+            if (subActivity.leadTime > activity.leadTime) {
+              tSubActivity.leadTime =
+                "Value should be less than Activity's Lead Time";
               tSubActivityList[subActivityIdx] = tSubActivity;
             } else if (
               sortedSubActivityList.some(
@@ -397,17 +460,14 @@ class TimelineCreate extends Component {
     if (tActivityList.length) {
       errors.tActivityList = tActivityList;
     }
-
     return errors;
   };
 
   onSelect = (fields, activity) => {
-    let activityList = this.state.activityList.slice();
-    activityList.push(activity);
-    this.setState({ activityList, dialogActive: false });
     let newActivity = {
       activityId: activity.id,
       name: activity.name,
+      serialNo: activity.serialNo,
       tSubActivityList:
         activity &&
         activity.subActivityList &&
@@ -416,7 +476,20 @@ class TimelineCreate extends Component {
           name
         }))
     };
-    fields.push(newActivity);
+    const fieldsList = fields.getAll();
+    const fieldsSerialNoList = fieldsList.map(e => e.serialNo).sort();
+    const newActivitySerialNo = newActivity.serialNo;
+
+    var tempIdx = 0; // Computing the index order for new activity
+    fieldsSerialNoList.forEach((e, i) => {
+      if (newActivitySerialNo > e) {
+        tempIdx = i + 1;
+      }
+    });
+    fields.insert(tempIdx, newActivity);
+    let activityList = this.state.activityList.slice();
+    activityList.splice(tempIdx, 0, activity);
+    this.setState({ activityList, dialogActive: false });
   };
 
   // Expansion bar control
@@ -433,7 +506,6 @@ class TimelineCreate extends Component {
       initialValues,
       expanded
     } = this.state;
-
     return (
       <div>
         <PageHeader title="Create Timeline" />
