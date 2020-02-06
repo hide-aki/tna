@@ -7,18 +7,26 @@
     <groupId>com.jazasoft</groupId>
     <artifactId>tna-core</artifactId>
     <version>2.0.0-SNAPSHOT</version>
+    <packaging>war</packaging>
+
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
         <version>2.1.6.RELEASE</version>
-        <relativePath/> <!-- lookup parent from repository -->
+        <relativePath/>
     </parent>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-
         <java.version>11</java.version>
+        <app.dir>tna</app.dir>
+        <skipIT>true</skipIT>
     </properties>
+
+    <scm>
+        <connection>scm:git:https://github.com/zahidraza/tna.git</connection>
+        <url>https://github.com/zahidraza/tna</url>
+    </scm>
 
     <dependencies>
         <dependency>
@@ -62,14 +70,14 @@
         <dependency>
             <groupId>org.spockframework</groupId>
             <artifactId>spock-core</artifactId>
-            <version>1.1-groovy-2.4</version>
+            <version>1.3-groovy-2.5</version>
             <scope>test</scope>
         </dependency>
 
         <dependency>
             <groupId>org.spockframework</groupId>
             <artifactId>spock-spring</artifactId>
-            <version>1.1-groovy-2.4</version>
+            <version>1.3-groovy-2.5</version>
         </dependency>
 
         <dependency> <!-- enables mocking of classes without default constructor (together with CGLIB) -->
@@ -85,11 +93,254 @@
         </dependency>
     </dependencies>
 
+
     <build>
 
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>true</filtering>
+            </resource>
+        </resources>
 
         <plugins>
 
+            <!-- For creating Build Information-->
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>buildnumber-maven-plugin</artifactId>
+                <version>1.4</version>
+                <executions>
+                    <execution>
+                        <phase>validate</phase>
+                        <goals>
+                            <goal>create</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <doCheck>false</doCheck>
+                    <doUpdate>true</doUpdate>
+                    <!--<format>{0,number,integer}</format>-->
+                    <items>
+                        <item>buildNumber</item>
+                    </items>
+                    <timestampFormat>{0,date,dd MMM,yyyy hh:mm a z(Z)}</timestampFormat>
+                    <timezone>IST</timezone>
+                    <shortRevisionLength>10</shortRevisionLength>
+                    <!--<buildNumberPropertiesFileLocation>${project.basedir.basedir}/../../build/buildNumber.properties</buildNumberPropertiesFileLocation>-->
+                </configuration>
+            </plugin>
+
+
+            <!-- For compiling Groovy source code -->
+            <plugin>
+                <groupId>org.codehaus.gmavenplus</groupId>
+                <artifactId>gmavenplus-plugin</artifactId>
+                <version>1.7.1</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>compile</goal>
+                            <goal>compileTests</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <!--For Running Unit Tests in Project-->
+            <plugin>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>2.22.2</version>
+                <configuration>
+                    <useFile>false</useFile>
+                    <includes>
+                        <include>**/*USpec.java</include>
+                        <include>**/*UTest.java</include>
+                    </includes>
+                </configuration>
+            </plugin>
+
+
+            <!--For building frontend SPA -->
+            <plugin>
+                <groupId>com.github.eirslett</groupId>
+                <artifactId>frontend-maven-plugin</artifactId>
+                <version>1.8.0</version>
+
+                <configuration>
+                    <workingDirectory>../tna-web-app</workingDirectory>
+                </configuration>
+
+                <executions>
+                    <execution>
+                        <id>install node and npm</id>
+                        <goals>
+                            <goal>install-node-and-npm</goal>
+                        </goals>
+                        <phase>prepare-package</phase>
+                        <configuration>
+                            <nodeVersion>v12.6.0</nodeVersion>
+                            <npmVersion>6.9.0</npmVersion>
+                        </configuration>
+                    </execution>
+
+                    <execution>
+                        <id>npm install</id>
+                        <goals>
+                            <goal>npm</goal>
+                        </goals>
+                        <phase>prepare-package</phase>
+                        <configuration>
+                            <arguments>install</arguments>
+                        </configuration>
+                    </execution>
+
+                    <execution>
+                        <id>npm run build</id>
+                        <goals>
+                            <goal>npm</goal>
+                        </goals>
+                        <phase>prepare-package</phase>
+                        <configuration>
+                            <arguments>run build</arguments>
+                        </configuration>
+                    </execution>
+
+                </executions>
+            </plugin>
+
+            <!--For Copying files-->
+            <plugin>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <version>1.8</version>
+                <executions>
+                    <execution>
+                        <id>Copy npm build output</id>
+                        <phase>prepare-package</phase>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                        <configuration>
+                            <target>
+
+                                <delete>
+                                    <fileset dir="src/main/webapp" includes="**"/>
+                                </delete>
+
+                                <!--Copy config files-->
+                                <copy overwrite="true" todir="src/main/webapp/static">
+                                    <fileset dir="${project.basedir}/../tna-web-app/build">
+                                        <include name="*"/>
+                                        <exclude name="index.html"/>
+                                        <exclude name="service-worker.js"/>
+                                        <!--<exclude name="sitemap.xml"/>-->
+                                        <!--<exclude name="robots.txt" />-->
+                                        <type type="file"/>
+                                    </fileset>
+                                </copy>
+
+                                <copy overwrite="true" todir="src/main/webapp/static/js/">
+                                    <fileset dir="${project.basedir}/../tna-web-app/build/static/js"/>
+                                </copy>
+
+                                <copy overwrite="true" todir="src/main/webapp/static/css/">
+                                    <fileset dir="${project.basedir}/../tna-web-app/build/static/css"/>
+                                </copy>
+
+                                <copy overwrite="true" todir="src/main/webapp/static/media/">
+                                    <fileset dir="${project.basedir}/../tna-web-app/build/static/media"/>
+                                </copy>
+
+                                <copy overwrite="true" file="${project.basedir}/../tna-web-app/build/index.html"
+                                      todir="src/main/webapp/WEB-INF/"/>
+                                <copy overwrite="true" file="${project.basedir}/../tna-web-app/build/service-worker.js"
+                                      todir="src/main/webapp/WEB-INF/"/>
+
+                                <replace file="src/main/webapp/WEB-INF/service-worker.js" token="precache-manifest"
+                                         value="static/precache-manifest"/>
+
+                                <delete>
+                                    <fileset dir="${project.basedir}/../src/main/webapp" includes="**"/>
+                                </delete>
+
+                                <copy overwrite="true" todir="${project.basedir}/../src/main/webapp">
+                                    <fileset dir="${project.basedir}/src/main/webapp"/>
+                                </copy>
+
+                            </target>
+                        </configuration>
+                    </execution>
+
+                    <execution>
+                        <id>Prepare Container content</id>
+                        <phase>install</phase>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                        <configuration>
+                            <target>
+                                <!--Create directory structure-->
+                                <mkdir dir="${project.build.directory}/${app.dir}/bin"/>
+                                <mkdir dir="${project.build.directory}/${app.dir}/conf"/>
+                                <mkdir dir="${project.build.directory}/${app.dir}/conf-default"/>
+                                <mkdir dir="${project.build.directory}/${app.dir}/log"/>
+                                <mkdir dir="${project.build.directory}/${app.dir}/data"/>
+
+                                <!--Copy config files-->
+                                <copy todir="${project.build.directory}/${app.dir}/conf-default">
+                                    <fileset dir="${project.basedir}/../container/conf">
+                                        <exclude name="**/*test*.*"/>
+                                    </fileset>
+                                </copy>
+
+                                <copy todir="${project.build.directory}/${app.dir}/bin">
+                                    <fileset dir="${project.basedir}/../container/bin"/>
+                                </copy>
+                                <copy file="${project.build.directory}/classes/run.sh"
+                                      todir="${project.build.directory}/${app.dir}/bin"/>
+
+                                <copy todir="${project.build.directory}/${app.dir}">
+                                    <fileset dir="${project.basedir}/../container">
+                                        <include name="*"/>
+                                        <type type="file"/>
+                                    </fileset>
+                                </copy>
+
+                                <copy file="${project.build.directory}/${project.build.finalName}.war"
+                                      todir="${project.build.directory}/${app.dir}"/>
+
+                                <zip basedir="${project.build.directory}"
+                                     destfile="${project.build.directory}/${app.dir}.zip"
+                                     includes="${app.dir}/**/*"/>
+                            </target>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+
+            <!--For Running Integration Tests in Project-->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-failsafe-plugin</artifactId>
+                <version>2.22.2</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>integration-test</goal>
+                            <goal>verify</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <skipITs>${skipIT}</skipITs>
+                    <includes>
+                        <!--<include>**/*ITest.java</include>-->
+                        <include>**/*ISpec.java</include>
+                    </includes>
+                </configuration>
+            </plugin>
 
             <!--Spring boot plugin to create packaged application-->
             <plugin>
@@ -127,7 +378,7 @@
             </plugin>
 
         </plugins>
-
     </build>
+
 
 </project>
