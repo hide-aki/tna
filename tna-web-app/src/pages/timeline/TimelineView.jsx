@@ -15,8 +15,7 @@ const grassRoot = true;
 
 const activityColumns = [
   { field: "name", title: "Name" },
-  { field: "leadTimeNormal", title: "Lead Time Normal" },
-  { field: "leadTimeOptimal", title: "Lead Time Optimal" }
+  { field: "leadTime", title: "Lead Time" }
 ];
 
 class TimelineView extends Component {
@@ -41,8 +40,9 @@ class TimelineView extends Component {
               content={({ record = {} }) => {
                 if (!record.tActivityList) return null;
                 let data = grassRoot
-                  ? record.tActivityList.flatMap(
-                      ({ tSubActivityList, ...tActivity }) => {
+                  ? record.tActivityList
+                      .sort((a, b) => a.activity.serialNo - b.activity.serialNo)
+                      .flatMap(({ tSubActivityList, ...tActivity }) => {
                         return [
                           {
                             ...tActivity,
@@ -50,25 +50,20 @@ class TimelineView extends Component {
                           },
                           ...tSubActivityList.map(e => ({
                             ...e,
+                            id: null,
                             name: e.subActivity && e.subActivity.name,
                             timeFrom: tActivity.timeFrom
                           }))
                         ];
-                      }
-                    )
+                      })
                   : record.tActivityList;
                 data = data.map(e => ({
                   ...e,
-                  name: e.name,
-                  leadTimeNormal:
+                  name: e.name ? e.name : e.activity.name,
+                  leadTime:
                     e.timeFrom === "O"
-                      ? `O + ` + e.leadTimeNormal
-                      : `E - ` + e.leadTimeNormal,
-                  leadTimeOptimal: !e.leadTimeOptimal
-                    ? ""
-                    : e.timeFrom === "O"
-                    ? `O + ` + e.leadTimeOptimal
-                    : `E - ` + e.leadTimeOptimal
+                      ? `O + ` + e.leadTime
+                      : `E - ` + e.leadTime
                 }));
 
                 return (
@@ -90,7 +85,9 @@ class TimelineView extends Component {
                       !grassRoot
                         ? null
                         : (row, rows) =>
-                            rows.find(a => a.id === row.tActivityId)
+                            rows.find(a => {
+                              return a.id === row.tActivityId;
+                            })
                     }
                     onTreeExpandChange={this.onTreeExpandChange}
                   />

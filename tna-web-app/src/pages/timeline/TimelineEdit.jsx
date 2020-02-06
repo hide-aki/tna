@@ -16,7 +16,8 @@ import {
   DialogTitle,
   List,
   ListItem,
-  ListItemText
+  ListItemText,
+  FormControlLabel
 } from "@material-ui/core";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import RemoveIcon from "@material-ui/icons/HighlightOff";
@@ -25,7 +26,8 @@ import AddIcon from "@material-ui/icons/Add";
 
 import {
   PageHeader,
-  RadioButtonGroupInput,
+  FormDataConsumer,
+  SelectArrayInput,
   PageFooter,
   TextInput,
   NumberInput,
@@ -52,7 +54,7 @@ import CardHeader from "../../components/CardHeader";
 import { dataProvider } from "../../App";
 import { Field, FieldArray } from "redux-form";
 import handleError from "../../utils/handleError";
-// import { getDistinctValues } from "../../utils/helpers";
+
 // Styling
 const homeStyle = theme => ({
   container: {
@@ -167,14 +169,15 @@ const renderActivities = ({
       <Paper className={classes.activitiesField}>
         {fields.map((activity, idx) => {
           const activityObj =
-            activities &&
-            fields.get(idx) &&
-            activities[fields.get(idx).activityId];
+            (activities &&
+              fields.get(idx) &&
+              activities[fields.get(idx).activityId]) ||
+            {};
           return (
             <ExpansionPanel
               key={idx}
-              expanded={expanded === idx}
-              onChange={handleExpansionPanelChange(idx)}
+              expanded={expanded === activityObj.id}
+              onChange={handleExpansionPanelChange(activityObj.id)}
             >
               <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
                 <div className={classes.panelBtn}>
@@ -183,13 +186,19 @@ const renderActivities = ({
                     component={TextField}
                     className={classes.heading}
                   />
-                  <Button
-                    showLabel={false}
-                    label="Remove Activity"
-                    onClick={_ => onRemoveActivity(fields, idx, activity)}
-                  >
-                    <RemoveIcon />
-                  </Button>
+                  <FormControlLabel
+                    onClick={event => event.stopPropagation()}
+                    onFocus={event => event.stopPropagation()}
+                    control={
+                      <Button
+                        showLabel={false}
+                        label="Remove Activity"
+                        onClick={_ => onRemoveActivity(fields, idx, activity)}
+                      >
+                        <RemoveIcon />
+                      </Button>
+                    }
+                  />
                 </div>
               </ExpansionPanelSummary>
               <ExpansionPanelDetails>
@@ -199,28 +208,43 @@ const renderActivities = ({
                   footer={false}
                 >
                   <NumberInput
-                    source={`${activity}.leadTimeNormal`}
-                    label="Lead Time Normal"
-                    {...inputOptions(4)}
+                    source={`${activity}.leadTime`}
+                    label="Lead Time"
+                    {...inputOptions(6)}
                     validate={[required(1), minValue(1)]}
                   />
-                  <NumberInput
-                    source={`${activity}.leadTimeOptimal`}
-                    label="Lead Time Optimal"
-                    {...inputOptions(4)}
-                    validate={[required(), minValue(1)]}
-                  />
-                  <RadioButtonGroupInput
-                    className={classes.radioBtn}
-                    source={`${activity}.timeFrom`}
-                    label="Time From"
-                    choices={[
-                      { id: "O", name: "Order Date" },
-                      { id: "E", name: "Ex-Factory Date" }
-                    ]}
-                    {...inputOptions(4)}
-                    validate={required()}
-                  />
+                  <FormDataConsumer {...inputOptions(6)}>
+                    {({ formData }) => {
+                      if (formData.tActivityList) {
+                        const formActList = formData.tActivityList;
+                        const currentId = activityObj.id;
+                        const filteredActList = formActList.filter(
+                          e => e.activityId < currentId
+                        );
+                        const choices = filteredActList.map(
+                          ({ activityId, name }) => {
+                            return {
+                              id: activityId,
+                              name
+                            };
+                          }
+                        );
+                        choices.unshift(
+                          { id: "O", name: "Order Date" },
+                          { id: "E", name: "Ex-Factory Date" }
+                        );
+                        return (
+                          <SelectArrayInput
+                            source={`${activity}.timeFrom`}
+                            label="From"
+                            choices={choices}
+                            {...inputOptions(6)}
+                            validate={required()}
+                          />
+                        );
+                      }
+                    }}
+                  </FormDataConsumer>
                   {activityObj && activityObj.subActivityList && (
                     <ArrayInput
                       label="Subactivity List"
@@ -246,8 +270,8 @@ const renderActivities = ({
                           )}
 
                         <NumberInput
-                          source="leadTimeNormal"
-                          label="Lead Time Normal"
+                          source="leadTime"
+                          label="Lead Time"
                           {...inputOptions(6)}
                           validate={[required(), minValue(1)]}
                         />
@@ -270,8 +294,7 @@ class TimelineEdit extends Component {
     rActivityList: [], // Remaining activity List
     initialValues: {},
     dialogActive: false,
-    expanded: false,
-    errors: null
+    expanded: null
   };
 
   componentDidMount() {
@@ -314,13 +337,21 @@ class TimelineEdit extends Component {
     const initialValues = {
       ...rest,
       tActivityList: tActivityList
-        ? tActivityList.map(({ activity, ...tActivity }) => ({
-            ...tActivity,
-            activity,
-            name: activity.name
-          }))
+        ? tActivityList
+            .map(({ activity, ...tActivity }) => ({
+              ...tActivity,
+              activity,
+              name: activity.name,
+              serialNo: activity.serialNo,
+              timeFrom:
+                tActivity.timeFrom == "O" || tActivity.timeFrom == "E"
+                  ? tActivity.timeFrom.split(",")
+                  : tActivity.timeFrom.split(",").map(Number)
+            }))
+            .sort((a, b) => a.serialNo - b.serialNo)
         : []
     };
+
     this.setState({
       activityList,
       initialValues
@@ -340,18 +371,32 @@ class TimelineEdit extends Component {
     const totalActivityList = activities
       ? Object.keys(activities).map(id => activities[id])
       : [];
-    const selectedIds = activityList.map(e => e.id); // Ids of activities present in the current state and Redux-form
-    const rActivityList = totalActivityList.filter(
-      // Remaining activities after filtering out state/current activities from whole activity list
-      e => !selectedIds.includes(e.id)
-    );
+    // Ids of activities present in the current state and Redux-form
+    const selectedIds = activityList.map(e => e.id);
+    // Remaining activities after filtering out state/current activities from whole activity list
+    const rActivityList = totalActivityList
+      .filter(e => !selectedIds.includes(e.id))
+      .sort((a, b) => a.serialNo - b.serialNo);
     this.setState({ dialogActive: true, rActivityList, fields });
   };
 
   onSubmit = handleSubmit => {
     handleSubmit(values => {
-      this.updateTimeline(values);
+      this.parse(values);
     })();
+  };
+
+  // Parsing submission values to convert timeFrom values to CSV
+  parse = values => {
+    const { tActivityList, ...rest } = values;
+    let parsedValue = {
+      ...rest,
+      tActivityList: tActivityList.map(activity => ({
+        ...activity,
+        timeFrom: activity.timeFrom.join()
+      }))
+    };
+    this.updateTimeline(parsedValue);
   };
 
   updateTimeline = timeline => {
@@ -387,22 +432,33 @@ class TimelineEdit extends Component {
       values.tActivityList &&
       values.tActivityList.forEach((activity, activityIdx) => {
         const tActivity = {};
-        if (activity.leadTimeOptimal >= activity.leadTimeNormal) {
-          tActivity.leadTimeOptimal =
-            "Value should be less than Lead Time Normal";
-          tActivityList[activityIdx] = tActivity;
+        let timeFromLength = activity.timeFrom ? activity.timeFrom.length : 0;
+        for (let i = 0; i < timeFromLength; i++) {
+          for (let j = 1; j < timeFromLength; j++) {
+            if (typeof activity.timeFrom[i] !== typeof activity.timeFrom[j]) {
+              tActivity.timeFrom =
+                "Value should be either single selection out of Order date, Ex-Factory date, Activity or multi-selection of activities";
+              tActivityList[activityIdx] = tActivity;
+            } else if (
+              typeof activity.timeFrom[i] === "string" &&
+              typeof activity.timeFrom[j] === "string"
+            ) {
+              tActivity.timeFrom =
+                "Value should be either single selection out of Order date, Ex-Factory date, Activity or multi-selection of activities";
+              tActivityList[activityIdx] = tActivity;
+            }
+          }
         }
         const tSubActivityList = [];
-
         let sortedSubActivityList =
           activity.tSubActivityList &&
           activity.tSubActivityList.map(a => a.subActivityId);
         activity.tSubActivityList &&
           activity.tSubActivityList.forEach((subActivity, subActivityIdx) => {
             const tSubActivity = {};
-            if (subActivity.leadTimeNormal > activity.leadTimeNormal) {
-              tSubActivity.leadTimeNormal =
-                "Value should be less than Activity's Lead Time Normal";
+            if (subActivity.leadTime > activity.leadTime) {
+              tSubActivity.leadTime =
+                "Value should be less than Activity's Lead Time";
               tSubActivityList[subActivityIdx] = tSubActivity;
             } else if (
               sortedSubActivityList.some(
@@ -421,23 +477,36 @@ class TimelineEdit extends Component {
     if (tActivityList.length) {
       errors.tActivityList = tActivityList;
     }
-
     return errors;
   };
 
   onSelect = (fields, activity) => {
-    let activityList = this.state.activityList.slice();
-    activityList.push(activity);
-    this.setState({ activityList, dialogActive: false });
     let newActivity = {
       activityId: activity.id,
       name: activity.name,
-      tSubActivityList: activity.subActivityList.map(({ id, name }) => ({
-        subActivityId: id,
-        name
-      }))
+      serialNo: activity.serialNo,
+      tSubActivityList:
+        activity &&
+        activity.subActivityList &&
+        activity.subActivityList.map(({ id, name }) => ({
+          subActivityId: id,
+          name
+        }))
     };
-    fields.push(newActivity);
+    const fieldsList = fields.getAll();
+    const fieldsSerialNoList = fieldsList.map(e => e.serialNo).sort();
+    const newActivitySerialNo = newActivity.serialNo;
+
+    var tempIdx = 0; // Computing the index order for new activity
+    fieldsSerialNoList.forEach((e, i) => {
+      if (newActivitySerialNo > e) {
+        tempIdx = i + 1;
+      }
+    });
+    fields.insert(tempIdx, newActivity);
+    let activityList = this.state.activityList.slice();
+    activityList.splice(tempIdx, 0, activity);
+    this.setState({ activityList, dialogActive: false });
   };
 
   // Expansion bar control

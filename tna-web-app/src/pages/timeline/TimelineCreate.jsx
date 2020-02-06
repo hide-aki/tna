@@ -375,9 +375,9 @@ class TimelineCreate extends Component {
     const { tActivityList, ...rest } = values;
     let parsedValue = {
       ...rest,
-      tActivityList: tActivityList.map(activity => ({
-        ...activity,
-        timeFrom: activity.timeFrom.join()
+      tActivityList: tActivityList.map(el => ({
+        ...el,
+        timeFrom: el.timeFrom.join(),
       }))
     };
     this.createTimeline(parsedValue);
