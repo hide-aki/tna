@@ -1,11 +1,13 @@
 import * as React from "react";
 import { createBrowserHistory } from "history";
 import axios from "axios";
+import { Route } from "react-router-dom";
 
 import logo from "./asset/img/logo2.png";
 import avatar from "./asset/img/faces/avatar-male.png";
 //icons
 import MenuIcon from "@material-ui/icons/Menu";
+import UserIcon from "mdi-material-ui/AccountGroup";
 import LibraryIcon from "@material-ui/icons/LibraryBooks";
 import SettingsIcon from "@material-ui/icons/Settings";
 import DeveloperBoardIcon from "@material-ui/icons/DeveloperBoard";
@@ -28,77 +30,40 @@ import theme from "./theme";
 
 import hasPrivilege from "./utils/hasPrivilege";
 
+import { OrderHome, OrderCreate, OrderEdit, OrderView } from "./pages/order";
+import { TimelineHome, TimelineCreate, TimelineView, TimelineEdit } from "./pages/timeline";
+import { ActivityHome, ActivityCreate, ActivityView, ActivityEdit } from "./pages/activity";
+import { UserHome, UserCreate, UserEdit, UserView, UserUpload } from "./pages/user";
 // Library Pages
 import { BuyerHome, CreateBuyer, EditBuyer } from "./pages/library/Buyer";
-import {
-  GarmentTypeHome,
-  CreateGarmentType,
-  EditGarmentType
-} from "./pages/library/GarmentType";
+import { GarmentTypeHome, CreateGarmentType, EditGarmentType } from "./pages/library/GarmentType";
 import { SeasonHome, CreateSeason, EditSeason } from "./pages/library/Season";
-import {
-  DepartmentHome,
-  CreateDepartment,
-  EditDepartment
-} from "./pages/library/Department";
+import { DepartmentHome, CreateDepartment, EditDepartment } from "./pages/library/Department";
 import { TeamHome, CreateTeam, EditTeam } from "./pages/library/Team";
-// import {
-//   DelayReasonHome,
-//   CreateDelayReason,
-//   EditDelayReason
-// } from "./pages/library/DelayReason";
-
-// Activity Pages
-import {
-  ActivityHome,
-  ActivityCreate,
-  ActivityView,
-  ActivityEdit
-} from "./pages/activity";
-
-// Timeline Pages
-import {
-  TimelineHome,
-  TimelineCreate,
-  TimelineView,
-  TimelineEdit
-} from "./pages/timeline";
-
-// Order Pages
-import { OrderHome, OrderCreate, OrderEdit, OrderView } from "./pages/order";
 
 // Setting Page
 import Settings from "./pages/setting/Settings";
 import Downloads from "./pages/downloads/Downloads";
 
-const rootUrl = window.location.protocol + "//" + window.location.hostname + (window.location.port ? ":" + window.location.port : "");
-// const rootUrl = `http://${window.location.hostname}:8006`;
+// const rootUrl = window.location.protocol + "//" + window.location.hostname + (window.location.port ? ":" + window.location.port : "");
+const rootUrl = `http://${window.location.hostname}:8006`;
 // const rootUrl = "https://spms.jaza-soft.com";
 // const rootUrl = `http://192.168.0.4:8006`;
 
-const appId = "tna";
-const authServerUrl = "https://iam-dev.jaza-soft.com";
+export const appId = "tna";
+// const authServerUrl = "https://iam-dev.jaza-soft.com";
+const authServerUrl = "http://localhost:8081";
 const appUrl = `${rootUrl}/api`;
 
-export const authProvider = createAuthProvider(
-  authServerUrl,
-  "Basic Y2xpZW50OnNlY3JldA==",
-  appId
-);
+export const authProvider = createAuthProvider(authServerUrl, "Basic Y2xpZW50OnNlY3JldA==", appId);
 export const dataProvider = createDataProvider(appUrl, appId);
-export const authDataProvider = createDataProvider(
-  `${authServerUrl}/api`,
-  appId
-);
+export const authDataProvider = createDataProvider(`${authServerUrl}/api`, appId);
 
 (function() {
   axios
     .get(`${rootUrl}/buildInfo`)
     .then(response => {
-      localStorage.setItem(
-        `${appId}-build-info`,
-        JSON.stringify(response.data)
-      );
+      localStorage.setItem(`${appId}-build-info`, JSON.stringify(response.data));
     })
     .catch(err => {
       console.log(err);
@@ -128,9 +93,7 @@ const resources = [
   { i18nKey: "buyers", resource: "buyers" }
 ];
 
-const customRoutes = [
-  // <Route name="users" resource="users" exact path="/users/upload" component={UserUpload} />,
-];
+const customRoutes = [<Route name="users" resource="users" exact path="/users/upload" component={UserUpload} />];
 
 class App extends React.Component {
   render() {
@@ -151,22 +114,8 @@ class App extends React.Component {
         history={history}
         theme={theme}
       >
-        {({ roles, hasAccess, hasPermission, getPermissions }) => {
+        {({ roles, hasAccess }) => {
           let resourceList = [];
-
-          // if (roles && (roles.includes(Role.SUPER_USER) || roles.includes(Role.ADMIN_USER))) {
-          //   resourceList.push(
-          //     <Resource
-          //       name="users"
-          //       resource="users"
-          //       home={UserHome}
-          //       create={UserCreate}
-          //       edit={UserEdit}
-          //       view={UserView}
-          //       icon={UserIcon}
-          //     />
-          //   );
-          // }
 
           // if (hasPrivilege(roles, hasAccess, "report", "read")) {
           //   resourceList.push(
@@ -182,20 +131,11 @@ class App extends React.Component {
           //   );
           // }
 
-          if (hasPrivilege(roles, hasAccess, "activity", "read")) {
+          if (hasPrivilege(roles, hasAccess, "order", "read")) {
             resourceList.push(
-              <Resource
-                name="activities"
-                resource="activities"
-                home={ActivityHome}
-                create={ActivityCreate}
-                view={ActivityView}
-                edit={ActivityEdit}
-                icon={DeveloperBoardIcon}
-              />
+              <Resource name="orders" resource="orders" home={OrderHome} create={OrderCreate} edit={OrderEdit} view={OrderView} icon={TicketIcon} />
             );
           }
-
           if (hasPrivilege(roles, hasAccess, "timeline", "read")) {
             resourceList.push(
               <Resource
@@ -209,32 +149,29 @@ class App extends React.Component {
               />
             );
           }
-
-          if (hasPrivilege(roles, hasAccess, "order", "read")) {
+          if (hasPrivilege(roles, hasAccess, "activity", "read")) {
             resourceList.push(
               <Resource
-                name="orders"
-                resource="orders"
-                home={OrderHome}
-                create={OrderCreate}
-                edit={OrderEdit}
-                view={OrderView}
-                icon={TicketIcon}
+                name="activities"
+                resource="activities"
+                home={ActivityHome}
+                create={ActivityCreate}
+                view={ActivityView}
+                edit={ActivityEdit}
+                icon={DeveloperBoardIcon}
               />
+            );
+          }
+          if (hasPrivilege(roles, hasAccess)) {
+            resourceList.push(
+              <Resource name="users" resource="users" home={UserHome} create={UserCreate} edit={UserEdit} view={UserView} icon={UserIcon} />
             );
           }
 
           if (hasPrivilege(roles, hasAccess, "library", "read")) {
             resourceList.push(
               <Resource name="library" icon={LibraryIcon}>
-                <Resource
-                  name="buyers"
-                  resource="buyers"
-                  home={BuyerHome}
-                  create={CreateBuyer}
-                  edit={EditBuyer}
-                  icon={MenuIcon}
-                />
+                <Resource name="buyers" resource="buyers" home={BuyerHome} create={CreateBuyer} edit={EditBuyer} icon={MenuIcon} />
                 <Resource
                   name="garmentTypes"
                   resource="garmentTypes"
@@ -243,14 +180,7 @@ class App extends React.Component {
                   edit={EditGarmentType}
                   icon={MenuIcon}
                 />
-                <Resource
-                  name="seasons"
-                  resource="seasons"
-                  home={SeasonHome}
-                  create={CreateSeason}
-                  edit={EditSeason}
-                  icon={MenuIcon}
-                />
+                <Resource name="seasons" resource="seasons" home={SeasonHome} create={CreateSeason} edit={EditSeason} icon={MenuIcon} />
                 <Resource
                   name="departments"
                   resource="departments"
@@ -259,33 +189,16 @@ class App extends React.Component {
                   edit={EditDepartment}
                   icon={MenuIcon}
                 />
-                <Resource
-                  name="teams"
-                  resource="teams"
-                  home={TeamHome}
-                  create={CreateTeam}
-                  edit={EditTeam}
-                />
-                {/*<Resource
-                  name="delayReasons"
-                  resource="delayReasons"
-                  home={DelayReasonHome}
-                  create={CreateDelayReason}
-                  edit={EditDelayReason}
-                />*/}
+                <Resource name="teams" resource="teams" home={TeamHome} create={CreateTeam} edit={EditTeam} />
               </Resource>
             );
           }
 
           if (hasPrivilege(roles, hasAccess, "setting", "read")) {
-            resourceList.push(
-              <Resource name="settings" home={Settings} icon={SettingsIcon} />
-            );
+            resourceList.push(<Resource name="settings" home={Settings} icon={SettingsIcon} />);
           }
 
-          resourceList.push(
-            <Resource name="downloads" home={Downloads} icon={DownloadsIcon} />
-          );
+          resourceList.push(<Resource name="downloads" home={Downloads} icon={DownloadsIcon} />);
 
           return resourceList;
         }}

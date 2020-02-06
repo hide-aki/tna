@@ -26,6 +26,7 @@ import AddIcon from "@material-ui/icons/Add";
 
 import {
   PageHeader,
+  RadioButtonGroupInput,
   PageFooter,
   TextInput,
   NumberInput,
@@ -378,6 +379,19 @@ class TimelineCreate extends Component {
       tActivityList: tActivityList.map(activity => ({
         ...activity,
         timeFrom: activity.timeFrom.join()
+      }))
+    };
+    this.createTimeline(parsedValue);
+  };
+
+  // Parsing submission values to convert timeFrom values to CSV
+  parse = values => {
+    const { tActivityList, ...rest } = values;
+    let parsedValue = {
+      ...rest,
+      tActivityList: tActivityList.map(el => ({
+        ...el,
+        timeFrom: el.timeFrom.join(),
       }))
     };
     this.createTimeline(parsedValue);

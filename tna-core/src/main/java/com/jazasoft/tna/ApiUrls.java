@@ -1,6 +1,11 @@
 package com.jazasoft.tna;
 
 public interface ApiUrls {
+
+  String ROOT_URL_USERS = "/api/users";
+  String URL_USERS_USER = "/{userId}";
+  String ROOT_URL_USERS_BATCH_SAVE = "/batchSave";
+
   String ROOT_URL_BUYERS = "/api/buyers";
   String URL_BUYERS_BUYER= "/{buyerId}";
 

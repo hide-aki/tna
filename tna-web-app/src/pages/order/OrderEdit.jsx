@@ -69,6 +69,12 @@ class OrederEdit extends Component {
             validate={[required(), minLength(2)]}
             {...inputOptions(3)}
           />
+          <TextInput
+          source="remarks"
+          label="Remarks"
+          validate={[minLength(2)]}
+          {...inputOptions(3)}
+        />
           <DateInput source="orderDate" validate={required()} {...inputOptions(3)}/>
           <DateInput source="exFactoryDate" validate={required()} {...inputOptions(2)}/>
         </SimpleForm>
