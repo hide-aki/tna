@@ -15,12 +15,12 @@
     </encoder>
   </appender>
 
-  <logger name="com.jazasoft.mtdb" level="ALL" additivity="false">
+  <logger name="com.jazasoft.mtdb" level="DEBUG" additivity="false">
     <appender-ref ref="FILE" />
     <appender-ref ref="STDOUT" />
   </logger>
 
-  <logger name="com.jazasoft.tna" level="ALL" additivity="false">
+  <logger name="com.jazasoft.tna" level="DEBUG" additivity="false">
     <appender-ref ref="FILE" />
     <appender-ref ref="STDOUT" />
   </logger>

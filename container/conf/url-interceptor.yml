@@ -20,21 +20,41 @@ public:
 authenticated:
   - !com.jazasoft.mtdb.dto.UrlInterceptor
      url: /api/buyers
-     resourceId: product
+     resourceId: buyer
      scopes:
      - read
 
   - !com.jazasoft.mtdb.dto.UrlInterceptor
      url: /api/buyers/\d+
-     resourceId: product
+     resourceId: buyer
      scopes:
      - read
+
+  - !com.jazasoft.mtdb.dto.UrlInterceptor
+    url: /api/activities
+    resourceId: activity
+    scopes:
+      - read
+
+  - !com.jazasoft.mtdb.dto.UrlInterceptor
+    url: /api/activities/\d+
+    resourceId: activity
+    scopes:
+      - read
 
 protected:
   - !com.jazasoft.mtdb.dto.UrlInterceptor
      url: /api/buyers
-     resourceId: product
+     resourceId: buyer
 
   - !com.jazasoft.mtdb.dto.UrlInterceptor
      url: /api/buyers/\d+
-     resourceId: product
+     resourceId: buyer
+
+  - !com.jazasoft.mtdb.dto.UrlInterceptor
+    url: /api/activities
+    resourceId: activity
+
+  - !com.jazasoft.mtdb.dto.UrlInterceptor
+    url: /api/activities/\d+
+    resourceId: activity
