@@ -35,7 +35,7 @@ class ActivityCreate extends Component {
   };
 
   render() {
-    const { departments, ...props } = this.props;
+    const { departments, dispatch, ...props } = this.props;
     return (
       <Create
         title="Generate Activity and subactivities"
@@ -114,7 +114,13 @@ class ActivityCreate extends Component {
               defaultValue={false}
               source="isDefault"
               label="Default Activity"
-              style={{ marginTop: "1.5em", marginLeft: "-5em" }}
+              style={{marginTop: "1.5em", marginLeft: "-3em", marginRight: "-2em" }}
+            />
+            <BooleanInput
+              defaultValue={false}
+              source="overridable"
+              label="Overridable"
+              style={{ marginTop: "1.5em",}}
             />
           </FormCard>
           <FormCard title="Subactivities">
