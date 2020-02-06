@@ -7,6 +7,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotEmpty;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
@@ -26,6 +27,12 @@ public class TActivity extends Auditable {
 
     @Column(nullable = false)
     private String timeFrom;
+
+    @NotEmpty
+    private String name;
+
+    private Integer serialNo;
+
 
     @JsonIgnore
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
@@ -62,13 +69,17 @@ public class TActivity extends Auditable {
         return Objects.equals(id, tActivity.id) &&
                 Objects.equals(leadTime, tActivity.leadTime) &&
                 Objects.equals(timeFrom, tActivity.timeFrom) &&
+                Objects.equals(name, tActivity.name) &&
+                Objects.equals(serialNo, tActivity.serialNo) &&
                 Objects.equals(timeline, tActivity.timeline) &&
-                Objects.equals(activity, tActivity.activity);
+                Objects.equals(activity, tActivity.activity) &&
+                Objects.equals(activityId, tActivity.activityId) &&
+                Objects.equals(timelineId, tActivity.timelineId);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, leadTime, timeFrom, timeline, activity);
+        return Objects.hash(id, leadTime, timeFrom, name, serialNo, timeline, activity, activityId, timelineId);
     }
 
     @Override
@@ -77,8 +88,12 @@ public class TActivity extends Auditable {
                 "id=" + id +
                 ", leadTime=" + leadTime +
                 ", timeFrom='" + timeFrom + '\'' +
+                ", name='" + name + '\'' +
+                ", serial_no=" + serialNo +
                 ", timeline=" + timeline +
                 ", activity=" + activity +
+                ", activityId=" + activityId +
+                ", timelineId=" + timelineId +
                 '}';
     }
 }

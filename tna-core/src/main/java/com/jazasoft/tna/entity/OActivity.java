@@ -5,7 +5,6 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.jazasoft.mtdb.entity.Auditable;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
@@ -38,7 +37,7 @@ public class OActivity extends Auditable {
     private String remarks;
 
     @NotEmpty
-    private String activityName;
+    private String name;
 
     private String timeFrom;
 
@@ -63,27 +62,23 @@ public class OActivity extends Auditable {
     @JsonProperty("tActivityId")
     private Long tActivityId;
 
+    private Integer serialNo;
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof OActivity)) return false;
+        if (o == null || getClass() != o.getClass()) return false;
         OActivity oActivity = (OActivity) o;
         return Objects.equals(id, oActivity.id) &&
-                Objects.equals(leadTime, oActivity.leadTime) &&
-                Objects.equals(completedDate, oActivity.completedDate) &&
-                Objects.equals(dueDate, oActivity.dueDate) &&
-                Objects.equals(delayReason, oActivity.delayReason) &&
-                Objects.equals(remarks, oActivity.remarks) &&
-                Objects.equals(activityName, oActivity.activityName) &&
-                Objects.equals(timeFrom, oActivity.timeFrom) &&
-                Objects.equals(order, oActivity.order) &&
-                Objects.equals(tActivity, oActivity.tActivity);
+                Objects.equals(name, oActivity.name) &&
+                Objects.equals(orderId, oActivity.orderId) &&
+                Objects.equals(tActivityId, oActivity.tActivityId) &&
+                Objects.equals(serialNo, oActivity.serialNo);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, leadTime, completedDate, dueDate, delayReason, remarks, activityName, timeFrom, order, tActivity);
+        return Objects.hash(id, name, orderId, tActivityId, serialNo);
     }
 
     @Override
@@ -95,10 +90,13 @@ public class OActivity extends Auditable {
                 ", dueDate=" + dueDate +
                 ", delayReason='" + delayReason + '\'' +
                 ", remarks='" + remarks + '\'' +
-                ", activityName='" + activityName + '\'' +
+                ", name='" + name + '\'' +
                 ", timeFrom='" + timeFrom + '\'' +
                 ", order=" + order +
                 ", tActivity=" + tActivity +
+                ", serialNo=" + serialNo +
                 '}';
     }
 }
+
+

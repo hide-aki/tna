@@ -55,6 +55,7 @@ public class Activity extends Auditable {
     @JsonProperty("isDefault")
     private Boolean isDefault;
 
+    @Column(nullable = false)
     private Boolean overridable;
 
     @Column(nullable = false)

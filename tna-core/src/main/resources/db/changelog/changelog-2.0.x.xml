@@ -531,6 +531,27 @@
         </addColumn>
         <rollback/>
     </changeSet>
+
+    <changeSet id="v2.0.x-id19" author="aditya">
+        <addColumn tableName="t_activity" schemaName="public">
+            <column name="name" type="VARCHAR(255)"/>
+            <column name="serial_no" type="INT"/>
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="v2.0.x-id20" author="aditya">
+        <addColumn tableName="o_activity" schemaName="public">
+            <column name="serial_no" type="INT"/>
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="v2.0.x-id21" author="aditya">
+        <renameColumn tableName="o_activity" oldColumnName="activity_name" newColumnName="name"/>
+
+        <rollback>
+            <renameColumn tableName="o_activity" oldColumnName="name" newColumnName="activity_name"/>
+        </rollback>
+    </changeSet>
 </databaseChangeLog>
 
 

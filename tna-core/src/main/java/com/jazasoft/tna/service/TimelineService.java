@@ -77,6 +77,10 @@ public class TimelineService {
                     tActivity.setActivity(activityRepository.findById(tActivity.getActivityId()).orElse(null));
                 }
 
+                //setting name and serial_no
+                tActivity.setName(tActivity.getActivity().getName());
+                tActivity.setSerialNo(tActivity.getActivity().getSerialNo());
+
                 if (tActivity.getTSubActivityList() != null) {
                     for (TSubActivity tSubActivity : tActivity.getTSubActivityList()) {
                         tSubActivity.setTActivity(tActivity);

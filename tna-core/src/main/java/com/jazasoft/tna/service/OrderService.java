@@ -102,8 +102,10 @@ public class OrderService {
             int leadTime = getActivityLeadTime(leadTimeNormal);
 
             oActivity.setLeadTime(leadTime);
-            oActivity.setActivityName(tActivity.getActivity().getName());
+            oActivity.setName(tActivity.getActivity().getName());
             oActivity.setTimeFrom(tActivity.getTimeFrom());
+            oActivity.setSerialNo(tActivity.getSerialNo());
+
 
             Set<OSubActivity> oSubActivityList = tActivity.getTSubActivityList().stream().map(tSubActivity -> {
                 OSubActivity oSubActivity = new OSubActivity();
