@@ -71,8 +71,8 @@ import { OrderHome, OrderCreate, OrderEdit, OrderView } from "./pages/order";
 import Settings from "./pages/setting/Settings";
 import Downloads from "./pages/downloads/Downloads";
 
-// const rootUrl = window.location.protocol + "//" + window.location.hostname + (window.location.port ? ":" + window.location.port : "");
-const rootUrl = `http://${window.location.hostname}:8006`;
+const rootUrl = window.location.protocol + "//" + window.location.hostname + (window.location.port ? ":" + window.location.port : "");
+// const rootUrl = `http://${window.location.hostname}:8006`;
 // const rootUrl = "https://spms.jaza-soft.com";
 // const rootUrl = `http://192.168.0.4:8006`;
 

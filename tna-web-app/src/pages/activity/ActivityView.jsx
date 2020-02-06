@@ -54,6 +54,10 @@ class ActivityView extends Component {
               label="Default Activity"
               render={record => (record.isDefault ? "Yes" : "No")}
             />
+            <FunctionField
+              label="Overridable"
+              render={record => (record.overridable ? "Yes" : "No")}
+            />
             <TextField source="delayReason" label="Delay Reason" />
           </ShowCard>
           <ShowCard

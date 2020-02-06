@@ -101,7 +101,15 @@ class ActivityEdit extends Component {
                     />
                   );
                 } else {
-                  return null;
+                  return (
+                    <SelectArrayInput
+                      source="notify"
+                      label="Notify Departments"
+                      optionText="name"
+                      choices={[]}
+                      {...inputOptions(5)}
+                    />
+                  )
                 }
               }}
             </FormDataConsumer>
