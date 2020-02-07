@@ -344,13 +344,13 @@ class TimelineEdit extends Component {
               name: activity.name,
               serialNo: activity.serialNo,
               timeFrom:
-                tActivity.timeFrom == "O" || tActivity.timeFrom == "E"
-                  ? tActivity.timeFrom.split(",")
+                tActivity.timeFrom === "O" || tActivity.timeFrom === "E"
+                  ? [tActivity.timeFrom]
                   : tActivity.timeFrom.split(",").map(Number)
             }))
             .sort((a, b) => a.serialNo - b.serialNo)
         : []
-    };
+      };
 
     this.setState({
       activityList,

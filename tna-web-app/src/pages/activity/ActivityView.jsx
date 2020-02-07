@@ -30,7 +30,6 @@ class ActivityView extends Component {
       <Show format={this.format} cardWrapper={false} {...props}>
         <MultiCardShowLayout>
           <ShowCard title="Activity Details">
-            <TextField source="serialNo" />
             <TextField source="name" />
             <ReferenceField source="departmentId" reference="departments">
               <TextField source="name" />
