@@ -105,6 +105,7 @@ public class ActivityService {
         return mActivity;
     }
 
+    @Transactional(value = "tenantTransactionManager")
     public List<Activity> updateActivities(List<Activity> activityList) {
         List<Activity> mActivityList = activityRepository.findAll();
 
