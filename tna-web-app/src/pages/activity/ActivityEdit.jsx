@@ -121,13 +121,20 @@ class ActivityEdit extends Component {
             <BooleanInput
               defaultValue={false}
               source="cLevel"
-              style={{ marginLeft: "0.5em", marginTop: "1.5em" }}
+              label="C Level"
+              style={{ marginLeft: "2em", marginTop: "1.5em" }}
             />
             <BooleanInput
               defaultValue={false}
               source="isDefault"
               label="Default Activity"
-              style={{ marginTop: "1.5em", marginLeft: "-6em" }}
+              style={{marginTop: "1.5em", marginLeft: "-3em", marginRight: "-2em" }}
+            />
+            <BooleanInput
+              defaultValue={false}
+              source="overridable"
+              label="Overridable"
+              style={{ marginTop: "1.5em",}}
             />
           </FormCard>
           <FormCard title="Subactivities">
