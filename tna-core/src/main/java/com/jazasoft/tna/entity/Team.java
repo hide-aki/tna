@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 import javax.persistence.*;
 import javax.validation.constraints.NotEmpty;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 
 @NoArgsConstructor
@@ -32,4 +33,28 @@ public class Team extends Auditable {
 
     @Transient
     private Long departmentId;
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Team team = (Team) o;
+        return Objects.equals(id, team.id) &&
+                Objects.equals(name, team.name) &&
+                Objects.equals(departmentId, team.departmentId);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, name, departmentId);
+    }
+
+    @Override
+    public String toString() {
+        return "Team{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", desc='" + desc + '\'' +
+                '}';
+    }
 }

@@ -59,7 +59,6 @@ public class Timeline extends Auditable {
     @Column(nullable = false)
     private String tnaType;
 
-//    @Column(nullable = false)
     private Boolean approved;
 
     private String approvedBy;
@@ -87,30 +86,6 @@ public class Timeline extends Auditable {
         this.tActivityList.remove(tActivity);
         tActivity.setTimeline(null);
     }
-
-//    public void updateTActivity(TActivity tActivity, TActivity mTActivity) {
-//        mTActivity.setLeadTimeNormal(tActivity.getLeadTimeNormal());
-//        mTActivity.setLeadTimeOptimal(tActivity.getLeadTimeOptimal());
-//        mTActivity.setTimeFrom(tActivity.getTimeFrom());
-//
-//        Set<Long> existingIds = tActivity.getTSubActivityList().stream().
-//                filter(tSubActivity -> tSubActivity.getId() != null).map(TSubActivity::getId).
-//                collect(Collectors.toSet());
-//        Set<TSubActivity> removeList = mTActivity.getTSubActivityList().stream().
-//                filter(tSubActivity -> !existingIds.contains(tSubActivity.getId())).
-//                collect(Collectors.toSet());
-//        Set<TSubActivity> newList = tActivity.getTSubActivityList().stream().
-//                filter(tSubActivity -> tSubActivity.getId() == null).
-//                collect(Collectors.toSet());
-//
-//        removeList.forEach(mTActivity::removeTSubActivity);
-//        newList.forEach(mTActivity::addTSubActivity);
-//        existingIds.forEach(id -> {
-//            TSubActivity tSubActivity = tActivity.getTSubActivityList().stream().filter(o -> o.getId() != null && o.getId().equals(id)).findAny().get();
-//            TSubActivity mTSubActivity = mTActivity.getTSubActivityList().stream().filter(o -> o.getId() != null && o.getId().equals(id)).findAny().get();
-//            mTActivity.updateTSubActivity(tSubActivity, mTSubActivity);
-//        });
-//    }
 
     @Override
     public boolean equals(Object o) {

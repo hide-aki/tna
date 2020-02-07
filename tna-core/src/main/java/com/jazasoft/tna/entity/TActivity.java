@@ -67,19 +67,13 @@ public class TActivity extends Auditable {
         if (o == null || getClass() != o.getClass()) return false;
         TActivity tActivity = (TActivity) o;
         return Objects.equals(id, tActivity.id) &&
-                Objects.equals(leadTime, tActivity.leadTime) &&
-                Objects.equals(timeFrom, tActivity.timeFrom) &&
                 Objects.equals(name, tActivity.name) &&
-                Objects.equals(serialNo, tActivity.serialNo) &&
-                Objects.equals(timeline, tActivity.timeline) &&
-                Objects.equals(activity, tActivity.activity) &&
-                Objects.equals(activityId, tActivity.activityId) &&
-                Objects.equals(timelineId, tActivity.timelineId);
+                Objects.equals(serialNo, tActivity.serialNo);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, leadTime, timeFrom, name, serialNo, timeline, activity, activityId, timelineId);
+        return Objects.hash(id, name, serialNo);
     }
 
     @Override
@@ -89,11 +83,7 @@ public class TActivity extends Auditable {
                 ", leadTime=" + leadTime +
                 ", timeFrom='" + timeFrom + '\'' +
                 ", name='" + name + '\'' +
-                ", serial_no=" + serialNo +
                 ", timeline=" + timeline +
-                ", activity=" + activity +
-                ", activityId=" + activityId +
-                ", timelineId=" + timelineId +
                 '}';
     }
 }

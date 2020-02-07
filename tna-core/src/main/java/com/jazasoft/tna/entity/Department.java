@@ -7,6 +7,7 @@ import org.hibernate.annotations.BatchSize;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotEmpty;
+import java.util.Objects;
 
 @NoArgsConstructor
 @Data
@@ -25,7 +26,26 @@ public class Department extends Auditable {
     @Column(name = "description")
     private String desc;
 
-//    @JsonIgnore
-//    @OneToMany(mappedBy = "department")
-//    private Set<Team> teamList = new HashSet<>();
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Department that = (Department) o;
+        return Objects.equals(id, that.id) &&
+                Objects.equals(name, that.name);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, name);
+    }
+
+    @Override
+    public String toString() {
+        return "Department{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", desc='" + desc + '\'' +
+                '}';
+    }
 }

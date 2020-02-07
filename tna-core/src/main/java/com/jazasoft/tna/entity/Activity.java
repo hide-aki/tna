@@ -97,16 +97,13 @@ public class Activity extends Auditable {
         return Objects.equals(id, activity.id) &&
                 Objects.equals(name, activity.name) &&
                 Objects.equals(serialNo, activity.serialNo) &&
-                Objects.equals(notify, activity.notify) &&
                 Objects.equals(cLevel, activity.cLevel) &&
-                Objects.equals(isDefault, activity.isDefault) &&
-                Objects.equals(overridable, activity.overridable) &&
-                Objects.equals(delayReason, activity.delayReason);
+                Objects.equals(isDefault, activity.isDefault);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, serialNo, notify, cLevel, isDefault, overridable, delayReason);
+        return Objects.hash(id, name, serialNo, cLevel, isDefault);
     }
 
     @Override

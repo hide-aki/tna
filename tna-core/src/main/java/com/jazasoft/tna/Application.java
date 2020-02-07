@@ -105,14 +105,6 @@ public class Application extends AbstractApplication {
     super.addMessageSourceBaseNames(list);
   }
 
-
-//  @Bean
-//  public Javers javers() {
-//    return JaversBuilder.javers()
-//        .withListCompareAlgorithm(ListCompareAlgorithm.AS_SET)
-//        .build();
-//  }
-
   @Bean
   RestTemplate restTemplate(RestTemplateBuilder builder) {
     return builder.requestFactory(HttpComponentsClientHttpRequestFactory::new).build();

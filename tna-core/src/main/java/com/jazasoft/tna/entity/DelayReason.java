@@ -62,6 +62,22 @@ public class DelayReason extends Auditable {
     }
 
     @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        DelayReason that = (DelayReason) o;
+        return Objects.equals(id, that.id) &&
+                Objects.equals(name, that.name) &&
+                Objects.equals(activity, that.activity) &&
+                Objects.equals(activityId, that.activityId);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, name, activity, activityId);
+    }
+
+    @Override
     public String toString() {
         return "DelayReason{" +
                 "id=" + id +

@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotEmpty;
+import java.util.Objects;
 
 @NoArgsConstructor
 @Data
@@ -22,4 +23,27 @@ public class Season extends Auditable {
 
     @Column(name = "description")
     private String desc;
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Season season = (Season) o;
+        return Objects.equals(id, season.id) &&
+                Objects.equals(name, season.name);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, name);
+    }
+
+    @Override
+    public String toString() {
+        return "Season{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", desc='" + desc + '\'' +
+                '}';
+    }
 }
