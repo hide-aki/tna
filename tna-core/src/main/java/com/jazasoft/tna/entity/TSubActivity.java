@@ -20,9 +20,10 @@ public class TSubActivity extends Auditable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    private String name;
+
     @NotNull
     private Integer leadTime;
-    //private Integer leadTimeNormal;
 
     @JsonIgnore
     @JsonProperty("tActivity")
@@ -36,8 +37,8 @@ public class TSubActivity extends Auditable {
     @Transient
     private Long subActivityId;
 
-    @JsonProperty("tActivityId")
     @Transient
+    @JsonProperty("tActivityId")
     private Long tActivityId;
 
     @Override

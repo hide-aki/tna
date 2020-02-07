@@ -20,6 +20,9 @@ public class OSubActivity extends Auditable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @NotEmpty
+    private String name;
+
     @Column(nullable = false)
     private Integer leadTime;
 
@@ -27,9 +30,6 @@ public class OSubActivity extends Auditable {
     private Date completedDate;
 
     private String remarks;
-
-    @NotEmpty
-    private String subActivityName;
 
     @ManyToOne(optional = false, fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "o_activity_id")
@@ -39,15 +39,13 @@ public class OSubActivity extends Auditable {
     @JoinColumn(name = "t_sub_activity_id")
     private TSubActivity tSubActivity;
 
-
-    //Transient Fields
     @Transient
     @JsonProperty("oActivityId")
     private Long oActivityId;
 
     @Transient
     @JsonProperty("tSubActivityId")
-    private Long TSubActivityId;
+    private Long tSubActivityId;
 
     @Override
     public boolean equals(Object o) {
@@ -55,27 +53,26 @@ public class OSubActivity extends Auditable {
         if (!(o instanceof OSubActivity)) return false;
         OSubActivity that = (OSubActivity) o;
         return Objects.equals(id, that.id) &&
-                Objects.equals(leadTime, that.leadTime) &&
-                Objects.equals(completedDate, that.completedDate) &&
-                Objects.equals(remarks, that.remarks) &&
-                Objects.equals(subActivityName, that.subActivityName) &&
-                Objects.equals(oActivity, that.oActivity);
+            Objects.equals(name, that.name) &&
+            Objects.equals(oActivityId, that.oActivityId) &&
+            Objects.equals(tSubActivityId, that.tSubActivityId);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, leadTime, completedDate, remarks, subActivityName, oActivity);
+        return Objects.hash(id, name, oActivityId, tSubActivityId);
     }
 
     @Override
     public String toString() {
         return "OSubActivity{" +
-                "id=" + id +
-                ", leadTime=" + leadTime +
-                ", completedDate=" + completedDate +
-                ", remarks='" + remarks + '\'' +
-                ", subActivityName='" + subActivityName + '\'' +
-                ", oActivity=" + oActivity +
-                '}';
+            "id=" + id +
+            ", name='" + name + '\'' +
+            ", leadTime=" + leadTime +
+            ", completedDate=" + completedDate +
+            ", remarks='" + remarks + '\'' +
+            ", oActivityId=" + oActivityId +
+            ", tSubActivityId=" + tSubActivityId +
+            '}';
     }
 }

@@ -34,14 +34,6 @@ class OrederEdit extends Component {
             <SelectInput optionText="name" />
           </ReferenceInput>
           <ReferenceInput
-            source="timelineId"
-            reference="timelines"
-            validate={required()}
-            {...inputOptions(3)}
-          >
-            <SelectInput optionText="name" />
-          </ReferenceInput>
-          <ReferenceInput
             source="garmentTypeId"
             reference="garmentTypes"
             validate={required()}

@@ -71,8 +71,8 @@ public class TenantPersistenceContext {
     properties.put("hibernate.id.new_generator_mappings", "false");
     properties.put("hibernate.dialect", dialect);
     properties.put("hibernate.jdbc.lob.non_contextual_creation", true);
-//    properties.put("hibernate.show_sql", true);
-//    properties.put("hibernate.format_sql", true);
+    properties.put("hibernate.show_sql", true);
+    properties.put("hibernate.format_sql", true);
     emfBean.setJpaPropertyMap(properties);
 
     return emfBean;

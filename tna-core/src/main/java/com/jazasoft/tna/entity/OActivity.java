@@ -21,6 +21,13 @@ public class OActivity extends Auditable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @NotEmpty
+    private String name;
+
+    private Integer serialNo;
+
+    private Boolean overridable;
+
     @Column(nullable = false)
     private Integer leadTime;
 
@@ -36,13 +43,10 @@ public class OActivity extends Auditable {
     @Column(columnDefinition = "TEXT")
     private String remarks;
 
-    @NotEmpty
-    private String name;
-
     private String timeFrom;
 
-    @ManyToOne(optional = false, fetch = FetchType.LAZY)
     @JsonIgnore
+    @ManyToOne(optional = false, fetch = FetchType.LAZY)
     private Order order;
 
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
@@ -52,7 +56,6 @@ public class OActivity extends Auditable {
 
     @OneToMany(mappedBy = "oActivity", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonProperty("oSubActivityList")
-    @JsonIgnore
     private Set<OSubActivity> oSubActivityList = new HashSet<>();
 
     @Transient
@@ -61,8 +64,6 @@ public class OActivity extends Auditable {
     @Transient
     @JsonProperty("tActivityId")
     private Long tActivityId;
-
-    private Integer serialNo;
 
     @Override
     public boolean equals(Object o) {

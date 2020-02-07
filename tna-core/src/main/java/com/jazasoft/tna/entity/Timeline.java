@@ -16,76 +16,71 @@ import java.util.Set;
 //                name = "activity.findAll",
 //                attributeNodes = @NamedAttributeNode("department")
 //        ),
-        @NamedEntityGraph(
-                name = "timeline.findOne",
+    @NamedEntityGraph(
+        name = "timeline.findOne",
+        attributeNodes = {
+            @NamedAttributeNode("buyer"),
+            @NamedAttributeNode(value = "tActivityList", subgraph = "timeline.tActivityList")
+        },
+        subgraphs = {
+            @NamedSubgraph(
+                name = "timeline.tActivityList",
                 attributeNodes = {
-                        @NamedAttributeNode("buyer"),
-                        @NamedAttributeNode(value = "tActivityList", subgraph = "timeline.tActivityList")
-                },
-                subgraphs = {
-                        @NamedSubgraph(
-                                name = "timeline.tActivityList",
-                                attributeNodes = {
-                                        @NamedAttributeNode("activity"),
-                                        @NamedAttributeNode(value = "tSubActivityList", subgraph = "timeline.tActivityList.tSubActivityList")
-                                }
-
-                        ),
-                        @NamedSubgraph(
-                                name = "timeline.tActivityList.tSubActivityList",
-                                attributeNodes = {
-                                        @NamedAttributeNode("subActivity")
-                                }
-                        )
+                    @NamedAttributeNode("activity"),
+                    @NamedAttributeNode(value = "tSubActivityList", subgraph = "timeline.tActivityList.tSubActivityList")
                 }
 
-        )
-}
-)
+            ),
+            @NamedSubgraph(
+                name = "timeline.tActivityList.tSubActivityList",
+                attributeNodes = {
+                    @NamedAttributeNode("subActivity")
+                }
+            )
+        }
+
+    )
+})
 @NoArgsConstructor
 @Data
 @Entity
 public class Timeline extends Auditable {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private Long id;
 
-    @NotEmpty
-    @Column(nullable = false)
-    private String name;
+  @NotEmpty
+  @Column(nullable = false)
+  private String name;
 
-    @NotEmpty
-    @Column(nullable = false)
-    private String tnaType;
+  @NotEmpty
+  @Column(nullable = false)
+  private String tnaType;
 
-    private Boolean approved;
+  private Boolean approved;
 
-    private String approvedBy;
+  private String approvedBy;
 
-    @ManyToOne(optional = false, fetch = FetchType.LAZY)
-    private Buyer buyer;
+  @ManyToOne(optional = false, fetch = FetchType.LAZY)
+  private Buyer buyer;
 
-    @OneToMany(mappedBy = "timeline", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonProperty("tActivityList")
-    private Set<TActivity> tActivityList = new HashSet<>();
+  @OneToMany(mappedBy = "timeline", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+  @JsonProperty("tActivityList")
+  private Set<TActivity> tActivityList = new HashSet<>();
 
-    @Transient
-    private Long buyerId;
+  @Transient
+  private Long buyerId;
 
-    public void addTActivity(TActivity tActivity){
-        this.tActivityList.add(tActivity);
-        tActivity.setTimeline(this);
+  public void addTActivity(TActivity tActivity) {
+    this.tActivityList.add(tActivity);
+    tActivity.setTimeline(this);
+  }
 
-        if (tActivity.getTSubActivityList() !=null){
-            tActivity.getTSubActivityList().forEach(tActivity::addTSubActivity);
-        }
-    }
-
-    public void removeTActivity(TActivity tActivity) {
-        this.tActivityList.remove(tActivity);
-        tActivity.setTimeline(null);
-    }
+  public void removeTActivity(TActivity tActivity) {
+    this.tActivityList.remove(tActivity);
+    tActivity.setTimeline(null);
+  }
 
     @Override
     public boolean equals(Object o) {

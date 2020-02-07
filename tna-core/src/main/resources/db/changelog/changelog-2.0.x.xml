@@ -552,6 +552,31 @@
             <renameColumn tableName="o_activity" oldColumnName="name" newColumnName="activity_name"/>
         </rollback>
     </changeSet>
+
+    <changeSet author="razamd" id="v2.0.x-id22">
+        <addColumn tableName="t_activity">
+            <column name="overridable" type="BOOL"/>
+        </addColumn>
+        <addColumn tableName="t_sub_activity">
+            <column name="name" type="VARCHAR(255)"/>
+        </addColumn>
+        <addColumn tableName="o_activity">
+            <column name="overridable" type="BOOL"/>
+        </addColumn>
+        <addColumn tableName="o_sub_activity">
+            <column name="name" type="VARCHAR(255)"/>
+        </addColumn>
+        <dropColumn tableName="orders" columnName="timeline_id"/>
+        <rollback>
+            <addColumn tableName="orders">
+                <column name="timeline_id" type="BIGINT"/>
+            </addColumn>
+            <dropColumn tableName="o_sub_activity" columnName="name" />
+            <dropColumn tableName="o_activity" columnName="overridable" />
+            <dropColumn tableName="t_sub_activity" columnName="name" />
+            <dropColumn tableName="t_activity" columnName="name" />
+        </rollback>
+    </changeSet>
 </databaseChangeLog>
 
 

@@ -33,6 +33,7 @@ public class TActivity extends Auditable {
 
     private Integer serialNo;
 
+    private Boolean overridable;
 
     @JsonIgnore
     @ManyToOne(optional = false, fetch = FetchType.LAZY)

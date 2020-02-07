@@ -1,7 +1,11 @@
 package com.jazasoft.tna.service;
 
+import com.jazasoft.tna.Constants;
 import com.jazasoft.tna.entity.*;
 import com.jazasoft.tna.repository.*;
+import com.jazasoft.tna.util.TnaUtils;
+import com.jazasoft.util.Assert;
+import com.jazasoft.util.DateUtils;
 import org.hibernate.Hibernate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -11,8 +15,11 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Set;
+import java.time.LocalDate;
+import java.util.*;
 import java.util.stream.Collectors;
+
+import static java.time.temporal.ChronoUnit.DAYS;
 
 @Service
 @Transactional(value = "tenantTransactionManager", readOnly = true)
@@ -43,7 +50,6 @@ public class OrderService {
         page.forEach(order -> Hibernate.initialize(order.getSeason()));
         page.forEach(order -> Hibernate.initialize(order.getBuyer()));
         page.forEach(order -> Hibernate.initialize(order.getGarmentType()));
-        page.forEach(order -> Hibernate.initialize(order.getTimeline()));
         page.forEach(order -> Hibernate.initialize(order.getBuyerId()));
         return page;
     }
@@ -53,21 +59,12 @@ public class OrderService {
         page.forEach(order -> Hibernate.initialize(order.getSeason()));
         page.forEach(order -> Hibernate.initialize(order.getBuyer()));
         page.forEach(order -> Hibernate.initialize(order.getGarmentType()));
-        page.forEach(order -> Hibernate.initialize(order.getTimeline()));
         page.forEach(order -> Hibernate.initialize(order.getBuyerId()));
         return page;
     }
 
     public Order findOne(Long id) {
         Order order = orderRepository.findById(id).orElse(null);
-        if (order != null) {
-            Hibernate.initialize(order.getOActivityList());
-            order.getOActivityList().forEach(oActivity -> Hibernate.initialize(oActivity.getOSubActivityList()));
-            Hibernate.initialize(order.getTimeline().getTActivityList());
-            order.getOActivityList().forEach(oActivity -> oActivity.getOSubActivityList().forEach(oSubActivity -> Hibernate.initialize(oSubActivity.getTSubActivity())));
-            order.getOActivityList().forEach(oActivity -> oActivity.getTActivity().getTSubActivityList().forEach(tSubActivity -> Hibernate.initialize(tSubActivity.getSubActivity())));
-
-        }
         return order;
     }
 
@@ -78,9 +75,6 @@ public class OrderService {
         if (order.getBuyerId() != null) {
             order.setBuyer(buyerRepository.findById(order.getBuyerId()).orElse(null));
         }
-        if (order.getTimelineId() != null) {
-            order.setTimeline(timeline);
-        }
         if (order.getGarmentTypeId() != null) {
             order.setGarmentType(garmentTypeRepository.findById(order.getGarmentTypeId()).orElse(null));
         }
@@ -88,57 +82,46 @@ public class OrderService {
             order.setSeason(seasonRepository.findById(order.getSeasonId()).orElse(null));
         }
 
-        Set<OActivity> oActivityList = timeline.getTActivityList().stream().map(tActivity -> {
-            Hibernate.initialize(tActivity.getActivity().getDepartment());
+        // Calculate Standard Lead Time
+        int standardLeadTime = TnaUtils.getStandardLeadTime(timeline.getTActivityList());
+        int currentLeadTime = (int)DAYS.between(DateUtils.toLocalDate(order.getOrderDate()), DateUtils.toLocalDate(order.getExFactoryDate()));
 
+
+        Set<OActivity> oActivityList = new HashSet<>();
+        for (TActivity tActivity: timeline.getTActivityList()) {
             OActivity oActivity = new OActivity();
             oActivity.setOrder(order);
-            oActivity.setOrderId(order.getId());
             oActivity.setTActivity(tActivity);
-            oActivity.setTActivityId(tActivity.getId());
 
-            //setting leadTime in oActivity
-            int leadTimeNormal = tActivity.getLeadTime();
-            int leadTime = getActivityLeadTime(leadTimeNormal);
+            int leadTime = TnaUtils.getLeadTime(tActivity.getLeadTime(), currentLeadTime, standardLeadTime);
 
-            oActivity.setLeadTime(leadTime);
-            oActivity.setName(tActivity.getActivity().getName());
-            oActivity.setTimeFrom(tActivity.getTimeFrom());
             oActivity.setSerialNo(tActivity.getSerialNo());
+            oActivity.setName(tActivity.getName());
+            oActivity.setOverridable(tActivity.getOverridable());
+            oActivity.setLeadTime(leadTime);
+            oActivity.setTimeFrom(tActivity.getTimeFrom());
 
+            Set<OSubActivity> oSubActivityList = new HashSet<>();
 
-            Set<OSubActivity> oSubActivityList = tActivity.getTSubActivityList().stream().map(tSubActivity -> {
+            for (TSubActivity tSubActivity: tActivity.getTSubActivityList()) {
                 OSubActivity oSubActivity = new OSubActivity();
                 oSubActivity.setTSubActivity(tSubActivity);
-                oSubActivity.setTSubActivityId(tSubActivity.getId());
                 oSubActivity.setOActivity(oActivity);
-                oSubActivity.setOActivityId(oActivity.getId());
 
-                //setting leadTime in oSubActivity
-                int leadTimeNormalSub = tSubActivity.getLeadTime();
-                int leadTimeSub = getSubActivityLeadTime(leadTimeNormalSub);
-                oSubActivity.setLeadTime(leadTimeSub);
-                oSubActivity.setSubActivityName(tSubActivity.getSubActivity().getName());
+                //TODO: implement actual logic
+                oSubActivity.setLeadTime(tSubActivity.getLeadTime());
+                oSubActivity.setName(tSubActivity.getSubActivity().getName());
 
-                return oSubActivity;
-            }).collect(Collectors.toSet());
-
+                oSubActivityList.add(oSubActivity);
+            }
             oActivity.setOSubActivityList(oSubActivityList);
 
-            return oActivity;
-        }).collect(Collectors.toSet());
+            oActivityList.add(oActivity);
+        }
 
         order.setOActivityList(oActivityList);
 
         return orderRepository.save(order);
-    }
-
-    public int getActivityLeadTime(int leadTime) {
-        return leadTime;
-    }
-
-    public int getSubActivityLeadTime(int leadTimeNormal) {
-        return leadTimeNormal;
     }
 
     @Transactional(value = "tenantTransactionManager")
@@ -155,9 +138,6 @@ public class OrderService {
         if (order.getBuyerId() != null) {
             mOrder.setBuyer(buyerRepository.findById(order.getBuyerId()).orElse(null));
         }
-        if (order.getTimelineId() != null) {
-            mOrder.setTimeline(timelineRepository.findById(order.getTimelineId()).orElse(null));
-        }
         if (order.getGarmentTypeId() != null) {
             mOrder.setGarmentType(garmentTypeRepository.findById(order.getGarmentTypeId()).orElse(null));
         }
@@ -165,13 +145,6 @@ public class OrderService {
             mOrder.setSeason(seasonRepository.findById(order.getSeasonId()).orElse(null));
 
         }
-
-        Hibernate.initialize(mOrder.getTimeline().getBuyer());
-        Hibernate.initialize(mOrder.getTimeline().getTActivityList());
-        mOrder.getTimeline().getTActivityList().forEach(tActivity -> Hibernate.initialize(tActivity.getActivity()));
-        mOrder.getTimeline().getTActivityList().forEach(tActivity -> Hibernate.initialize(tActivity.getTSubActivityList()));
-        Hibernate.initialize(mOrder.getOActivityList());
-        mOrder.getOActivityList().forEach(oActivity -> Hibernate.initialize(oActivity.getOSubActivityList()));
 
         return mOrder;
     }

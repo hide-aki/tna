@@ -72,11 +72,11 @@ const activityColumns = [
 ];
 
 const format = order => {
-  let orderView = order.oActivityList && order.oActivityList.flatMap(
-    ({ oSubActivityList, ...oActivity }) => [
+  let orderView =
+    order.oActivityList &&
+    order.oActivityList.flatMap(({ oSubActivityList, ...oActivity }) => [
       {
         ...oActivity,
-        name: oActivity.activityName,
         viewDueDate:
           oActivity.timeFrom === "O"
             ? moment(order.orderDate)
@@ -85,18 +85,13 @@ const format = order => {
             : moment(order.exFactoryDate)
                 .subtract(oActivity.leadTime, "day")
                 .format("ll"),
-        compDate:
-          oActivity.completedDate == null || oActivity.completedDate === ""
-            ? undefined
-            : moment(oActivity.completedDate).format("ll"),
-        delayReason:
-          oActivity.delayReason == null ? undefined : oActivity.delayReason,
+        compDate: oActivity.completedDate == null || oActivity.completedDate === "" ? undefined : moment(oActivity.completedDate).format("ll"),
+        delayReason: oActivity.delayReason == null ? undefined : oActivity.delayReason,
         remarks: oActivity.remarks == null ? undefined : oActivity.remarks,
         actId: oActivity.id
       },
       ...oSubActivityList.map(e => ({
         ...e,
-        name: e.subActivityName,
         viewDueDate:
           oActivity.timeFrom === "O"
             ? moment(order.orderDate)
@@ -105,17 +100,12 @@ const format = order => {
             : moment(order.exFactoryDate)
                 .subtract(e.leadTime, "day")
                 .format("ll"),
-        compDate:
-          e.completedDate == null || e.completedDate === ""
-            ? undefined
-            : moment(e.completedDate).format("ll"),
+        compDate: e.completedDate == null || e.completedDate === "" ? undefined : moment(e.completedDate).format("ll"),
         delayReason: e.delayReason == null ? undefined : e.delayReason,
-        remarks: e.remarks == null ? undefined : e.remarks,
-        
+        remarks: e.remarks == null ? undefined : e.remarks
       }))
-    ]
-  );
-  return orderView
+    ]);
+  return orderView;
 };
 
 class OrderView extends Component {
@@ -142,9 +132,7 @@ class OrderView extends Component {
       initialValues &&
       initialValues.map(e => ({
         ...e,
-        name: e.name ? e.name : e.activityName,
-        viewLeadTime:
-          e.timeFrom === "O" ? `O + ` + e.leadTime : `E - ` + e.leadTime
+        viewLeadTime: e.timeFrom === "O" ? `O + ` + e.leadTime : `E - ` + e.leadTime
       }));
     this.setState({ initialValues });
   };
@@ -164,11 +152,11 @@ class OrderView extends Component {
     };
 
     const parsedData = data;
-    if ("activityName" in parsedData) {
-      this.updateActivity(parsedData);
-    } else if ("subActivityName" in parsedData) {
-      this.updateSubActivity(parsedData);
-    }
+    // if ("name" in parsedData) {
+    //   this.updateActivity(parsedData);
+    // } else if ("nam" in parsedData) {
+    //   this.updateSubActivity(parsedData);
+    // }
   };
 
   updateActivity = oActivity => {
@@ -214,49 +202,21 @@ class OrderView extends Component {
           <PageHeader title="Basic Details" className={classes.pageHeader} />
           <Divider style={{ marginTop: "-2em", marginBottom: "3em" }} />
           <SimpleShowLayout footer={false} record={order}>
-            <ReferenceField
-              source="buyerId"
-              reference="buyers"
-              allowEmpty={true}
-            >
+            <ReferenceField source="buyerId" reference="buyers" allowEmpty={true}>
               <TextField source="name" />
             </ReferenceField>
             <TextField source="poRef" label="PO Reference" />
-            <ReferenceField
-              source="timelineId"
-              reference="timelines"
-              allowEmpty={true}
-            >
+            <ReferenceField source="garmentTypeId" label="Garment Type" reference="garmentTypes" allowEmpty={true}>
               <TextField source="name" />
             </ReferenceField>
-            <ReferenceField
-              source="garmentTypeId"
-              label="Garment Type"
-              reference="garmentTypes"
-              allowEmpty={true}
-            >
-              <TextField source="name" />
-            </ReferenceField>
-            <ReferenceField
-              source="seasonId"
-              reference="seasons"
-              allowEmpty={true}
-            >
+            <ReferenceField source="seasonId" reference="seasons" allowEmpty={true}>
               <TextField source="name" />
             </ReferenceField>
             <TextField source="style" label="Style" />
             <NumberField source="orderQty" label="Order Quantity" />
             <TextField source="remarks" />
-            <FunctionField
-              source="orderDate"
-              label="Order Date"
-              render={record => moment(record.orderDate).format("ll")}
-            />
-            <FunctionField
-              source="exFactoryDate"
-              label="Ex Factory Date"
-              render={record => moment(record.exFactoryDate).format("ll")}
-            />
+            <FunctionField source="orderDate" label="Order Date" render={record => moment(record.orderDate).format("ll")} />
+            <FunctionField source="exFactoryDate" label="Ex Factory Date" render={record => moment(record.exFactoryDate).format("ll")} />
           </SimpleShowLayout>
         </Paper>
         <Paper style={{ padding: "1.5em", marginTop: "2em" }}>
@@ -271,7 +231,7 @@ class OrderView extends Component {
                   ? null
                   : (row, rows) =>
                       rows.find(a => {
-                        return a.actId === row.oActivityId;
+                        return a.id === row.oActivityId;
                       })
               }
               options={{
@@ -302,10 +262,7 @@ class OrderView extends Component {
 }
 
 const mapStateToProps = (state, props) => ({
-  order:
-    state.jazasoft.resources["orders"] &&
-    state.jazasoft.resources["orders"].data &&
-    state.jazasoft.resources["orders"].data[props.id]
+  order: state.jazasoft.resources["orders"] && state.jazasoft.resources["orders"].data && state.jazasoft.resources["orders"].data[props.id]
 });
 
 export default connect(mapStateToProps)(withStyles(styles)(OrderView));
