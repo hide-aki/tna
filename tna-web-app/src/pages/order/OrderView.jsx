@@ -71,9 +71,58 @@ const activityColumns = [
   { field: "remarks", title: "Remarks", editable: "onUpdate" }
 ];
 
-let data = [];
+const format = order => {
+  let orderView = order.oActivityList && order.oActivityList.flatMap(
+    ({ oSubActivityList, ...oActivity }) => [
+      {
+        ...oActivity,
+        name: oActivity.activityName,
+        viewDueDate:
+          oActivity.timeFrom === "O"
+            ? moment(order.orderDate)
+                .add(oActivity.leadTime, "day")
+                .format("ll")
+            : moment(order.exFactoryDate)
+                .subtract(oActivity.leadTime, "day")
+                .format("ll"),
+        compDate:
+          oActivity.completedDate == null || oActivity.completedDate === ""
+            ? undefined
+            : moment(oActivity.completedDate).format("ll"),
+        delayReason:
+          oActivity.delayReason == null ? undefined : oActivity.delayReason,
+        remarks: oActivity.remarks == null ? undefined : oActivity.remarks,
+        actId: oActivity.id
+      },
+      ...oSubActivityList.map(e => ({
+        ...e,
+        name: e.subActivityName,
+        viewDueDate:
+          oActivity.timeFrom === "O"
+            ? moment(order.orderDate)
+                .add(e.leadTime, "day")
+                .format("ll")
+            : moment(order.exFactoryDate)
+                .subtract(e.leadTime, "day")
+                .format("ll"),
+        compDate:
+          e.completedDate == null || e.completedDate === ""
+            ? undefined
+            : moment(e.completedDate).format("ll"),
+        delayReason: e.delayReason == null ? undefined : e.delayReason,
+        remarks: e.remarks == null ? undefined : e.remarks,
+        
+      }))
+    ]
+  );
+  return orderView
+};
 
 class OrderView extends Component {
+  state = {
+    initialValues: {}
+  };
+
   componentDidMount() {
     this.init();
     this.props.dispatch(crudGetOne("orders", this.props.id));
@@ -88,65 +137,19 @@ class OrderView extends Component {
   init = (props = this.props) => {
     const { order } = props;
     if (!order) return;
-    data = grassRoot
-      ? order.oActivityList &&
-        order.oActivityList.flatMap(({ oSubActivityList, ...oActivity }) => {
-          return [
-            {
-              ...oActivity,
-              name: oActivity.activityName,
-              viewDueDate:
-                oActivity.timeFrom === "O"
-                  ? moment(order.orderDate)
-                      .add(oActivity.leadTime, "day")
-                      .format("ll")
-                  : moment(order.exFactoryDate)
-                      .subtract(oActivity.leadTime, "day")
-                      .format("ll"),
-              compDate:
-                oActivity.completedDate == null ||
-                oActivity.completedDate === ""
-                  ? undefined
-                  : moment(oActivity.completedDate).format("ll"),
-              delayReason:
-                oActivity.delayReason == null
-                  ? undefined
-                  : oActivity.delayReason,
-              remarks: oActivity.remarks == null ? undefined : oActivity.remarks
-            },
-            ...oSubActivityList.map(e => ({
-              ...e,
-              name: e.subActivityName,
-              viewDueDate:
-                oActivity.timeFrom === "O"
-                  ? moment(order.orderDate)
-                      .add(e.leadTime, "day")
-                      .format("ll")
-                  : moment(order.exFactoryDate)
-                      .subtract(e.leadTime, "day")
-                      .format("ll"),
-              compDate:
-                e.completedDate == null || e.completedDate === ""
-                  ? undefined
-                  : moment(e.completedDate).format("ll"),
-              delayReason: e.delayReason == null ? undefined : e.delayReason,
-              remarks: e.remarks == null ? undefined : e.remarks
-            }))
-          ];
-        })
-      : order.oActivityList;
-    data =
-      data &&
-      data.map(e => ({
+    let initialValues = grassRoot ? format(order) : order.oActivityList;
+    initialValues =
+      initialValues &&
+      initialValues.map(e => ({
         ...e,
-        name: e.name,
+        name: e.name ? e.name : e.activityName,
         viewLeadTime:
           e.timeFrom === "O" ? `O + ` + e.leadTime : `E - ` + e.leadTime
       }));
+    this.setState({ initialValues });
   };
 
   onRowUpdate = async (newData, oldData) => {
-    // console.log({ newData, oldData });
     let { delayReason, compDate, remarks, ...rest } = newData;
     let data = {
       ...rest,
@@ -194,7 +197,6 @@ class OrderView extends Component {
         this.props.dispatch({ type: FETCH_END });
         this.props.dispatch({ type: SAVING_END });
         this.props.dispatch(crudGetOne("orders", this.props.id));
-        // this.props.history.push(`/orders/${this.props.id}/view`);
       })
       .catch(error => {
         this.props.dispatch({ type: FETCH_END });
@@ -204,6 +206,7 @@ class OrderView extends Component {
 
   render() {
     const { order = {}, classes } = this.props;
+    const { initialValues } = this.state;
     return (
       <div className={classes.root}>
         <PageHeader title="Order View" />
@@ -259,16 +262,16 @@ class OrderView extends Component {
         <Paper style={{ padding: "1.5em", marginTop: "2em" }}>
           <PageHeader title="Activities" className={classes.pageHeader} />
           <Divider style={{ marginTop: "-2em" }} />
-          {data && data.length && (
+          {initialValues && initialValues.length && (
             <MaterialTable
               columns={activityColumns}
-              data={data}
+              data={initialValues}
               parentChildData={
                 !grassRoot
                   ? null
                   : (row, rows) =>
                       rows.find(a => {
-                        return a.id === row.oActivityId;
+                        return a.actId === row.oActivityId;
                       })
               }
               options={{
