@@ -35,17 +35,30 @@ public class OrderRestController {
   }
 
   @GetMapping
-  public ResponseEntity<?> findAll(@RequestParam(value = "search", defaultValue = "") String search, Pageable pageable) {
+  public ResponseEntity<?> findAll(@RequestParam(value = "search", defaultValue = "") String search,
+                                   @RequestParam(value = "view", defaultValue = "list") String view,
+                                   Pageable pageable) {
     Page<Order> pages;
     if (search.trim().isEmpty()) {
-      pages = orderService.findAll(pageable);
+      pages = orderService.findAll(pageable, view);
     } else {
       Node rootNode = new RSQLParser().parse(search);
       Specification<Order> spec = rootNode.accept(new CustomRsqlVisitor<>());
-      pages = orderService.findAll(spec, pageable);
+      pages = orderService.findAll(spec, pageable, view);
     }
-    pages.forEach(order -> order.setBuyerId(order.getBuyer() != null ? order.getBuyer().getId() : null));
-    pages.forEach(order -> order.setOActivityList(null));
+    if (view.equalsIgnoreCase("list")) {
+      pages.forEach(order -> order.setOActivityList(null));
+    } else if (view.equalsIgnoreCase("grid")) {
+      pages.forEach(order -> {
+        order.getOActivityList().forEach(oActivity -> {
+          oActivity.setTActivity(null);
+          oActivity.getOSubActivityList().forEach(oSubActivity -> {
+            oSubActivity.setTSubActivity(null);
+            oSubActivity.setOActivity(null);
+          });
+        });
+      });
+    }
     return ResponseEntity.ok(pages);
   }
 

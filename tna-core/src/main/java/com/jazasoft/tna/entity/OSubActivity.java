@@ -1,9 +1,11 @@
 package com.jazasoft.tna.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.jazasoft.mtdb.entity.Auditable;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.BatchSize;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotEmpty;
@@ -14,6 +16,7 @@ import java.util.Objects;
 @Data
 @Entity
 @Table(name = "o_sub_activity")
+@BatchSize(size = 20)
 public class OSubActivity extends Auditable {
 
     @Id
@@ -31,6 +34,7 @@ public class OSubActivity extends Auditable {
 
     private String remarks;
 
+    @JsonIgnore
     @ManyToOne(optional = false, fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "o_activity_id")
     private  OActivity oActivity;

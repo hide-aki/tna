@@ -138,20 +138,20 @@ class OrderView extends Component {
   };
 
   onRowUpdate = async (newData, oldData) => {
-    let { delayReason, compDate, remarks, ...rest } = newData;
-    let data = {
-      ...rest,
-      delayReason: delayReason && delayReason.toString().trim(),
-      remarks: remarks && remarks.toString().trim(),
-      completedDate:
-        typeof compDate === "string"
-          ? moment(compDate, "ll").format()
-          : compDate !== null && typeof compDate == "object"
-          ? moment(compDate).format()
-          : compDate
-    };
+    // let { delayReason, compDate, remarks, ...rest } = newData;
+    // let data = {
+    //   ...rest,
+    //   delayReason: delayReason && delayReason.toString().trim(),
+    //   remarks: remarks && remarks.toString().trim(),
+    //   completedDate:
+    //     typeof compDate === "string"
+    //       ? moment(compDate, "ll").format()
+    //       : compDate !== null && typeof compDate == "object"
+    //       ? moment(compDate).format()
+    //       : compDate
+    // };
 
-    const parsedData = data;
+    // const parsedData = data;
     // if ("name" in parsedData) {
     //   this.updateActivity(parsedData);
     // } else if ("nam" in parsedData) {

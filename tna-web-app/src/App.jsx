@@ -7,13 +7,15 @@ import logo from "./asset/img/logo2.png";
 import avatar from "./asset/img/faces/avatar-male.png";
 //icons
 import MenuIcon from "@material-ui/icons/Menu";
+import OrderIcon from "@material-ui/icons/FiberManualRecordOutlined";
 import UserIcon from "mdi-material-ui/AccountGroup";
 import LibraryIcon from "@material-ui/icons/LibraryBooks";
 import SettingsIcon from "@material-ui/icons/Settings";
-import DeveloperBoardIcon from "@material-ui/icons/DeveloperBoard";
+// import DeveloperBoardIcon from "@material-ui/icons/DeveloperBoard";
 import DownloadsIcon from "@material-ui/icons/GetApp";
 import HourglassEmptyOutlinedIcon from "@material-ui/icons/HourglassEmptyOutlined";
-import TicketIcon from "@material-ui/icons/ConfirmationNumber";
+// import TicketIcon from "@material-ui/icons/ConfirmationNumber";
+import ActivityIcon from "mdi-material-ui/ClipboardList";
 
 import {
   App as JApp,
@@ -133,7 +135,7 @@ class App extends React.Component {
 
           if (hasPrivilege(roles, hasAccess, "order", "read")) {
             resourceList.push(
-              <Resource name="orders" resource="orders" home={OrderHome} create={OrderCreate} edit={OrderEdit} view={OrderView} icon={TicketIcon} />
+              <Resource name="orders" resource="orders" home={OrderHome} create={OrderCreate} edit={OrderEdit} view={OrderView} icon={OrderIcon} />
             );
           }
           if (hasPrivilege(roles, hasAccess, "timeline", "read")) {
@@ -158,7 +160,7 @@ class App extends React.Component {
                 create={ActivityCreate}
                 view={ActivityView}
                 edit={ActivityEdit}
-                icon={DeveloperBoardIcon}
+                icon={ActivityIcon}
               />
             );
           }
