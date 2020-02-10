@@ -25,7 +25,7 @@ class TeamRestControllerSpec extends BaseISpec {
                 .andExpect(jsonPath('$.content[0].name', is("Team1")))
     }
 
-    def "findOne Garment Type"() {
+    def "findOne team"() {
         expect:
         mvc.perform(get(ApiUrls.ROOT_URL_TEAMS + ApiUrls.URL_TEAMS_TEAM, 2).header("Authorization", "Bearer " + accessToken))
                 .andExpect(status().isOk())
@@ -37,6 +37,8 @@ class TeamRestControllerSpec extends BaseISpec {
     def "create and delete team"() {
         given:
         Team team = new Team(name: "Team3", departmentId: 1);
+
+
 
         when: "Create new Team"
         def mvcResult = mvc.perform(post(ApiUrls.ROOT_URL_TEAMS)

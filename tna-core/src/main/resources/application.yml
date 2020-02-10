@@ -9,8 +9,8 @@ spring:
     ###### PostgreSQL Configuration #######
     driverClassName: org.postgresql.Driver
     url: jdbc:postgresql://localhost:5432/tna_master
-    username: razamd
-    password: zahid7292
+    username: postgres
+    password: 123456
     platform: postgresql
     host: localhost
     port: 5432
