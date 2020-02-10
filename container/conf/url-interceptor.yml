@@ -42,6 +42,127 @@ authenticated:
     scopes:
       - read
 
+  - !com.jazasoft.mtdb.dto.UrlInterceptor
+    url: /api/users
+    resourceId: user
+    scopes:
+      - read
+
+  - !com.jazasoft.mtdb.dto.UrlInterceptor
+    url: /api/users/\d+
+    resourceId: user
+    scope:
+      - read
+
+
+  - !com.jazasoft.mtdb.dto.UrlInterceptor
+    url: /api/delayReasons
+    resourceId: delayReason
+    scope:
+      -read
+
+  - !com.jazasoft.mtdb.dto.UrlInterceptor
+    url: /api/delayReasons/\d+
+    resourceId: delayReason
+    scope:
+      -read
+
+  - !com.jazasoft.mtdb.dto.UrlInterceptor
+    url: /api/departments
+    resourceId: department
+    scope:
+      -read
+
+  - !com.jazasoft.mtdb.dto.UrlInterceptor
+    url: /api/departments/\d+
+    resourceId: department
+    scope:
+      -read
+
+  - !com.jazasoft.mtdb.dto.UrlInterceptor
+    url: /api/garmentTypes
+    resourceId: garmentType
+    scope:
+      -read
+
+  - !com.jazasoft.mtdb.dto.UrlInterceptor
+    url: /api/garmentTypes/\d+
+    resourceId: garmentType
+    scope:
+      -read
+
+  - !com.jazasoft.mtdb.dto.UrlInterceptor
+    url: /api/orders
+    resourceId: order
+    scope:
+      -read
+
+  - !com.jazasoft.mtdb.dto.UrlInterceptor
+    url: /api/orders/\d+
+    resourceId: order
+    scope:
+      -read
+
+  - !com.jazasoft.mtdb.dto.UrlInterceptor
+    url: /api/seasons
+    resourceId: season
+    scope:
+      -read
+
+  - !com.jazasoft.mtdb.dto.UrlInterceptor
+    url: /api/seasons/\d+
+    resourceId: season
+    scope:
+      -read
+
+  - !com.jazasoft.mtdb.dto.UrlInterceptor
+    url: /api/settings
+    resourceId: setting
+    scope:
+      -read
+
+  - !com.jazasoft.mtdb.dto.UrlInterceptor
+    url: /api/settings/\d+
+    resourceId: setting
+    scope:
+      -read
+
+  - !com.jazasoft.mtdb.dto.UrlInterceptor
+    url: /api/teams
+    resourceId: team
+    scope:
+      -read
+
+  - !com.jazasoft.mtdb.dto.UrlInterceptor
+    url: /api/teams/\d+
+    resourceId: team
+    scope:
+      -read
+
+  - !com.jazasoft.mtdb.dto.UrlInterceptor
+    url: /api/templates
+    resourceId: template
+    scope:
+      -read
+
+  - !com.jazasoft.mtdb.dto.UrlInterceptor
+    url: /api/templates/\d+
+    resourceId: template
+    scope:
+      -read
+
+  - !com.jazasoft.mtdb.dto.UrlInterceptor
+    url: /api/timelines
+    resourceId: timeline
+    scope:
+      -read
+
+  - !com.jazasoft.mtdb.dto.UrlInterceptor
+    url: /api/timelines/\d+
+    resourceId: timeline
+    scope:
+      -read
+
 protected:
   - !com.jazasoft.mtdb.dto.UrlInterceptor
      url: /api/buyers
@@ -58,3 +179,87 @@ protected:
   - !com.jazasoft.mtdb.dto.UrlInterceptor
     url: /api/activities/\d+
     resourceId: activity
+
+  - !com.jazasoft.mtdb.dto.UrlInterceptor
+    url: /api/delayReasons
+    resourceId: delayReason
+
+  - !com.jazasoft.mtdb.dto.UrlInterceptor
+    url: /api/delayReasons/\d+
+    resourceId: delayReason
+
+  - !com.jazasoft.mtdb.dto.UrlInterceptor
+    url: /api/departments
+    resourceId: department
+
+  - !com.jazasoft.mtdb.dto.UrlInterceptor
+    url: /api/departments/\d+
+    resourceId: department
+
+  - !com.jazasoft.mtdb.dto.UrlInterceptor
+    url: /api/garmentTypes
+    resourceId: garmentType
+
+  - !com.jazasoft.mtdb.dto.UrlInterceptor
+    url: /api/garmentTypes/\d+
+    resourceId: garmentType
+
+  - !com.jazasoft.mtdb.dto.UrlInterceptor
+    url: /api/orders
+    resourceId: order
+
+  - !com.jazasoft.mtdb.dto.UrlInterceptor
+    url: /api/orders/\d+
+    resourceId: order
+
+  - !com.jazasoft.mtdb.dto.UrlInterceptor
+    url: /api/seasons
+    resourceId: season
+
+  - !com.jazasoft.mtdb.dto.UrlInterceptor
+    url: /api/seasons/\d+
+    resourceId: season
+
+  - !com.jazasoft.mtdb.dto.UrlInterceptor
+    url: /api/settings
+    resourceId: setting
+
+  - !com.jazasoft.mtdb.dto.UrlInterceptor
+    url: /api/settings/\d+
+    resourceId: setting
+
+  - !com.jazasoft.mtdb.dto.UrlInterceptor
+    url: /api/teams
+    resourceId: team
+
+  - !com.jazasoft.mtdb.dto.UrlInterceptor
+    url: /api/teams/\d+
+    resourceId: team
+
+  - !com.jazasoft.mtdb.dto.UrlInterceptor
+    url: /api/templates
+    resourceId: template
+
+  - !com.jazasoft.mtdb.dto.UrlInterceptor
+    url: /api/templates/\d+
+    resourceId: template
+
+  - !com.jazasoft.mtdb.dto.UrlInterceptor
+    url: /api/timelines
+    resourceId: timeline
+
+  - !com.jazasoft.mtdb.dto.UrlInterceptor
+    url: /api/timelines/\d+
+    resourceId: timeline
+
+  - !com.jazasoft.mtdb.dto.UrlInterceptor
+    url: /api/users
+    resourceId: user
+
+  - !com.jazasoft.mtdb.dto.UrlInterceptor
+    url: /api/users/\d+
+    resourceId: user
+
+
+
+
