@@ -407,7 +407,7 @@ class TimelineCreate extends Component {
         }))
     };
     const fieldsList = fields.getAll();
-    const fieldsSerialNoList = fieldsList.map(e => e.serialNo).sort();
+    const fieldsSerialNoList = fieldsList.sort((a, b) => a.serialNo - b.serialNo).map(e => e.serialNo);
     const newActivitySerialNo = newActivity.serialNo;
 
     var tempIdx = 0; // Computing the index order for new activity
