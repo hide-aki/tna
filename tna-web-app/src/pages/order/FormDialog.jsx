@@ -23,7 +23,7 @@ const columnsSubActivity = [
 ];
 
 const FormDialog = ({ open, onSubmit, onClose }) => {
-  const [state, setState] = React.useState({ page: "Activity" });
+  const [state] = React.useState({ page: "Activity" });
   return (
     <Dialog open={open} maxWidth="md" fullWidth onClose={onClose} aria-labelledby="form-dialog-title">
       <DialogTitle id="form-dialog-title">{state.page}</DialogTitle>

@@ -23,6 +23,8 @@ import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import RemoveIcon from "@material-ui/icons/HighlightOff";
 import SaveIcon from "@material-ui/icons/Save";
 import AddIcon from "@material-ui/icons/Add";
+import hasPrivilege from "../../utils/hasPrivilege";
+import Forbidden from "../../components/Forbidden";
 
 import {
   PageHeader,
@@ -51,6 +53,7 @@ import {
 import { SimpleForm } from "jazasoft/lib/mui/form/SimpleForm";
 import CardHeader from "../../components/CardHeader";
 import { dataProvider } from "../../App";
+import handleError from "../../utils/handleError";
 import { Field, FieldArray } from "redux-form";
 
 // Styling
@@ -341,6 +344,7 @@ class TimelineCreate extends Component {
         this.props.dispatch({ type: SAVING_END });
       })
       .catch(error => {
+        handleError(error, this.props.dispatch);
         this.props.dispatch({ type: FETCH_END });
         this.props.dispatch({ type: SAVING_END });
       });
@@ -357,12 +361,10 @@ class TimelineCreate extends Component {
         for (let i = 0; i < timeFromLength; i++) {
           for (let j = 1; j < timeFromLength; j++) {
             if (typeof activity.timeFrom[i] !== typeof activity.timeFrom[j]) {
-              tActivity.timeFrom =
-                "Value should be either single selection out of Order date, Ex-Factory date, Activity or multi-selection of activities";
+              tActivity.timeFrom = "Value should be either single selection of Order date and Ex-Factory date or multi-selection of activities";
               tActivityList[activityIdx] = tActivity;
             } else if (typeof activity.timeFrom[i] === "string" && typeof activity.timeFrom[j] === "string") {
-              tActivity.timeFrom =
-                "Value should be either single selection out of Order date, Ex-Factory date, Activity or multi-selection of activities";
+              tActivity.timeFrom = "Value should be either single selection of Order date and Ex-Factory date or multi-selection of activities";
               tActivityList[activityIdx] = tActivity;
             }
           }
@@ -426,8 +428,11 @@ class TimelineCreate extends Component {
   };
 
   render() {
-    const { classes, activities } = this.props;
+    const { roles, hasAccess, history, classes, activities } = this.props;
     const { dialogActive, rActivityList, fields, initialValues, expanded } = this.state;
+    if (!hasPrivilege(roles, hasAccess, "timeline", "write")) {
+      return <Forbidden history={history} />;
+    }
     return (
       <div>
         <PageHeader title="Create Timeline" />

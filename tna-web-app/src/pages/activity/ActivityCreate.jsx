@@ -18,6 +18,8 @@ import {
   FormDataConsumer,
   SelectArrayInput
 } from "jazasoft";
+import hasPrivilege from "../../utils/hasPrivilege";
+import Forbidden from "../../components/Forbidden";
 
 const inputOptions = sm => ({
   xs: 12,
@@ -35,7 +37,10 @@ class ActivityCreate extends Component {
   };
 
   render() {
-    const { departments, dispatch, ...props } = this.props;
+    const { roles, hasAccess, history, departments, dispatch, ...props } = this.props;
+    if(!hasPrivilege(roles, hasAccess, "activty", "write")){
+      return <Forbidden history={history} />
+    }
     return (
       <Create
         title="Generate Activity and subactivities"

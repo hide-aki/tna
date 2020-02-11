@@ -10,9 +10,12 @@ import {
   required,
   minLength,
   Datagrid,
+  CreateButton,
   EditButton,
   DeleteButton
 } from "jazasoft";
+import hasPrivilege from "../../utils/hasPrivilege";
+import Forbidden from "../../components/Forbidden";
 
 const homeStyle = theme => ({
   buttonEdit: {
@@ -23,10 +26,13 @@ const homeStyle = theme => ({
   }
 });
 
-export const EditDepartment = ({ ...props }) => {
+export const EditDepartment = ({ classes, ...props }) => {
+  if (!hasPrivilege(props.roles, props.hasAccess, "buyer", "update")) {
+    return <Forbidden history={props.history} />;
+  }
   return (
     <Edit {...props}>
-      <SimpleForm>
+      <SimpleForm redirect="home" form="record-form-edit">
         <TextInput source="name" validate={[required(), minLength(2)]} />
         <TextInput source="desc" />
       </SimpleForm>
@@ -34,25 +40,35 @@ export const EditDepartment = ({ ...props }) => {
   );
 };
 
-export const CreateDepartment = ({ ...props }) => {
-    return (
-        <Create {...props}>
-            <SimpleForm redirect="home">
-                <TextInput source = "name" validate = {[required(), minLength(2)]} />
-                <TextInput source = "desc" />
-            </SimpleForm>
-        </Create>
-    )
-}
+export const CreateDepartment = ({ classes, ...props }) => {
+  if (!hasPrivilege(props.roles, props.hasAccess, "department", "write")) {
+    return <Forbidden history={props.history} />;
+  }
+
+  return (
+    <Create {...props}>
+      <SimpleForm redirect="home">
+        <TextInput source="name" validate={[required(), minLength(2)]} />
+        <TextInput source="desc" />
+      </SimpleForm>
+    </Create>
+  );
+};
 
 export const DepartmentHome = withStyles(homeStyle)(({ classes, ...props }) => {
+  const { roles, hasAccess } = props;
   return (
-    <List {...props}>
+    <List
+      actions={({ basePath, roles, hasAccess }) => (
+        <div>{hasPrivilege(roles, hasAccess, "department", "write") && <CreateButton basePath={basePath} showLabe={false} />}</div>
+      )}
+      {...props}
+    >
       <Datagrid>
         <TextField source="name" />
         <TextField source="desc" />
-        <EditButton cellClassName={classes.buttonEdit} />
-        <DeleteButton cellClassName={classes.buttonDelete} />
+        {hasPrivilege(roles, hasAccess, "department", "update") && <EditButton cellClassName={classes.buttonEdit} />}
+        {hasPrivilege(roles, hasAccess, "department", "delete") && <DeleteButton cellClassName={classes.buttonDelete} />}
       </Datagrid>
     </List>
   );

@@ -15,7 +15,7 @@ import MuiButton from "@material-ui/core/Button";
 import { Paper, Typography } from "@material-ui/core";
 
 import { Button, crudGetList, RestMethods, FETCH_START, FETCH_END, SAVING_START, SAVING_END } from "jazasoft";
-
+import hasPrivilege from "../../utils/hasPrivilege";
 import { dataProvider } from "../../App";
 
 const homeStyle = theme => ({
@@ -97,7 +97,7 @@ class Activity extends Component {
         this.props.dispatch({ type: FETCH_END });
         this.props.dispatch({ type: SAVING_END });
         this.props.dispatch(crudGetList("activities"));
-        this.setState({editing: false});
+        this.setState({ editing: false });
         // this.setState({activityList: response.data});
       })
       .catch(error => {
@@ -136,9 +136,8 @@ class Activity extends Component {
   };
 
   render() {
-    const { classes, saving } = this.props;
+    const { roles, hasAccess, classes, saving } = this.props;
     const { activityList, editing } = this.state;
-    console.log({ saving });
     const rows = activityList.map((activity, idx) => ({
       ...activity,
       department: activity.department.name,
@@ -152,9 +151,11 @@ class Activity extends Component {
           <Button label="View" className={classes.viewEditBtn} onClick={() => this.props.history.push(`/activities/${activity.id}/view`)}>
             <ViewIcon />
           </Button>
-          <Button label="Edit" className={classes.viewEditBtn} onClick={() => this.props.history.push(`/activities/${activity.id}/edit`)}>
-            <EditIcon />
-          </Button>
+          {hasPrivilege(roles, hasAccess, "activity", "update") && (
+            <Button label="Edit" className={classes.viewEditBtn} onClick={() => this.props.history.push(`/activities/${activity.id}/edit`)}>
+              <EditIcon />
+            </Button>
+          )}
         </div>
       )
     }));
@@ -168,7 +169,7 @@ class Activity extends Component {
           </div>
           <div style={{ flexGrow: 1 }} />
           <div style={{ marginLeft: "1em" }}>
-            {("activity", "create") && (
+            {hasPrivilege(roles, hasAccess, "activity", "create") && (
               <Button showLabel={false} label="Create" onClick={() => this.props.history.push("/activities/create")}>
                 <AddIcon />
               </Button>
@@ -203,9 +204,11 @@ class Activity extends Component {
                   </MuiButton>
                 </React.Fragment>
               ) : (
-                <MuiButton color="primary" style={{ margin: "1em" }} onClick={_ => this.setState({ editing: true })}>
-                  Edit
-                </MuiButton>
+                hasPrivilege(roles, hasAccess, "activity", "update") && (
+                  <MuiButton color="primary" style={{ margin: "1em" }} onClick={_ => this.setState({ editing: true })}>
+                    Edit
+                  </MuiButton>
+                )
               )}
             </div>
           )}

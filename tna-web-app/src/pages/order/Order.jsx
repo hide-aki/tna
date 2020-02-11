@@ -11,12 +11,46 @@ import Divider from "@material-ui/core/Divider";
 import "react-perfect-scrollbar/dist/css/styles.css";
 import PerfectScrollbar from "react-perfect-scrollbar";
 
-import { List, Datagrid, TextField, Button, CreateButton, ShowButton, EditButton, DeleteButton, FunctionField } from "jazasoft";
+import {
+  SelectInput,
+  ReferenceInput,
+  List,
+  Datagrid,
+  TextField,
+  Button,
+  CreateButton,
+  ShowButton,
+  EditButton,
+  Filter,
+  DeleteButton,
+  FunctionField,
+  FilterButton
+} from "jazasoft";
 import Table, { CheckBox, Toolbar } from "jazasoft/lib/mui/components/Table";
 
 import FormDialog from "./FormDialog";
 
 import hasPrivilege from "../../utils/hasPrivilege";
+
+const filters = (
+  <Filter
+    parse={({ buyerId }) => ({
+      "buyer.id": buyerId
+    })}
+  >
+    <ReferenceInput
+      source="buyerId"
+      reference="buyers"
+      resource="buyers"
+      sort={{ field: "name", order: "asc" }}
+      xs={12}
+      fullWidth={true}
+      options={{ fullWidth: true }}
+    >
+      <SelectInput optionText="name" />
+    </ReferenceInput>
+  </Filter>
+);
 
 const MyTextField = ({ column, record }) => {
   const activity = record[column.dataKey];
@@ -170,30 +204,27 @@ class Order extends React.Component {
   };
 
   onEditClick = (data, ids) => e => {
-    console.log("onEditClick");
-    console.log({ data, ids });
     this.setState({ dialogActive: true });
   };
 
   onClose = () => {
-    console.log("onClose");
     this.setState({ dialogActive: false });
   };
 
   render() {
-    const { classes, ...props } = this.props;
+    const { roles, hasAccess, classes, ...props } = this.props;
     const { view, dialogActive } = this.state;
-    const { roles, hasAccess } = props;
-    console.log({ dialogActive });
     return (
       <div>
         <FormDialog open={dialogActive} onClose={this.onClose} />
         <List
+          filters={filters}
           key={view}
           searchKeys={["poRef", "style"]}
           actions={({ basePath }) => (
             <div>
-              <CreateButton basePath={basePath} showLabel={false} />
+              {hasPrivilege(roles, hasAccess, "order", "write") && <CreateButton basePath={basePath} showLabel={false} />}
+              <FilterButton showLabel={false} />
               <Button showLabel={false} label="View" onClick={this.onViwSwitch}>
                 {view === "list" ? <ListIcon /> : <GridIcon />}
               </Button>

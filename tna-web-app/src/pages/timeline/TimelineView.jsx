@@ -1,15 +1,19 @@
 import React, { Component } from "react";
 
-import {
-  Show,
-  TextField,
-  ShowCard,
-  MultiCardShowLayout,
-  ReferenceField
-} from "jazasoft";
+import { Show, TextField, ShowCard, MultiCardShowLayout, ReferenceField, PageFooter, EditButton, BackButton } from "jazasoft";
 
 import MaterialTable from "material-table";
 import { Icons } from "../../components/MaterialTableIcons";
+import hasPrivilege from "../../utils/hasPrivilege";
+
+const Footer = ({ roles, hasAccess, resource, i18nKey, basePath }) => (
+  <PageFooter>
+    {hasPrivilege(roles, hasAccess, "timeline", "update") && (
+      <EditButton style={{ marginLeft: "1em" }} resource={resource} i18nKey={i18nKey} basePath={basePath} color="primary" variant="contained" />
+    )}
+    <BackButton style={{ marginLeft: "1em" }} variant="contained" />
+  </PageFooter>
+);
 
 const grassRoot = true;
 
@@ -19,14 +23,12 @@ const activityColumns = [
 ];
 
 class TimelineView extends Component {
-  onTreeExpandChange = (element, isExpanded) => {};
-
   render() {
-    const { classes, tActivityList, ...props } = this.props;
+    const { roles, hasAccess, classes, tActivityList, ...props } = this.props;
     return (
       <div>
         <Show cardWrapper={false} {...props}>
-          <MultiCardShowLayout>
+          <MultiCardShowLayout footer={<Footer />}>
             <ShowCard title="Timeline Details">
               <ReferenceField source="buyerId" reference="buyers">
                 <TextField source="name" />
@@ -34,7 +36,6 @@ class TimelineView extends Component {
               <TextField source="name" />
               <TextField source="tnaType" label="TNA Type" />
             </ShowCard>
-
             <ShowCard
               title="Activities"
               content={({ record = {} }) => {
@@ -42,30 +43,28 @@ class TimelineView extends Component {
                 let data = grassRoot
                   ? record.tActivityList
                       .sort((a, b) => a.activity.serialNo - b.activity.serialNo)
-                      .flatMap(({ tSubActivityList, ...tActivity }) => {
+                      .flatMap(({ tSubActivityList, ...tActivity }, idx) => {
                         return [
                           {
                             ...tActivity,
-                            name: tActivity.activity && tActivity.activity.name
+                            name: tActivity.activity && tActivity.activity.name,
+                            key: `P-${tActivity.id}`
                           },
                           ...tSubActivityList.map(e => ({
                             ...e,
-                            id: null,
                             name: e.subActivity && e.subActivity.name,
-                            timeFrom: tActivity.timeFrom
+                            timeFrom: tActivity.timeFrom,
+                            key: `C-${e.id}`,
+                            parentKey: `P-${tActivity.id}`
                           }))
                         ];
                       })
                   : record.tActivityList;
                 data = data.map(e => ({
                   ...e,
-                  name: e.name ? e.name : e.activity.name,
-                  leadTime:
-                    e.timeFrom === "O"
-                      ? `O + ` + e.leadTime
-                      : `E - ` + e.leadTime
+                  name: e.name,
+                  leadTime: e.timeFrom === "O" ? `O + ` + e.leadTime : `E - ` + e.leadTime
                 }));
-
                 return (
                   <MaterialTable
                     columns={activityColumns}
@@ -86,7 +85,7 @@ class TimelineView extends Component {
                         ? null
                         : (row, rows) =>
                             rows.find(a => {
-                              return a.id === row.tActivityId;
+                              return a.key === row.parentKey;
                             })
                     }
                     onTreeExpandChange={this.onTreeExpandChange}
