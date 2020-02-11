@@ -6,6 +6,7 @@ import com.jazasoft.tna.repository.ActivityRepository;
 import com.jazasoft.tna.repository.BuyerRepository;
 import com.jazasoft.tna.repository.SubActivityRepository;
 import com.jazasoft.tna.repository.TimelineRepository;
+import com.jazasoft.util.Utils;
 import org.hibernate.Hibernate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,6 +16,7 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -91,7 +93,17 @@ public class TimelineService {
         }
       }
     }
-    return timelineRepository.save(timeline);
+    Timeline mTimeline = timelineRepository.save(timeline);
+
+    for (TActivity mActivity: mTimeline.getTActivityList()) {
+      if (mActivity.getTimeFrom() != null && !(mActivity.getTimeFrom().equals("O") || mActivity.getTimeFrom().equals("E"))) {
+        Set<Long> activityIds = Utils.getListFromCsv(mActivity.getTimeFrom()).stream().map(String::trim).map(Long::parseLong).collect(Collectors.toSet());
+        List<String> tActivityIds =  mTimeline.getTActivityList().stream().filter(ta -> ta.getActivity() != null && activityIds.contains(ta.getActivity().getId())).map(TActivity::getId).map(String::valueOf).collect(Collectors.toList());
+        mActivity.setTimeFrom(Utils.getCsvFromIterable(tActivityIds));
+      }
+    }
+
+    return mTimeline;
   }
 
   @Transactional(value = "tenantTransactionManager")
@@ -179,6 +191,15 @@ public class TimelineService {
         });
       }
     });
+
+    for (TActivity mActivity: mTimeline.getTActivityList()) {
+      if (mActivity.getTimeFrom() != null && !(mActivity.getTimeFrom().equals("O") || mActivity.getTimeFrom().equals("E"))) {
+        Set<Long> activityIds = Utils.getListFromCsv(mActivity.getTimeFrom()).stream().map(String::trim).map(Long::parseLong).collect(Collectors.toSet());
+        List<String> tActivityIds =  mTimeline.getTActivityList().stream().filter(ta -> ta.getActivity() != null && activityIds.contains(ta.getActivity().getId())).map(TActivity::getId).map(String::valueOf).collect(Collectors.toList());
+        mActivity.setTimeFrom(Utils.getCsvFromIterable(tActivityIds));
+      }
+    }
+
     return mTimeline;
   }
 

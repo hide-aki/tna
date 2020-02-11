@@ -1,9 +1,9 @@
 api-keys:
   - !com.jazasoft.mtdb.dto.ApiKey
     client: iam
-    tenantId: test
+    tenantId: dev
     active: true
-    key: JYuBEYxUViy5jQgxlDgOa3Zm.dGVzdA==
+    key: zvImdfaZMShnjpVu90Ctgmqn.ZGV2
     apis:
       - !com.jazasoft.mtdb.dto.UrlInterceptor
         url: /api/buyers
