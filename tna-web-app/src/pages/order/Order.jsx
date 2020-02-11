@@ -13,6 +13,8 @@ import "react-perfect-scrollbar/dist/css/styles.css";
 import PerfectScrollbar from "react-perfect-scrollbar";
 
 import {
+ SelectInput,
+  ReferenceInput,
   List,
   Datagrid,
   TextField,
@@ -22,6 +24,8 @@ import {
   EditButton,
   DeleteButton,
   FunctionField,
+  Filter,
+  FilterButton,
   crudGetMany,
   RestMethods,
   FETCH_START,
@@ -36,6 +40,26 @@ import FormDialog from "./FormDialog";
 import hasPrivilege from "../../utils/hasPrivilege";
 import handleError from "../../utils/handleError";
 import { dataProvider } from "../../App";
+
+const filters = (
+  <Filter
+    parse={({ buyerId }) => ({
+      "buyer.id": buyerId
+    })}
+  >
+    <ReferenceInput
+      source="buyerId"
+      reference="buyers"
+      resource="buyers"
+      sort={{ field: "name", order: "asc" }}
+      xs={12}
+      fullWidth={true}
+      options={{ fullWidth: true }}
+    >
+      <SelectInput optionText="name" />
+    </ReferenceInput>
+  </Filter>
+);
 
 const MyTextField = ({ column, record }) => {
   const activity = record[column.dataKey];
@@ -275,11 +299,13 @@ class Order extends React.Component {
       <div>
         <FormDialog open={dialogActive} data={orders} ids={ids} onClose={this.onClose} onSubmit={this.onEditSubmit} />
         <List
+          filters={filters}
           key={view}
           searchKeys={["poRef", "style"]}
           actions={({ basePath }) => (
             <div>
-              <CreateButton basePath={basePath} showLabel={false} />
+              {hasPrivilege(roles, hasAccess, "order", "write") && <CreateButton basePath={basePath} showLabel={false} />}
+              <FilterButton showLabel={false} />
               <Button showLabel={false} label="View" onClick={this.onViwSwitch}>
                 {view === "list" ? <ListIcon /> : <GridIcon />}
               </Button>

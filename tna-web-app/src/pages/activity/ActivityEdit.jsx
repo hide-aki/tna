@@ -17,6 +17,8 @@ import {
   FormDataConsumer,
   SelectArrayInput
 } from "jazasoft";
+import Forbidden from "../../components/Forbidden";
+import hasPrivilege from "../../utils/hasPrivilege";
 
 const inputOptions = sm => ({
   xs: 12,
@@ -46,8 +48,10 @@ class ActivityEdit extends Component {
     }
   };
   render() {
-    const { departments, classes, dispatch, activity, ...props } = this.props;
-
+    const { roles, hasAccess, history, departments, classes, dispatch, activity, ...props } = this.props;
+    if (!hasPrivilege(roles, hasAccess, "activity", "update")){
+      return <Forbidden history={history} />
+    }
     return (
       <Edit
         cardWrapper={false}

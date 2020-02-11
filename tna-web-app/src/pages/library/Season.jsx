@@ -10,31 +10,17 @@ import {
   required,
   minLength,
   Datagrid,
+  CreateButton,
   EditButton,
   DeleteButton
 } from "jazasoft";
-
-const homeStyle = theme => ({
-  buttonEdit: {
-    width: theme.spacing(14)
-  },
-  buttonDelete: {
-    width: theme.spacing(16)
-  }
-});
-
-export const EditSeason = ({ ...props }) => {
-  return (
-    <Edit {...props}>
-      <SimpleForm>
-        <TextInput source="name" validate={[required(), minLength(2)]} />
-        <TextInput source="desc" />
-      </SimpleForm>
-    </Edit>
-  );
-};
+import hasPrivilege from "../../utils/hasPrivilege";
+import Forbidden from "../../components/Forbidden";
 
 export const CreateSeason = ({ ...props }) => {
+  if(!hasPrivilege(props.roles, props.hasAccess, "season", "write")){
+    return <Forbidden history={props.history} />
+  }
   return (
     <Create {...props}>
       <SimpleForm redirect="home" >
@@ -45,15 +31,45 @@ export const CreateSeason = ({ ...props }) => {
   );
 };
 
-export const SeasonHome = withStyles(homeStyle)(({ classes, ...props }) => {
+export const EditSeason = ({ ...props }) => {
+  if(!hasPrivilege(props.roles, props.hasAccess, "season", "update")){
+    return <Forbidden history={props.history} />
+  }
   return (
-    <List {...props}>
+    <Edit {...props}>
+      <SimpleForm>
+        <TextInput source="name" validate={[required(), minLength(2)]} />
+        <TextInput source="desc" />
+      </SimpleForm>
+    </Edit>
+  );
+};
+
+const homeStyle = theme => ({
+  buttonEdit: {
+    width: theme.spacing(14)
+  },
+  buttonDelete: {
+    width: theme.spacing(16)
+  }
+});
+
+export const SeasonHome = withStyles(homeStyle)(({ classes, ...props }) => {
+    const {roles, hasAccess} = props
+  return (
+    <List 
+    actions={({basePath, roles, hasAccess}) => (
+      <div>
+        {hasPrivilege(roles, hasAccess, "season", "write") && <CreateButton basePath={basePath} showLabel={false} />}
+      </div>
+    )}
+    {...props}>
       <Datagrid>
         <TextField source="name" />
         <TextField source="desc" />
 
-        <EditButton cellClassName={classes.buttonEdit} />
-        <DeleteButton cellClassName={classes.buttonDelete} />
+        {hasPrivilege(roles, hasAccess, "season", "update") && <EditButton cellClassName={classes.buttonEdit} />}
+        {hasPrivilege(roles, hasAccess, "season", "delete") && <DeleteButton cellClassName={classes.buttonDelete} />}
       </Datagrid>
     </List>
   );
