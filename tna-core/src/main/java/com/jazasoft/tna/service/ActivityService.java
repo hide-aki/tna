@@ -13,7 +13,6 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -81,7 +80,7 @@ public class ActivityService {
         Activity mActivity = activityRepository.findById(activity.getId()).orElseThrow();
         mActivity.setName(activity.getName());
         mActivity.setSerialNo(activity.getSerialNo());
-        mActivity.setDelayReason(activity.getDelayReason());
+        mActivity.setDelayReasons(activity.getDelayReasons());
         mActivity.setNotify(activity.getNotify());
         mActivity.setCLevel(activity.getCLevel());
         mActivity.setOverridable(activity.getOverridable());

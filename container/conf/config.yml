@@ -2,15 +2,13 @@ app:
    app-id: tna
 scheduler: 
    pool-size: '10'
-iam: 
-   endpoint: http://192.168.0.3:8081
-   apis: 
-   - !com.jazasoft.tna.dto.Api
-      name: user
-      apiKey: KLZQ5krM0ybQ2U89.dGVzdA==.dG5h
-      endpoint: /api/users
-      lastSync: 1581079351365
-      tenantId: test
+tenant:
+   database:
+      init-script-filename: initdb.sh
+liquibase:
+   tenant-changelog: classpath:/db/changelog-tenant.xml
+   rollback-sql: rollback-sql-temp.sql
+   enabled: true
 configuration: 
    settings: 
    - !com.jazasoft.mtdb.dto.Setting
@@ -27,14 +25,4 @@ configuration:
    - !com.jazasoft.mtdb.dto.ConfigGroup
       id: default
       name: Default
-client: 
-   id: client
-   secret: secret
-tenant: 
-   database: 
-      init-script-filename: initdb.sh
-liquibase: 
-   test: 
-      tenant-changelog: classpath:/db/changelog-integration-test.xml
-   tenant-changelog: classpath:/db/changelog-tenant.xml
-   enabled: true
+

@@ -11,7 +11,6 @@ import javax.persistence.*;
 import javax.validation.constraints.NotEmpty;
 import java.util.*;
 
-@NoArgsConstructor
 @Data
 @Entity
 @Table(name = "o_activity")
@@ -24,19 +23,11 @@ public class OActivity extends Auditable {
     @NotEmpty
     private String name;
 
-    private Integer serialNo;
-
-    private Boolean overridable;
-
     @Column(nullable = false)
     private Integer leadTime;
 
     @Temporal(value = TemporalType.TIMESTAMP)
     private Date completedDate;
-
-    @Temporal(value = TemporalType.TIMESTAMP)
-    private Date dueDate;
-
 
     private String delayReason;
 
@@ -49,7 +40,7 @@ public class OActivity extends Auditable {
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
     private Order order;
 
-    @ManyToOne(optional = false, fetch = FetchType.LAZY)
+    @ManyToOne(optional = false, fetch = FetchType.EAGER)
     @JsonProperty("tActivity")
     @JoinColumn(name = "t_activity_id")
     private TActivity tActivity;
@@ -65,6 +56,10 @@ public class OActivity extends Auditable {
     @JsonProperty("tActivityId")
     private Long tActivityId;
 
+
+    public OActivity() {
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -73,13 +68,12 @@ public class OActivity extends Auditable {
         return Objects.equals(id, oActivity.id) &&
                 Objects.equals(name, oActivity.name) &&
                 Objects.equals(orderId, oActivity.orderId) &&
-                Objects.equals(tActivityId, oActivity.tActivityId) &&
-                Objects.equals(serialNo, oActivity.serialNo);
+                Objects.equals(tActivityId, oActivity.tActivityId);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, orderId, tActivityId, serialNo);
+        return Objects.hash(id, name, orderId, tActivityId);
     }
 
     @Override
@@ -88,14 +82,12 @@ public class OActivity extends Auditable {
                 "id=" + id +
                 ", leadTime=" + leadTime +
                 ", completedDate=" + completedDate +
-                ", dueDate=" + dueDate +
                 ", delayReason='" + delayReason + '\'' +
                 ", remarks='" + remarks + '\'' +
                 ", name='" + name + '\'' +
                 ", timeFrom='" + timeFrom + '\'' +
                 ", order=" + order +
                 ", tActivity=" + tActivity +
-                ", serialNo=" + serialNo +
                 '}';
     }
 }

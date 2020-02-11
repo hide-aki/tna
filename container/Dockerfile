@@ -13,6 +13,6 @@ COPY . /tna
 RUN ["/bin/bash", "-c", "chmod 755 /tna/bin/*"]
 RUN ["/bin/bash", "-c", "chmod -R 755 /tna/conf/"]
 
-EXPOSE 8000
+EXPOSE 8006
 
 ENTRYPOINT ["/tna/bin/run.sh"]

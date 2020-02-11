@@ -21,6 +21,10 @@ public interface OrderRepository extends JpaRepository<Order,Long>, JpaSpecifica
 
   @Override
   @EntityGraph("order.findAll")
+  List<Order> findAllById(Iterable<Long> ids);
+
+  @Override
+  @EntityGraph("order.findAll")
   List<Order> findAll(Specification<Order> spec);
 
   @Override

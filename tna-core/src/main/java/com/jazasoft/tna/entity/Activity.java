@@ -59,7 +59,7 @@ public class Activity extends Auditable {
     private Boolean overridable;
 
     @Column(nullable = false)
-    private String delayReason;
+    private String delayReasons;
 
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
     private Department department;
@@ -116,7 +116,7 @@ public class Activity extends Auditable {
                 ", cLevel=" + cLevel +
                 ", isDefault=" + isDefault +
                 ", overridable=" + overridable +
-                ", delayReason='" + delayReason + '\'' +
+                ", delayReason='" + delayReasons + '\'' +
                 '}';
     }
 }

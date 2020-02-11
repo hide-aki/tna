@@ -47,19 +47,27 @@ import { TeamHome, CreateTeam, EditTeam } from "./pages/library/Team";
 import Settings from "./pages/setting/Settings";
 import Downloads from "./pages/downloads/Downloads";
 
-// const rootUrl = window.location.protocol + "//" + window.location.hostname + (window.location.port ? ":" + window.location.port : "");
-const rootUrl = `http://${window.location.hostname}:8006`;
-// const rootUrl = "https://spms.jaza-soft.com";
-// const rootUrl = `http://192.168.0.4:8006`;
-
 export const appId = "tna";
-//const authServerUrl = "https://iam-dev.jaza-soft.com";
- const authServerUrl = "http://192.168.0.3:8081";
-const appUrl = `${rootUrl}/api`;
 
-export const authProvider = createAuthProvider(authServerUrl, "Basic Y2xpZW50OnNlY3JldA==", appId);
-export const dataProvider = createDataProvider(appUrl, appId);
-export const authDataProvider = createDataProvider(`${authServerUrl}/api`, appId);
+const rootUrl = window.location.protocol + "//" + window.location.hostname + (window.location.port ? ":" + window.location.port : "");
+// const rootUrl = `http://${window.location.hostname}:8006`;
+// const rootUrl = `https://tna.jaza-soft.com`;
+
+///// Env: Local IAM ///////
+// const authProvider = createAuthProvider(`http://${window.location.hostname}:8081`, "Basic Y2xpZW50OnNlY3JldA==", appId);
+// export const authDataProvider = createDataProvider(`http://${window.location.hostname}:8081/api`, appId);
+
+/// Env: Production ///////
+const authProvider = createAuthProvider(
+  tenantId => (tenantId ? `https://iam-${tenantId}.jaza-soft.com` : "https://iam.jaza-soft.com"),
+  "Basic Y2xpZW50OnNlY3JldA==",
+  appId
+);
+export const authDataProvider = createDataProvider(
+  tenantId => (tenantId ? `https://iam-${tenantId}.jaza-soft.com/api` : "https://iam.jaza-soft.com/api"),
+  appId
+);
+export const dataProvider = createDataProvider(`${rootUrl}/api`, appId);
 
 (function() {
   axios

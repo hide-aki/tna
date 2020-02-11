@@ -17,7 +17,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import javax.servlet.http.HttpServletRequest;
 import java.net.URI;
+import java.util.List;
 
 import static com.jazasoft.tna.ApiUrls.URL_ORDERS_ORDER_ACTIVITIES_ACTIVITY;
 import static com.jazasoft.tna.ApiUrls.URL_ORDERS_ORDER_SUBACTIVITIES_SUBACTIVITY;
@@ -34,6 +36,23 @@ public class OrderRestController {
     this.orderService = orderService;
   }
 
+  /**
+   * Fetch all orders.
+   *
+   * <p>
+   *
+   * Param: view
+   *  <ul>
+   *    <li>{@code list} - Do not initialize activities</li>
+   *    <li>{@code grid} - Initialize activities but not sub activities</li>
+   *    <li>{@code grid-deep} Initialize activities as well as sub activities</li>
+   *  </ul>
+   *
+   * @param search
+   * @param view values - [list, grid, grid-deep]
+   * @param pageable
+   * @return
+   */
   @GetMapping
   public ResponseEntity<?> findAll(@RequestParam(value = "search", defaultValue = "") String search,
                                    @RequestParam(value = "view", defaultValue = "list") String view,
@@ -48,10 +67,25 @@ public class OrderRestController {
     }
     if (view.equalsIgnoreCase("list")) {
       pages.forEach(order -> order.setOActivityList(null));
-    } else if (view.equalsIgnoreCase("grid")) {
+    }  else if (view.equalsIgnoreCase("grid")) {
       pages.forEach(order -> {
         order.getOActivityList().forEach(oActivity -> {
-          oActivity.setTActivity(null);
+          if (oActivity.getTActivity() != null) {
+            oActivity.getTActivity().setTimeline(null);
+            oActivity.getTActivity().setActivity(null);
+            oActivity.getTActivity().setTSubActivityList(null);
+          }
+          oActivity.setOSubActivityList(null);
+        });
+      });
+    } else if (view.equalsIgnoreCase("grid-deep")) {
+      pages.forEach(order -> {
+        order.getOActivityList().forEach(oActivity -> {
+          if (oActivity.getTActivity() != null) {
+            oActivity.getTActivity().setTimeline(null);
+            oActivity.getTActivity().setActivity(null);
+            oActivity.getTActivity().setTSubActivityList(null);
+          }
           oActivity.getOSubActivityList().forEach(oSubActivity -> {
             oSubActivity.setTSubActivity(null);
             oSubActivity.setOActivity(null);
@@ -74,7 +108,11 @@ public class OrderRestController {
     mOrder.setSeasonId(mOrder.getSeason() != null ? mOrder.getSeason().getId() : null);
 
     mOrder.getOActivityList().forEach(oActivity -> {
-      oActivity.setTActivity(null);
+      if (oActivity.getTActivity() != null) {
+        oActivity.getTActivity().setTimeline(null);
+        oActivity.getTActivity().setActivity(null);
+        oActivity.getTActivity().setTSubActivityList(null);
+      }
       oActivity.getOSubActivityList().forEach(oSubActivity -> {
         oSubActivity.setOActivityId(oActivity.getId());
         oSubActivity.setOActivity(null);
@@ -90,7 +128,11 @@ public class OrderRestController {
     order = orderService.save(order);
 
     order.getOActivityList().forEach(oActivity -> {
-      oActivity.setTActivity(null);
+      if (oActivity.getTActivity() != null) {
+        oActivity.getTActivity().setTimeline(null);
+        oActivity.getTActivity().setActivity(null);
+        oActivity.getTActivity().setTSubActivityList(null);
+      }
       oActivity.getOSubActivityList().forEach(oSubActivity -> {
         oSubActivity.setOActivity(null);
         oSubActivity.setTSubActivity(null);
@@ -116,7 +158,11 @@ public class OrderRestController {
     mOrder.setSeasonId(order.getSeasonId());
 
     mOrder.getOActivityList().forEach(oActivity -> {
-      oActivity.setTActivity(null);
+      if (oActivity.getTActivity() != null) {
+        oActivity.getTActivity().setTimeline(null);
+        oActivity.getTActivity().setActivity(null);
+        oActivity.getTActivity().setTSubActivityList(null);
+      }
       oActivity.getOSubActivityList().forEach(oSubActivity -> {
         oSubActivity.setOActivity(null);
         oSubActivity.setTSubActivity(null);
@@ -125,8 +171,31 @@ public class OrderRestController {
     return ResponseEntity.ok(mOrder);
   }
 
+  @PutMapping
+  public ResponseEntity<?> updateAll(@RequestBody List<Order> orderList, HttpServletRequest request) {
+
+//    List<String> buyerIds = (List<String>) request.getAttribute(Constants.REQ_ATTRIBUTE_BUYER);
+
+    List<Order> mOrderList = orderService.updateAll(orderList);
+    mOrderList.forEach(order -> {
+      order.getOActivityList().forEach(oActivity -> {
+        if (oActivity.getTActivity() != null) {
+          oActivity.getTActivity().setTimeline(null);
+          oActivity.getTActivity().setActivity(null);
+          oActivity.getTActivity().setTSubActivityList(null);
+        }
+        oActivity.getOSubActivityList().forEach(oSubActivity -> {
+          oSubActivity.setOActivityId(oActivity.getId());
+          oSubActivity.setOActivity(null);
+          oSubActivity.setTSubActivity(null);
+        });
+      });
+    });
+    return ResponseEntity.ok(mOrderList);
+  }
+
   @PutMapping(ApiUrls.URL_ORDERS_ORDER + URL_ORDERS_ORDER_ACTIVITIES_ACTIVITY)
-  public ResponseEntity updateOrderActivity(@PathVariable(value = "orderId") Long orderId,
+  public ResponseEntity<?> updateOrderActivity(@PathVariable(value = "orderId") Long orderId,
                                             @PathVariable(value = "activityId") Long activityId,
                                             @RequestBody OActivity oActivity) {
 

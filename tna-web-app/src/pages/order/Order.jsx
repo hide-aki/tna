@@ -1,6 +1,7 @@
 import React from "react";
 import { withStyles } from "@material-ui/styles";
 import moment from "moment";
+import { connect } from "react-redux";
 
 import ListIcon from "mdi-material-ui/FormatListBulletedSquare";
 import GridIcon from "mdi-material-ui/ViewGrid";
@@ -12,7 +13,7 @@ import "react-perfect-scrollbar/dist/css/styles.css";
 import PerfectScrollbar from "react-perfect-scrollbar";
 
 import {
-  SelectInput,
+ SelectInput,
   ReferenceInput,
   List,
   Datagrid,
@@ -21,16 +22,24 @@ import {
   CreateButton,
   ShowButton,
   EditButton,
-  Filter,
   DeleteButton,
   FunctionField,
-  FilterButton
+  Filter,
+  FilterButton,
+  crudGetMany,
+  RestMethods,
+  FETCH_START,
+  FETCH_END,
+  SAVING_START,
+  SAVING_END
 } from "jazasoft";
 import Table, { CheckBox, Toolbar } from "jazasoft/lib/mui/components/Table";
 
 import FormDialog from "./FormDialog";
 
 import hasPrivilege from "../../utils/hasPrivilege";
+import handleError from "../../utils/handleError";
+import { dataProvider } from "../../App";
 
 const filters = (
   <Filter
@@ -86,15 +95,18 @@ const getColumns = (orderList, onChange) => {
   let activityList = [];
   let activitySet = new Set();
   const aList = orderList
-    ? orderList.flatMap(order => (order.oActivityList ? order.oActivityList.map(({ id, serialNo, name }) => ({ id, serialNo, name })) : []))
+    ? orderList.flatMap(order =>
+        order.oActivityList ? order.oActivityList.map(({ serialNo, name, tActivity }) => ({ serialNo: tActivity.serialNo, name })) : []
+      )
     : [];
-  aList.forEach(activity => {
-    if (!activitySet.has(activity.name)) {
-      activitySet.add(activity.name);
-      activityList.push(activity);
-    }
-  });
-
+  aList
+    .sort((a, b) => (a.serialNo ? -1 : 1))
+    .forEach(activity => {
+      if (!activitySet.has(activity.name)) {
+        activitySet.add(activity.name);
+        activityList.push(activity);
+      }
+    });
   let columns = [
     { dataKey: "selector", element: <CheckBox onChange={onChange} /> },
     { dataKey: "edit" },
@@ -195,16 +207,84 @@ const styles = theme => ({
 
 class Order extends React.Component {
   state = {
-    view: "list", // list, grid
-    dialogActive: false
+    view: "grid", // list, grid
+    dialogActive: false,
+    ids: []
   };
 
   onViwSwitch = () => {
     this.setState({ view: this.state.view === "list" ? "grid" : "list" });
   };
 
+  onEditSubmit = (page, rows, activity) => {
+    const { orders } = this.props;
+    const { ids } = this.state;
+
+    let orderList = ids.map(id => orders[id]);
+    if (page === "Activity") {
+      orderList = orderList.map(({ oActivityList, ...order }) => {
+        const list = oActivityList.map(e => {
+          const activity = rows.find(r => r.activityId === btoa(e.name));
+          return activity
+            ? {
+                ...e,
+                completedDate: activity.completedDate && activity.completedDate.format(),
+                delayReason: Array.isArray(activity.delayReason) ? activity.delayReason.join(", ") : activity.delayReason,
+                remarks: activity.remarks
+              }
+            : e;
+        });
+        return { ...order, oActivityList: list };
+      });
+    } else if (page === "SubActivity") {
+      orderList = orderList.map(({ oActivityList, ...order }) => {
+        const list = oActivityList.map(({ oSubActivityList, ...oActivity }) => {
+          if (activity.activityId === btoa(oActivity.name)) {
+            const list = oSubActivityList.map(e => {
+              const subActivity = rows.find(r => r.subActivityId === btoa(e.name));
+              return subActivity
+                ? {
+                    ...e,
+                    completedDate: subActivity.completedDate && subActivity.completedDate.format(),
+
+                    remarks: subActivity.remarks
+                  }
+                : e;
+            });
+            return { ...oActivity, oSubActivityList: list };
+          }
+          return { ...oActivity, oSubActivityList };
+        });
+        return { ...order, oActivityList: list };
+      });
+    }
+
+    const options = {
+      url: "orders",
+      method: "put",
+      data: orderList
+    };
+    this.props.dispatch({ type: FETCH_START });
+    this.props.dispatch({ type: SAVING_START });
+    dataProvider(RestMethods.CUSTOM, null, options)
+      .then(response => {
+        this.props.dispatch({ type: FETCH_END });
+        this.props.dispatch({ type: SAVING_END });
+
+        this.setState({ dialogActive: false, ids: [] });
+        this.props.dispatch(crudGetMany("orders", ids, undefined, { params: { view: "grid" } }));
+      })
+      .catch(error => {
+        console.log(error);
+        handleError(error, this.props.dispatch);
+        this.props.dispatch({ type: FETCH_END });
+        this.props.dispatch({ type: SAVING_END });
+      });
+  };
+
   onEditClick = (data, ids) => e => {
-    this.setState({ dialogActive: true });
+    this.props.dispatch(crudGetMany("orders", ids, undefined, { params: { view: "grid-deep" } }));
+    this.setState({ dialogActive: true, ids });
   };
 
   onClose = () => {
@@ -212,11 +292,12 @@ class Order extends React.Component {
   };
 
   render() {
-    const { roles, hasAccess, classes, ...props } = this.props;
-    const { view, dialogActive } = this.state;
+    const { classes, orders, dispatch, ...props } = this.props;
+    const { view, dialogActive, ids } = this.state;
+    const { roles, hasAccess } = props;
     return (
       <div>
-        <FormDialog open={dialogActive} onClose={this.onClose} />
+        <FormDialog open={dialogActive} data={orders} ids={ids} onClose={this.onClose} onSubmit={this.onEditSubmit} />
         <List
           filters={filters}
           key={view}
@@ -240,6 +321,8 @@ class Order extends React.Component {
   }
 }
 
+const mapStateToProps = (state, props) => ({ orders: state.jazasoft.resources[props.resource] && state.jazasoft.resources[props.resource].data });
+
 const StyledOrder = withStyles(styles)(Order);
 
-export default StyledOrder;
+export default connect(mapStateToProps)(StyledOrder);
