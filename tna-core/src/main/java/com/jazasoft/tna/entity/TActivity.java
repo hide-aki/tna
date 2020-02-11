@@ -25,6 +25,8 @@ public class TActivity extends Auditable {
     @Column(nullable = false)
     private Integer leadTime;
 
+    private Integer prevLeadTime;
+
     @Column(nullable = false)
     private String timeFrom;
 
@@ -34,6 +36,8 @@ public class TActivity extends Auditable {
     private Integer serialNo;
 
     private Boolean overridable;
+
+    private String delayReasons;
 
     @JsonIgnore
     @ManyToOne(optional = false, fetch = FetchType.LAZY)

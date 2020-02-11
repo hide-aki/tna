@@ -577,6 +577,41 @@
             <dropColumn tableName="t_activity" columnName="name" />
         </rollback>
     </changeSet>
+
+    <changeSet author="razamd" id="v2.0.x-id23">
+        <addColumn tableName="t_activity">
+            <column name="prev_lead_time" type="INT"/>
+        </addColumn>
+        <addColumn tableName="users">
+            <column name="department_id" type="BIGINT"/>
+        </addColumn>
+        <addColumn tableName="users">
+            <column name="team_id" type="BIGINT"/>
+        </addColumn>
+        <addColumn tableName="users">
+            <column name="buyer_ids" type="TEXT"/>
+        </addColumn>
+    </changeSet>
+
+    <changeSet author="razamd" id="v2.0.x-id24">
+        <renameColumn tableName="activity" oldColumnName="delay_reason" newColumnName="delay_reasons"/>
+        <addColumn tableName="t_activity">
+            <column name="delay_reasons" type="TEXT"/>
+        </addColumn>
+        <dropColumn tableName="o_activity" columnName="serial_no" />
+        <dropColumn tableName="o_activity" columnName="overridable" />
+
+        <rollback>
+            <renameColumn tableName="activity" oldColumnName="delay_reasons" newColumnName="delay_reason"/>
+            <dropColumn tableName="t_activity" columnName="delay_reasons" />
+            <addColumn tableName="o_activity">
+                <column name="serial_no" type="INT"/>
+            </addColumn>
+            <addColumn tableName="o_activity">
+                <column name="overridable" type="BOOL"/>
+            </addColumn>
+        </rollback>
+    </changeSet>
 </databaseChangeLog>
 
 

@@ -44,6 +44,13 @@ public class User extends Auditable {
     @Column(nullable = false, columnDefinition = "TEXT")
     private String roles;
 
+    private Long departmentId;
+
+    private Long teamId;
+
+    @Column(columnDefinition = "TEXT")
+    private String buyerIds;
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

@@ -97,7 +97,7 @@ class Activity extends Component {
         this.props.dispatch({ type: FETCH_END });
         this.props.dispatch({ type: SAVING_END });
         this.props.dispatch(crudGetList("activities"));
-        this.setState({editing: false});
+        this.setState({ editing: false });
         // this.setState({activityList: response.data});
       })
       .catch(error => {
@@ -138,7 +138,6 @@ class Activity extends Component {
   render() {
     const { classes, saving } = this.props;
     const { activityList, editing } = this.state;
-    console.log({ saving });
     const rows = activityList.map((activity, idx) => ({
       ...activity,
       department: activity.department.name,

@@ -53,8 +53,8 @@ const rootUrl = `http://${window.location.hostname}:8006`;
 // const rootUrl = `http://192.168.0.4:8006`;
 
 export const appId = "tna";
-//const authServerUrl = "https://iam-dev.jaza-soft.com";
- const authServerUrl = "http://192.168.0.3:8081";
+const authServerUrl = "https://iam-dev.jaza-soft.com";
+// const authServerUrl = "http://localhost:8081";
 const appUrl = `${rootUrl}/api`;
 
 export const authProvider = createAuthProvider(authServerUrl, "Basic Y2xpZW50OnNlY3JldA==", appId);

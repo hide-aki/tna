@@ -82,6 +82,9 @@ public class UserService {
     mUser.setEmail(user.getEmail());
     mUser.setMobile(user.getMobile());
     mUser.setRoles(user.getRoles());
+    mUser.setDepartmentId(user.getDepartmentId());
+    mUser.setTeamId(user.getTeamId());
+    mUser.setBuyerIds(user.getBuyerIds());
     return mUser;
   }
 
@@ -105,7 +108,8 @@ public class UserService {
   @Transactional(value = "tenantTransactionManager")
   public void syncUsers(String tenantId) {
     try {
-      String confFile = MtdbUtils.getAppHome() + File.separator + "conf" + File.separator + "config.yml";
+      String appId = MtdbUtils.getAppId();
+      String confFile = MtdbUtils.getAppHome() + File.separator + "conf" + File.separator + tenantId + ".yml";
       Map<String, Object> iamMap = (Map<String, Object>) YamlUtils.getInstance().getProperty(confFile, ConfigKeys.IAM);
       if (iamMap == null) {
         logger.error("'iam' configuration missing in config.yml file");
@@ -139,7 +143,7 @@ public class UserService {
       if (resp != null) {
         List<Map> users = (List<Map>) resp.getOrDefault("content", new ArrayList<>());
         logger.debug("updated user count = {}", users.size());
-        List<User> userList = users.stream().map(this::userFromMap).collect(Collectors.toList());
+        List<User> userList = users.stream().map(map -> userFromMap(map, tenantId, appId)).collect(Collectors.toList());
 
 
         for (User user : userList) {
@@ -166,7 +170,7 @@ public class UserService {
   }
 
   @SuppressWarnings("unchecked")
-  private User userFromMap(Map userMap) {
+  private User userFromMap(Map userMap, String tenantId, String appId) {
     if (userMap == null) return null;
     User user = new User();
     user.setId(Long.parseLong(userMap.get("id").toString()));
@@ -178,6 +182,72 @@ public class UserService {
       List<Map> roleList = (List<Map>) userMap.get("roleList");
       Set<String> roles = roleList.stream().map(m -> (String) ((Map) m.getOrDefault("role", new HashMap<>())).getOrDefault("roleId", "")).filter(s -> !s.isEmpty()).collect(Collectors.toSet());
       user.setRoles(Utils.getCsvFromIterable(roles));
+    }
+    if (userMap.containsKey("permissionList")) {
+      List<Map> permissionList = (List<Map>) userMap.get("permissionList");
+
+      List<Long> departmentIdList = permissionList.stream()
+          .filter(pMap -> {
+            String key = (String) pMap.get("key");
+            String value = (String) pMap.get("value");
+            if (value == null || !"departmentId".equals(key)) return false;
+            Map app = (Map) pMap.get("app");
+            Map tenant = (Map) pMap.get("tenant");
+            if (app != null && tenant != null) {
+              String aId = (String) app.get("appId");
+              String tId = (String) tenant.get("tenantId");
+              if (appId.equals(aId) && tenantId.equals(tId)) return true;
+            }
+            return false;
+          })
+          .map(pMap -> (Long) pMap.get("value"))
+          .collect(Collectors.toList());
+      if (departmentIdList.size() > 1) {
+        logger.error("Multiple department for User [id = {}, username = {}, roles = {}], departmentIds = {}", user.getId(), user.getUsername(), user.getRoles(), departmentIdList);
+      } else if (departmentIdList.size() == 1) {
+        user.setDepartmentId(departmentIdList.get(0));
+      } else {
+        logger.warn("No department for User [id = {}, username = {}, roles = {}]", user.getId(), user.getUsername(), user.getRoles());
+      }
+      List<Long> teamIdList = permissionList.stream()
+          .filter(pMap -> {
+            String key = (String) pMap.get("key");
+            String value = (String) pMap.get("value");
+            if (value == null || !"teamId".equals(key)) return false;
+            Map app = (Map) pMap.get("app");
+            Map tenant = (Map) pMap.get("tenant");
+            if (app != null && tenant != null) {
+              String aId = (String) app.get("appId");
+              String tId = (String) tenant.get("tenantId");
+              if (appId.equals(aId) && tenantId.equals(tId)) return true;
+            }
+            return false;
+          })
+          .map(pMap -> (Long) pMap.get("value"))
+          .collect(Collectors.toList());
+      if (teamIdList.size() > 1) {
+        logger.error("Multiple team for User [id = {}, username = {}, roles = {}], teamIds = {}", user.getId(), user.getUsername(), user.getRoles(), teamIdList);
+      } else if (departmentIdList.size() == 1) {
+        user.setTeamId(teamIdList.get(0));
+      }
+
+      Set<String> buyerIdList = permissionList.stream()
+          .filter(pMap -> {
+            String key = (String) pMap.get("key");
+            String value = (String) pMap.get("value");
+            if (value == null || !"buyerId".equals(key)) return false;
+            Map app = (Map) pMap.get("app");
+            Map tenant = (Map) pMap.get("tenant");
+            if (app != null && tenant != null) {
+              String aId = (String) app.get("appId");
+              String tId = (String) tenant.get("tenantId");
+              if (appId.equals(aId) && tenantId.equals(tId)) return true;
+            }
+            return false;
+          })
+          .map(pMap -> (String) pMap.get("value"))
+          .collect(Collectors.toSet());
+      user.setBuyerIds(Utils.getCsvFromIterable(buyerIdList));
     }
     return user;
   }

@@ -1,0 +1,20 @@
+settings: 
+- !com.jazasoft.mtdb.dto.Setting
+   name: Minimum Marker Percentage
+   dataType: number
+   description: ""
+   groupId: default
+   key: min-marker-percent
+   roles: super_user,admin
+   serialNo: 1
+   unit: '%'
+   value: '85'
+iam: 
+   endpoint: https://iam-dev.jaza-soft.com
+   apis: 
+   - !com.jazasoft.tna.dto.Api
+      name: user
+      apiKey: GVEaeCXthqBz1bcx.ZGV2.dG5h
+      endpoint: /api/users
+      lastSync: 0
+      tenantId: dev

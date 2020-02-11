@@ -48,6 +48,9 @@ public class OrderService {
   public Page<Order> findAll(Pageable pageable, String view) {
     Page<Order> page = orderRepository.findAll(pageable);
     if (view.equalsIgnoreCase("grid")) {
+      page.forEach(order -> Hibernate.initialize(order.getOActivityList()));
+    }
+    if (view.equalsIgnoreCase("grid-deep")) {
       page.forEach(order -> {
         Hibernate.initialize(order.getOActivityList());
         order.getOActivityList().forEach(oActivity -> Hibernate.initialize(oActivity.getOSubActivityList()));
@@ -59,6 +62,9 @@ public class OrderService {
   public Page<Order> findAll(Specification<Order> spec, Pageable pageable, String view) {
     Page<Order> page = orderRepository.findAll(spec, pageable);
     if (view.equalsIgnoreCase("grid")) {
+      page.forEach(order -> Hibernate.initialize(order.getOActivityList()));
+    }
+    if (view.equalsIgnoreCase("grid-deep")) {
       page.forEach(order -> {
         Hibernate.initialize(order.getOActivityList());
         order.getOActivityList().forEach(oActivity -> Hibernate.initialize(oActivity.getOSubActivityList()));
@@ -99,9 +105,7 @@ public class OrderService {
 
       int leadTime = TnaUtils.getLeadTime(tActivity.getLeadTime(), currentLeadTime, standardLeadTime);
 
-      oActivity.setSerialNo(tActivity.getSerialNo());
       oActivity.setName(tActivity.getName());
-      oActivity.setOverridable(tActivity.getOverridable());
       oActivity.setLeadTime(leadTime);
       oActivity.setTimeFrom(tActivity.getTimeFrom());
 
@@ -151,6 +155,32 @@ public class OrderService {
     }
 
     return mOrder;
+  }
+
+  @Transactional(value = "tenantTransactionManager")
+  public List<Order> updateAll(List<Order> orderList) {
+    Set<Long> ids = orderList.stream().map(Order::getId).collect(Collectors.toSet());
+    List<Order> mOrderList = orderRepository.findAllById(ids);
+
+    for (Order order: orderList) {
+      Order mOrder = mOrderList.stream().filter(o -> o.getId().equals(order.getId())).findAny().orElseThrow(() -> new RuntimeException("Order with id " + order.getId() + " not found."));
+      if (order.getOActivityList() == null || mOrder.getOActivityList() == null) continue;
+      for (OActivity oActivity: order.getOActivityList()) {
+        OActivity mActivity = mOrder.getOActivityList().stream().filter(a -> a.getId().equals(oActivity.getId())).findAny().orElse(null);
+        if (mActivity == null) continue;
+        mActivity.setCompletedDate(oActivity.getCompletedDate());
+        mActivity.setDelayReason(oActivity.getDelayReason());
+        mActivity.setRemarks(oActivity.getRemarks());
+        if (oActivity.getOSubActivityList() == null || mActivity.getOSubActivityList() == null) continue;
+        for (OSubActivity oSubActivity: oActivity.getOSubActivityList()) {
+          OSubActivity mSubActivity = mActivity.getOSubActivityList().stream().filter(sa -> sa.getId().equals(oSubActivity.getId())).findAny().orElse(null);
+          if (mSubActivity == null) continue;
+          mSubActivity.setCompletedDate(oSubActivity.getCompletedDate());
+          mSubActivity.setRemarks(oSubActivity.getRemarks());
+        }
+      }
+    }
+    return mOrderList;
   }
 
   @Transactional(value = "tenantTransactionManager")

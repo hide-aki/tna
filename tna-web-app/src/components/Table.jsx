@@ -9,9 +9,31 @@ import TableHead from "@material-ui/core/TableHead";
 import TableRow from "@material-ui/core/TableRow";
 import MuiCheckbox from "@material-ui/core/Checkbox";
 import MuiTextField from "@material-ui/core/TextField";
-import Select from "jazasoft/lib/mui/input/Select";
+import MenuItem from "@material-ui/core/MenuItem";
+import Select from "@material-ui/core/Select";
 
 import withStyles from "@material-ui/core/styles/withStyles";
+
+import DateFnsUtils from "@date-io/moment";
+import { MuiPickersUtilsProvider, KeyboardDatePicker } from "@material-ui/pickers";
+
+export const DateInput = ({ rowIdx, colIdx, column, record, onChange, width = 120, disabled = false, format = "ll" }) => (
+  <MuiPickersUtilsProvider utils={DateFnsUtils}>
+    <KeyboardDatePicker
+      disableToolbar
+      variant="inline"
+      format={format}
+      margin="normal"
+      id={`date-picker-inline-${rowIdx}-${colIdx}`}
+      value={record[column.dataKey]}
+      onChange={onChange && onChange({ rowIdx, colIdx, column, record })}
+      KeyboardButtonProps={{
+        "aria-label": "change date"
+      }}
+      disabled={disabled}
+    />
+  </MuiPickersUtilsProvider>
+);
 
 export const CheckBox = ({ rowIdx, colIdx, column, record, onChange }) => (
   <MuiCheckbox
@@ -30,18 +52,28 @@ export const TextInput = ({ rowIdx, colIdx, column, record, onChange, type, widt
   />
 );
 
-export const SelectInput = ({ rowIdx, colIdx, column, record, onChange, choices, allowEmpty, width = 135 }) => (
-  <Select
-    style={{ width: 135 }}
-    value={record[column.dataKey] || (allowEmpty ? "" : choices[0].id)}
-    choices={choices}
-    allowEmpty={allowEmpty}
-    onChange={onChange && onChange({ rowIdx, colIdx, column, record })}
-  />
-);
+export const SelectInput = ({ rowIdx, colIdx, column, record, onChange, choices, multiple, allowEmpty, width = 135 }) => {
+  let options = typeof choices === "function" ? choices({ rowIdx, colIdx, column, record }) : choices;
+  if (allowEmpty && !multiple) {
+    options.unshift({});
+  }
+  let value = record[column.dataKey];
+  if (!value) {
+    value = !multiple ? (allowEmpty ? "" : options[0] && options[0].id) : [];
+  }
+  return (
+    <Select style={{ width }} multiple={multiple} value={value} onChange={onChange && onChange({ rowIdx, colIdx, column, record })}>
+      {options.map((option, idx) => (
+        <MenuItem key={idx} value={option.name} style={{ padding: allowEmpty && idx === 0 ? "16px" : "8px" }}>
+          {option.name}
+        </MenuItem>
+      ))}
+    </Select>
+  );
+};
 
-export const LinkField = ({ rowIdx, colIdx, column, record, onClick }) => (
-  <div style={{ color: "blue", cursor: "pointer" }} onClick={onClick && onClick({ rowIdx, colIdx, column, record })}>
+export const LinkField = ({ rowIdx, colIdx, column, record, color = "blue", onClick }) => (
+  <div style={{ color, cursor: "pointer" }} onClick={onClick && onClick({ rowIdx, colIdx, column, record })}>
     {record[column.dataKey]}
   </div>
 );
@@ -111,7 +143,7 @@ class Table extends Component {
         <TableBody>
           {rows.map((record, rowIdx) =>
             typeof rowRenderer === "function"
-              ? rowRenderer({columns, record, rowIdx })
+              ? rowRenderer({ columns, record, rowIdx })
               : React.cloneElement(rowRenderer, { columns, record, rowIdx, key: rowIdx })
           )}
         </TableBody>
