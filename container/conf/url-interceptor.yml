@@ -51,111 +51,111 @@ authenticated:
   - !com.jazasoft.mtdb.dto.UrlInterceptor
     url: /api/users/\d+
     resourceId: user
-    scope:
+    scopes:
       - read
 
 
   - !com.jazasoft.mtdb.dto.UrlInterceptor
     url: /api/delayReasons
     resourceId: delay_reason
-    scope:
-      -read
+    scopes:
+      - read
 
   - !com.jazasoft.mtdb.dto.UrlInterceptor
     url: /api/delayReasons/\d+
     resourceId: delay_reason
-    scope:
-      -read
+    scopes:
+      - read
 
   - !com.jazasoft.mtdb.dto.UrlInterceptor
     url: /api/departments
     resourceId: department
-    scope:
-      -read
+    scopes:
+      - read
 
   - !com.jazasoft.mtdb.dto.UrlInterceptor
     url: /api/departments/\d+
     resourceId: department
-    scope:
-      -read
+    scopes:
+      - read
 
   - !com.jazasoft.mtdb.dto.UrlInterceptor
     url: /api/garmentTypes
     resourceId: garment_type
-    scope:
-      -read
+    scopes:
+      - read
 
   - !com.jazasoft.mtdb.dto.UrlInterceptor
     url: /api/garmentTypes/\d+
     resourceId: garment_type
-    scope:
-      -read
+    scopes:
+      - read
 
   - !com.jazasoft.mtdb.dto.UrlInterceptor
     url: /api/orders
     resourceId: order
-    scope:
-      -read
+    scopes:
+      - read
 
   - !com.jazasoft.mtdb.dto.UrlInterceptor
     url: /api/orders/\d+
     resourceId: order
-    scope:
-      -read
+    scopes:
+      - read
 
   - !com.jazasoft.mtdb.dto.UrlInterceptor
     url: /api/seasons
     resourceId: season
-    scope:
-      -read
+    scopes:
+      - read
 
   - !com.jazasoft.mtdb.dto.UrlInterceptor
     url: /api/seasons/\d+
     resourceId: season
-    scope:
-      -read
+    scopes:
+      - read
 
   - !com.jazasoft.mtdb.dto.UrlInterceptor
     url: /api/teams
     resourceId: team
-    scope:
-      -read
+    scopes:
+      - read
 
   - !com.jazasoft.mtdb.dto.UrlInterceptor
     url: /api/teams/\d+
     resourceId: team
-    scope:
-      -read
+    scopes:
+      - read
 
   - !com.jazasoft.mtdb.dto.UrlInterceptor
     url: /api/timelines
     resourceId: timeline
-    scope:
-      -read
+    scopes:
+      - read
 
   - !com.jazasoft.mtdb.dto.UrlInterceptor
     url: /api/timelines/\d+
     resourceId: timeline
-    scope:
-      -read
+    scopes:
+      - read
 
   - !com.jazasoft.mtdb.dto.UrlInterceptor
     url: /api/settings
     resourceId: setting
-    scope:
-      -read
+    scopes:
+      - read
 
   - !com.jazasoft.mtdb.dto.UrlInterceptor
     url: /api/settings/[a-zA-Z_0-9-]+
     resourceId: setting
-    scope:
-      -read
+    scopes:
+      - read
 
   - !com.jazasoft.mtdb.dto.UrlInterceptor
     url: /api/templates
     resourceId: template
-    scope:
-      -read
+    scopes:
+      - read
 
 
 protected:
