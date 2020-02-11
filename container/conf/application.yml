@@ -3,19 +3,24 @@ app:
 
 server:
   port: 8006
+  compression:
+    enabled: true
+    mime-types: text/html,text/xml,text/plain,text/css,text/javascript,application/javascript,application/json,application/xml
+  connection-timeout: -1
+  tomcat:
+    max-http-post-size: 10485760
 
 spring:
   datasource:
     ###### PostgreSQL Configuration #######
     driverClassName: org.postgresql.Driver
-    url: jdbc:postgresql://localhost:5432/tna_master
-    username: postgres
-    password: 123456
+    url: jdbc:postgresql://${PG_HOST}:${PG_PORT}/${DB_NAME}
+    username: ${PG_USERNAME}
+    password: ${PG_PASSWORD}
     platform: postgresql
-    host: localhost
-    port: 5432
-    masterdb: tna_master
-
+    host: ${PG_HOST}
+    port: ${PG_PORT}
+    masterdb: ${DB_NAME}
   jpa:
     show-sql: false
     format-sql: true
@@ -23,11 +28,12 @@ spring:
       ddl-auto: none
     properties:
       hibernate:
+        implicit_naming_strategy: org.springframework.boot.orm.jpa.hibernate.SpringImplicitNamingStrategy
+        physical_naming_strategy: org.springframework.boot.orm.jpa.hibernate.SpringPhysicalNamingStrategy
         dialect: org.hibernate.dialect.PostgreSQLDialect
         jdbc:
           lob:
             non_contextual_creation: true
-
   mail:
     protocol: smtp
     test-connection: false
@@ -35,7 +41,7 @@ spring:
     port: 587
     from: noreply@jaza-soft.com
     username: admin@jaza-soft.com
-    password: tuksysvicjegaufu
+    password: arcutfrsuoduyivy
     properties:
       mail:
         smtp:
@@ -51,5 +57,3 @@ spring:
 
   liquibase:
     enabled: true
-
-

@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<configuration>
+
+  <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+    <encoder>
+      <pattern>%d{dd-MM-yyyy HH:mm:ss.SSS} %magenta([%thread]) %highlight(%-5level) [%X{tenant}] [%X{requestInfo}] %logger{36}.%M - %msg%n</pattern>
+    </encoder>
+  </appender>
+
+  <!--Time And Size based rolling appender-->
+  <appender name="TS_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+    <file>${TNA_HOME}/log/optacut.log</file>
+    <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+      <Pattern>%d{dd-MM-yyyy HH:mm:ss.SSS} [%thread] %-5level [%X{tenant}] [%X{requestInfo}] %logger{36}.%M - %msg%n</Pattern>
+    </encoder>
+    <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+      <fileNamePattern>${TNA_HOME}/log/log_%d{dd-MM-yyyy}_%i.log</fileNamePattern>
+      <maxFileSize>5MB</maxFileSize>
+      <maxHistory>30</maxHistory>
+      <totalSizeCap>100MB</totalSizeCap>
+    </rollingPolicy>
+  </appender>
+
+  <logger name="com.jazasoft.mtdb" level="INFO" additivity="false">
+    <appender-ref ref="TS_FILE" />
+  </logger>
+
+  <logger name="com.jazasoft.optacut" level="DEBUG" additivity="false">
+    <appender-ref ref="TS_FILE" />
+  </logger>
+
+  <logger name="org.optaplanner" level="INFO" additivity="false">
+    <appender-ref ref="TS_FILE" />
+  </logger>
+  
+  <!-- Strictly speaking, the level attribute is not necessary since -->
+  <!-- the level of the root level is set to DEBUG by default.       -->
+  <root level="INFO">
+    <appender-ref ref="STDOUT" />
+  </root>
+</configuration>
