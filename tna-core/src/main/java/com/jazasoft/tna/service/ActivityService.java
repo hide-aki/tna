@@ -82,6 +82,7 @@ public class ActivityService {
         mActivity.setSerialNo(activity.getSerialNo());
         mActivity.setDelayReasons(activity.getDelayReasons());
         mActivity.setNotify(activity.getNotify());
+        mActivity.setIsDefault(activity.getIsDefault());
         mActivity.setCLevel(activity.getCLevel());
         mActivity.setOverridable(activity.getOverridable());
 
