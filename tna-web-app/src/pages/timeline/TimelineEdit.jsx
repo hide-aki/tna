@@ -276,12 +276,24 @@ class TimelineEdit extends Component {
               activity,
               name: activity.name,
               serialNo: activity.serialNo,
-              timeFrom: tActivity.timeFrom === "O" || tActivity.timeFrom === "E" ? [tActivity.timeFrom] : tActivity.timeFrom.split(",").map(Number)
+              timeFrom:
+                tActivity.timeFrom === "O" || tActivity.timeFrom === "E"
+                  ? [tActivity.timeFrom]
+                  : tActivity.timeFrom
+                      .split(",")
+                      .map(e => {
+                        // Tranforming t_activity Id back to activityId
+                        for (let i = 0; i < tActivityList.length; i++) {
+                          if (Number(e) === tActivityList[i].id) {
+                            return tActivityList[i].activity.id;
+                          }
+                        }
+                        return e;
+                      })
             }))
             .sort((a, b) => a.serialNo - b.serialNo)
         : []
     };
-
     this.setState({
       activityList,
       initialValues
@@ -484,7 +496,7 @@ class TimelineEdit extends Component {
                   <Button label="Save" variant="contained" color="primary" onClick={_ => this.onSubmit(handleSubmit)}>
                     <SaveIcon />
                   </Button>
-                  <BackButton style={{ marginLeft: "2em" }} variant="contained" />
+                  <BackButton style={{ marginLeft: "1.5em" }} variant="contained" />
                 </PageFooter>
               </div>
             )}

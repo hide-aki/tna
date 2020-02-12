@@ -60,7 +60,7 @@ export const DepartmentHome = withStyles(homeStyle)(({ classes, ...props }) => {
   return (
     <List
       actions={({ basePath, roles, hasAccess }) => (
-        <div>{hasPrivilege(roles, hasAccess, "department", "write") && <CreateButton basePath={basePath} showLabe={false} />}</div>
+        <div>{hasPrivilege(roles, hasAccess, "department", "write") && <CreateButton basePath={basePath} showLabel={false} />}</div>
       )}
       {...props}
     >
