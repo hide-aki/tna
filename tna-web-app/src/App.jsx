@@ -7,6 +7,7 @@ import logo from "./asset/img/logo2.png";
 import avatar from "./asset/img/faces/avatar-male.png";
 //icons
 import MenuIcon from "@material-ui/icons/Menu";
+import CalendarIcon from "mdi-material-ui/CalendarMonth";
 import OrderIcon from "@material-ui/icons/FiberManualRecordOutlined";
 import UserIcon from "mdi-material-ui/AccountGroup";
 import LibraryIcon from "@material-ui/icons/LibraryBooks";
@@ -26,6 +27,7 @@ import {
 } from "jazasoft";
 
 import Dashboard from "./pages/dashboard/Dashboard";
+import Calendar from "./pages/calender/Calendar";
 
 import englishMessage from "./i18n/en";
 import theme from "./theme";
@@ -140,6 +142,8 @@ class App extends React.Component {
           //     </Resource>
           //   );
           // }
+
+          resourceList.push(<Resource name="calendar" home={Calendar} icon={CalendarIcon} />);
 
           if (hasPrivilege(roles, hasAccess, "order", "read")) {
             resourceList.push(
