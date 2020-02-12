@@ -1,22 +1,19 @@
 spring:
   datasource:
-    url: jdbc:h2:mem:tna_master;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
-    driver-class-name: org.h2.Driver
-    username: sa
-    password:
-    platform: h2
-    initialize: true
-    continue-on-error: false
+    driverClassName: org.postgresql.Driver
+    url: jdbc:postgresql://localhost:5432/tna_master
+    username: postgres
+    password: 123456
 
   jpa:
     generate-ddl: false
     show-sql: true
     format-sql: true
     hibernate:
-      ddl-auto: update
+      ddl-auto: none
     properties:
       hibernate:
-        dialect: org.hibernate.dialect.H2Dialect
+        dialect: org.hibernate.dialect.PostgreSQLDialect
 
   h2:
     console:
@@ -35,10 +32,10 @@ spring:
 test:
   tenant:
     datasource:
-      db-name: tna_test
-      url: jdbc:h2:mem:tna_test;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
-      driver-class-name: org.h2.Driver
-      username: sa
-      password: ""
-      platform: h2
 
+      db-name: tna_test
+      driver-class-name: org.postgresql.Driver
+      url: jdbc:postgresql://localhost:5432/tna_test
+      username: postgres
+      password: 123456
+      platform: postgresql

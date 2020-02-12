@@ -59,19 +59,19 @@
     <changeSet id="v2.0.x-id6" author="aditya">
         <insert tableName="activity">
             <column name="id" valueNumeric="1" />
+            <column name="name" value="Activity1"/>
             <column name="department_id" type="BIGINT" value="1"/>
             <column name="serial_no" value="1"/>
+            <column name="c_level" value="1"/>
+            <column name="is_default" value="1"/>
         </insert>
         <insert tableName="activity">
             <column name="id" valueNumeric="2" />
+            <column name="name" value="Activity2"/>
             <column name="department_id" type="BIGINT" value="1"/>
             <column name="serial_no" value="2"/>
+            <column name="c_level" value="2"/>
+            <column name="is_default" value="1"/>
         </insert>
-
-
     </changeSet>
-
-
-
-
 </databaseChangeLog>
