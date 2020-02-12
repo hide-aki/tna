@@ -1,19 +1,11 @@
 import React, { Component } from "react";
 
-import { Show, TextField, ShowCard, MultiCardShowLayout, ReferenceField, PageFooter, EditButton, BackButton } from "jazasoft";
+import { Show, TextField, ShowCard, MultiCardShowLayout, ReferenceField, PageFooter, Button, BackButton } from "jazasoft";
 
+import EditIcon from "@material-ui/icons/Edit";
 import MaterialTable from "material-table";
 import { Icons } from "../../components/MaterialTableIcons";
 import hasPrivilege from "../../utils/hasPrivilege";
-
-const Footer = ({ roles, hasAccess, resource, i18nKey, basePath }) => (
-  <PageFooter>
-    {hasPrivilege(roles, hasAccess, "timeline", "update") && (
-      <EditButton style={{ marginLeft: "1em" }} resource={resource} i18nKey={i18nKey} basePath={basePath} color="primary" variant="contained" />
-    )}
-    <BackButton style={{ marginLeft: "1em" }} variant="contained" />
-  </PageFooter>
-);
 
 const grassRoot = true;
 
@@ -23,12 +15,19 @@ const activityColumns = [
 ];
 
 class TimelineView extends Component {
+  
+  onEdit = id => {
+    this.props.history.push(`/timelines/${id}/edit`);
+  };
+
   render() {
-    const { roles, hasAccess, classes, tActivityList, ...props } = this.props;
+    const { roles, hasAccess, basePath, classes, tActivityList, ...props } = this.props;
+    console.log({ props });
+
     return (
       <div>
         <Show cardWrapper={false} {...props}>
-          <MultiCardShowLayout footer={<Footer />}>
+          <MultiCardShowLayout footer={false}>
             <ShowCard title="Timeline Details">
               <ReferenceField source="buyerId" reference="buyers">
                 <TextField source="name" />
@@ -93,6 +92,14 @@ class TimelineView extends Component {
                 );
               }}
             />
+            <PageFooter>
+              {hasPrivilege(roles, hasAccess, "timeline", "update") && (
+                <Button label="Edit" style={{ marginLeft: "1em" }} variant="contained" color="primary" onClick={_ => this.onEdit(props.id)}>
+                  <EditIcon />
+                </Button>
+              )}
+              <BackButton style={{ marginLeft: "1em" }} variant="contained" />
+            </PageFooter>
           </MultiCardShowLayout>
         </Show>
       </div>
