@@ -11,21 +11,33 @@ const grassRoot = true;
 
 const activityColumns = [
   { field: "name", title: "Name" },
+  { field: "timefrom", title: "From" },
   { field: "leadTime", title: "Lead Time" }
 ];
 
+const Footer = ({ roles, hasAccess, onEdit }) => (
+  <PageFooter>
+    {hasPrivilege(roles, hasAccess, "timeline", "update") && (
+      <Button label="Edit" style={{ marginLeft: "1em" }} variant="contained" color="primary" onClick={onEdit}>
+        <EditIcon />
+      </Button>
+    )}
+    <BackButton style={{ marginLeft: "1em" }} variant="contained" />
+  </PageFooter>
+);
+
 class TimelineView extends Component {
-  onEdit = id => {
-    this.props.history.push(`/timelines/${id}/edit`);
+  onEdit = () => {
+    this.props.history.push(`/timelines/${this.props.id}/edit`);
   };
 
   render() {
-    const { roles, hasAccess, basePath, classes, tActivityList, ...props } = this.props;
+    const { roles, hasAccess } = this.props;
 
     return (
       <div>
-        <Show cardWrapper={false} {...props}>
-          <MultiCardShowLayout footer={false}>
+        <Show cardWrapper={false} {...this.props}>
+          <MultiCardShowLayout footer={<Footer roles={roles} hasAccess={hasAccess} onEdit={this.onEdit} />}>
             <ShowCard title="Timeline Details">
               <ReferenceField source="buyerId" reference="buyers">
                 <TextField source="name" />
@@ -40,17 +52,33 @@ class TimelineView extends Component {
                 let data = grassRoot
                   ? record.tActivityList
                       .sort((a, b) => a.activity.serialNo - b.activity.serialNo)
-                      .flatMap(({ tSubActivityList, ...tActivity }, idx) => {
+                      .flatMap(({ tSubActivityList, ...tActivity }) => {
                         return [
                           {
                             ...tActivity,
                             name: tActivity.activity && tActivity.activity.name,
+                            timefrom:
+                              tActivity.timeFrom && tActivity.timeFrom === "O"
+                                ? "Order Date"
+                                : tActivity.timeFrom === "E"
+                                ? "Ex-Factory Date"
+                                : tActivity.timeFrom
+                                    .split(",")
+                                    .map(e => {
+                                      // Tranforming t_activity Id back to activityId
+                                      for (let i = 0; i < record.tActivityList.length; i++) {
+                                        if (Number(e) === record.tActivityList[i].id) {
+                                          return record.tActivityList[i].name;
+                                        }
+                                      }
+                                      return e;
+                                    })
+                                    .join(", "),
                             key: `P-${tActivity.id}`
                           },
                           ...tSubActivityList.map(e => ({
                             ...e,
                             name: e.subActivity && e.subActivity.name,
-                            timeFrom: tActivity.timeFrom,
                             key: `C-${e.id}`,
                             parentKey: `P-${tActivity.id}`
                           }))
@@ -59,8 +87,7 @@ class TimelineView extends Component {
                   : record.tActivityList;
                 data = data.map(e => ({
                   ...e,
-                  name: e.name,
-                  leadTime: e.timeFrom === "O" ? `O + ` + e.leadTime : `E - ` + e.leadTime
+                  name: e.name
                 }));
                 return (
                   <MaterialTable
@@ -90,14 +117,6 @@ class TimelineView extends Component {
                 );
               }}
             />
-            <PageFooter>
-              {hasPrivilege(roles, hasAccess, "timeline", "update") && (
-                <Button label="Edit" style={{ marginLeft: "1em" }} variant="contained" color="primary" onClick={_ => this.onEdit(props.id)}>
-                  <EditIcon />
-                </Button>
-              )}
-              <BackButton style={{ marginLeft: "1em" }} variant="contained" />
-            </PageFooter>
           </MultiCardShowLayout>
         </Show>
       </div>
