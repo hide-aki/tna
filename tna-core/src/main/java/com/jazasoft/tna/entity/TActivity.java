@@ -33,11 +33,18 @@ public class TActivity extends Auditable {
     @NotEmpty
     private String name;
 
+    // Copy of Parent: Activity
     private Integer serialNo;
 
+    // Copy of Parent: Activity
     private Boolean overridable;
 
+    // Copy of Parent: Activity
     private String delayReasons;
+
+    // Copy of Parent: Activity
+    @ManyToOne(optional = false, fetch = FetchType.EAGER)
+    private Department department;
 
     @JsonIgnore
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
@@ -55,6 +62,9 @@ public class TActivity extends Auditable {
 
     @Transient
     private Long timelineId;
+
+    @Transient
+    private Long departmentId;
 
     public void addTSubActivity(TSubActivity tSubActivity) {
         this.tSubActivityList.add(tSubActivity);

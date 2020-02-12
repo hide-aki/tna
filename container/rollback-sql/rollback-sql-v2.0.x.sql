@@ -1,3 +1,10 @@
+-- Rolling Back ChangeSet: db/changelog/changelog-2.0.x.xml::v2.0.x-id25::razamd
+ALTER TABLE public.t_activity DROP CONSTRAINT fk_t_activity_department_id;
+
+ALTER TABLE public.t_activity DROP COLUMN department_id;
+
+DELETE FROM public.databasechangelog WHERE ID = 'v2.0.x-id25' AND AUTHOR = 'razamd' AND FILENAME = 'db/changelog/changelog-2.0.x.xml';
+
 -- Rolling Back ChangeSet: db/changelog/changelog-2.0.x.xml::v2.0.x-id24::razamd
 ALTER TABLE public.activity RENAME COLUMN delay_reasons TO delay_reason;
 

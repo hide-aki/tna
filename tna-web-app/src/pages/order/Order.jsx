@@ -13,7 +13,7 @@ import "react-perfect-scrollbar/dist/css/styles.css";
 import PerfectScrollbar from "react-perfect-scrollbar";
 
 import {
- SelectInput,
+  SelectInput,
   ReferenceInput,
   List,
   Datagrid,
@@ -41,7 +41,7 @@ import hasPrivilege from "../../utils/hasPrivilege";
 import handleError from "../../utils/handleError";
 import { dataProvider } from "../../App";
 
-const filters = (
+const filters = (buyerIds = []) => (
   <Filter
     parse={({ buyerId }) => ({
       "buyer.id": buyerId
@@ -54,6 +54,7 @@ const filters = (
       sort={{ field: "name", order: "asc" }}
       xs={12}
       fullWidth={true}
+      filter={{ id: buyerIds }}
       options={{ fullWidth: true }}
     >
       <SelectInput optionText="name" />
@@ -96,7 +97,7 @@ const getColumns = (orderList, onChange) => {
   let activitySet = new Set();
   const aList = orderList
     ? orderList.flatMap(order =>
-        order.oActivityList ? order.oActivityList.map(({ serialNo, name, tActivity }) => ({ serialNo: tActivity.serialNo, name })) : []
+        order.oActivityList ? order.oActivityList.map(({ name, tActivity }) => ({ serialNo: tActivity.serialNo, name })) : []
       )
     : [];
   aList
@@ -150,7 +151,7 @@ const CustomDatagrid = ({ classes, view, roles, hasAccess, onEditClick, ...props
           selector: selectedIds.includes(e.id),
           edit: (
             <div>
-              <EditIcon onClick={onEditClick && onEditClick(data, [e.id])} />
+              <EditIcon onClick={selectedIds.length === 0 && onEditClick ? onEditClick([e.id]) : null} />
             </div>
           ),
           buyerName: e.buyer && e.buyer.name,
@@ -184,7 +185,7 @@ const CustomDatagrid = ({ classes, view, roles, hasAccess, onEditClick, ...props
         <React.Fragment>
           <Toolbar
             title={`${selectedIds.length} Item${selectedIds.length > 1 ? "s" : ""} selected`}
-            actions={[{ name: "edit", tooltip: "Update Completed Date", onClick: onEditClick && onEditClick(data, selectedIds) }]}
+            actions={[{ name: "edit", tooltip: "Update Completed Date", onClick: onEditClick && onEditClick(selectedIds) }]}
           />
           <Divider />
         </React.Fragment>
@@ -228,7 +229,10 @@ class Order extends React.Component {
           return activity
             ? {
                 ...e,
-                completedDate: activity.completedDate && activity.completedDate.format(),
+                completedDate:
+                  typeof activity.completedDate === "number"
+                    ? moment(activity.completedDate).format()
+                    : activity.completedDate && activity.completedDate.format(),
                 delayReason: Array.isArray(activity.delayReason) ? activity.delayReason.join(", ") : activity.delayReason,
                 remarks: activity.remarks
               }
@@ -245,8 +249,10 @@ class Order extends React.Component {
               return subActivity
                 ? {
                     ...e,
-                    completedDate: subActivity.completedDate && subActivity.completedDate.format(),
-
+                    completedDate:
+                      typeof subActivity.completedDate === "number"
+                        ? moment(subActivity.completedDate).format()
+                        : subActivity.completedDate && subActivity.completedDate.format(),
                     remarks: subActivity.remarks
                   }
                 : e;
@@ -282,7 +288,7 @@ class Order extends React.Component {
       });
   };
 
-  onEditClick = (data, ids) => e => {
+  onEditClick = ids => e => {
     this.props.dispatch(crudGetMany("orders", ids, undefined, { params: { view: "grid-deep" } }));
     this.setState({ dialogActive: true, ids });
   };
@@ -294,13 +300,13 @@ class Order extends React.Component {
   render() {
     const { classes, orders, dispatch, ...props } = this.props;
     const { view, dialogActive, ids } = this.state;
-    const { roles, hasAccess } = props;
+    const { roles, hasAccess, getPermissions } = props;
+    const buyerIds = getPermissions && getPermissions("buyerId");
     return (
       <div>
         <FormDialog open={dialogActive} data={orders} ids={ids} onClose={this.onClose} onSubmit={this.onEditSubmit} />
         <List
-          filters={filters}
-          key={view}
+          filters={filters(buyerIds)}
           searchKeys={["poRef", "style"]}
           actions={({ basePath }) => (
             <div>

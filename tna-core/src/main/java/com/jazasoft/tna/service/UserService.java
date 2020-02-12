@@ -200,7 +200,8 @@ public class UserService {
             }
             return false;
           })
-          .map(pMap -> (Long) pMap.get("value"))
+          .map(pMap -> (String) pMap.get("value"))
+          .map(Long::parseLong)
           .collect(Collectors.toList());
       if (departmentIdList.size() > 1) {
         logger.error("Multiple department for User [id = {}, username = {}, roles = {}], departmentIds = {}", user.getId(), user.getUsername(), user.getRoles(), departmentIdList);
@@ -223,7 +224,8 @@ public class UserService {
             }
             return false;
           })
-          .map(pMap -> (Long) pMap.get("value"))
+          .map(pMap -> (String) pMap.get("value"))
+          .map(Long::parseLong)
           .collect(Collectors.toList());
       if (teamIdList.size() > 1) {
         logger.error("Multiple team for User [id = {}, username = {}, roles = {}], teamIds = {}", user.getId(), user.getUsername(), user.getRoles(), teamIdList);

@@ -7,6 +7,7 @@ import {
   ReferenceField,
   crudGetOne,
   PageFooter,
+  Button,
   BackButton,
   FunctionField,
   SAVING_START,
@@ -24,15 +25,24 @@ import { dataProvider } from "../../App";
 
 //Material-UI
 import Divider from "@material-ui/core/Divider";
-import Paper from "@material-ui/core/Paper";
+import Card from "@material-ui/core/Card";
 import withStyles from "@material-ui/styles/withStyles";
+
+// Icons
+import EditIcon from "@material-ui/icons/Edit";
 
 //material-Table
 import MaterialTable from "material-table";
 import { Icons } from "../../components/MaterialTableIcons";
 
+import CardHeader from "../../components/CardHeader";
+import FormDialog from "./FormDialog";
+
+import handleError from "../../utils/handleError";
+
 const styles = {
-  root: {
+  root: {},
+  content: {
     margin: "1.5em"
   },
   pageHeader: {
@@ -52,65 +62,67 @@ const styles = {
 
 const grassRoot = true;
 
-const activityColumns = [
-  { field: "name", title: "Name", editable: "never" },
+const columns = [
+  { field: "name", title: "Name" },
   {
     field: "viewLeadTime",
     title: "Lead Time",
-    type: "numeric",
-    editable: "never"
+    type: "numeric"
   },
-  { field: "viewDueDate", title: "Due Date", type: "date", editable: "never" },
+  { field: "viewDueDate", title: "Due Date", type: "date" },
   {
     field: "compDate",
     title: "Completed Date",
-    type: "date",
-    editable: "onUpdate"
+    type: "date"
   },
-  { field: "delayReason", title: "Delay Reason", editable: "onUpdate" },
-  { field: "remarks", title: "Remarks", editable: "onUpdate" }
+  { field: "delayReason", title: "Delay Reason" },
+  { field: "remarks", title: "Remarks" }
 ];
 
 const format = order => {
   let orderView =
     order.oActivityList &&
-    order.oActivityList.flatMap(({ oSubActivityList, ...oActivity }) => [
-      {
-        ...oActivity,
-        viewDueDate:
-          oActivity.timeFrom === "O"
-            ? moment(order.orderDate)
-                .add(oActivity.leadTime, "day")
-                .format("ll")
-            : moment(order.exFactoryDate)
-                .subtract(oActivity.leadTime, "day")
-                .format("ll"),
-        compDate: oActivity.completedDate == null || oActivity.completedDate === "" ? undefined : moment(oActivity.completedDate).format("ll"),
-        delayReason: oActivity.delayReason == null ? undefined : oActivity.delayReason,
-        remarks: oActivity.remarks == null ? undefined : oActivity.remarks,
-        actId: oActivity.id
-      },
-      ...oSubActivityList.map(e => ({
-        ...e,
-        viewDueDate:
-          oActivity.timeFrom === "O"
-            ? moment(order.orderDate)
-                .add(e.leadTime, "day")
-                .format("ll")
-            : moment(order.exFactoryDate)
-                .subtract(e.leadTime, "day")
-                .format("ll"),
-        compDate: e.completedDate == null || e.completedDate === "" ? undefined : moment(e.completedDate).format("ll"),
-        delayReason: e.delayReason == null ? undefined : e.delayReason,
-        remarks: e.remarks == null ? undefined : e.remarks
-      }))
-    ]);
+    order.oActivityList
+      .map(e => ({ ...e.tActivity, ...e }))
+      .sort((a, b) => a.serialNo - b.serialNo)
+      .flatMap(({ oSubActivityList, ...oActivity }) => [
+        {
+          ...oActivity,
+          viewDueDate:
+            oActivity.timeFrom === "O"
+              ? moment(order.orderDate)
+                  .add(oActivity.leadTime, "day")
+                  .format("ll")
+              : moment(order.exFactoryDate)
+                  .subtract(oActivity.leadTime, "day")
+                  .format("ll"),
+          compDate: oActivity.completedDate == null || oActivity.completedDate === "" ? undefined : moment(oActivity.completedDate).format("ll"),
+          delayReason: oActivity.delayReason == null ? undefined : oActivity.delayReason,
+          remarks: oActivity.remarks == null ? undefined : oActivity.remarks,
+          actId: oActivity.id
+        },
+        ...oSubActivityList.map(e => ({
+          ...e,
+          viewDueDate:
+            oActivity.timeFrom === "O"
+              ? moment(order.orderDate)
+                  .add(e.leadTime, "day")
+                  .format("ll")
+              : moment(order.exFactoryDate)
+                  .subtract(e.leadTime, "day")
+                  .format("ll"),
+          compDate: e.completedDate == null || e.completedDate === "" ? undefined : moment(e.completedDate).format("ll"),
+          delayReason: e.delayReason == null ? undefined : e.delayReason,
+          remarks: e.remarks == null ? undefined : e.remarks
+        }))
+      ]);
   return orderView;
 };
 
 class OrderView extends Component {
   state = {
-    initialValues: {}
+    initialValues: {},
+    dialogActive: false
   };
 
   componentDidMount() {
@@ -137,125 +149,156 @@ class OrderView extends Component {
     this.setState({ initialValues });
   };
 
-  onRowUpdate = async (newData, oldData) => {
-    // let { delayReason, compDate, remarks, ...rest } = newData;
-    // let data = {
-    //   ...rest,
-    //   delayReason: delayReason && delayReason.toString().trim(),
-    //   remarks: remarks && remarks.toString().trim(),
-    //   completedDate:
-    //     typeof compDate === "string"
-    //       ? moment(compDate, "ll").format()
-    //       : compDate !== null && typeof compDate == "object"
-    //       ? moment(compDate).format()
-    //       : compDate
-    // };
+  onEditSubmit = (page, rows, activity) => {
+    const { order } = this.props;
 
-    // const parsedData = data;
-    // if ("name" in parsedData) {
-    //   this.updateActivity(parsedData);
-    // } else if ("nam" in parsedData) {
-    //   this.updateSubActivity(parsedData);
-    // }
-  };
+    let data;
+    if (page === "Activity") {
+      const { oActivityList, ...rest } = order;
+      const list = oActivityList.map(e => {
+        const activity = rows.find(r => r.activityId === btoa(e.name));
+        return activity
+          ? {
+              ...e,
+              completedDate:
+                typeof activity.completedDate === "number"
+                  ? moment(activity.completedDate).format()
+                  : activity.completedDate && activity.completedDate.format(),
+              delayReason: Array.isArray(activity.delayReason) ? activity.delayReason.join(", ") : activity.delayReason,
+              remarks: activity.remarks
+            }
+          : e;
+      });
+      data = { ...rest, oActivityList: list };
+    } else if (page === "SubActivity") {
+      const { oActivityList, ...rest } = order;
+      const list = oActivityList.map(({ oSubActivityList, ...oActivity }) => {
+        if (activity.activityId === btoa(oActivity.name)) {
+          const list = oSubActivityList.map(e => {
+            const subActivity = rows.find(r => r.subActivityId === btoa(e.name));
+            return subActivity
+              ? {
+                  ...e,
+                  completedDate:
+                    typeof subActivity.completedDate === "number"
+                      ? moment(subActivity.completedDate).format()
+                      : subActivity.completedDate && subActivity.completedDate.format(),
+                  remarks: subActivity.remarks
+                }
+              : e;
+          });
+          return { ...oActivity, oSubActivityList: list };
+        }
+        return { ...oActivity, oSubActivityList };
+      });
+      data = { ...rest, oActivityList: list };
+    }
 
-  updateActivity = oActivity => {
     const options = {
-      url: `orders/${this.props.id}/activities/${oActivity.id}`,
+      url: "orders",
       method: "put",
-      data: oActivity
+      data: [data]
     };
-    this.updateAndFetch(options);
-  };
-
-  updateSubActivity = oSubActivity => {
-    const options = {
-      url: `orders/${this.props.id}/activities/${oSubActivity.oActivityId}/subActivities/${oSubActivity.id}`,
-      method: "put",
-      data: oSubActivity
-    };
-    this.updateAndFetch(options);
-  };
-
-  updateAndFetch = options => {
     this.props.dispatch({ type: FETCH_START });
     this.props.dispatch({ type: SAVING_START });
     dataProvider(RestMethods.CUSTOM, null, options)
       .then(response => {
         this.props.dispatch({ type: FETCH_END });
         this.props.dispatch({ type: SAVING_END });
+
+        this.setState({ dialogActive: false, ids: [] });
         this.props.dispatch(crudGetOne("orders", this.props.id));
       })
       .catch(error => {
+        console.log(error);
+        handleError(error, this.props.dispatch);
         this.props.dispatch({ type: FETCH_END });
         this.props.dispatch({ type: SAVING_END });
       });
   };
 
   render() {
-    const { order = {}, classes } = this.props;
-    const { initialValues } = this.state;
+    const { id, order = {}, classes } = this.props;
+    const { initialValues, dialogActive } = this.state;
     return (
       <div className={classes.root}>
         <PageHeader title="Order View" />
-        <Paper style={{ padding: "1.5em" }}>
-          <PageHeader title="Basic Details" className={classes.pageHeader} />
-          <Divider style={{ marginTop: "-2em", marginBottom: "3em" }} />
-          <SimpleShowLayout footer={false} record={order}>
-            <ReferenceField source="buyerId" reference="buyers" allowEmpty={true}>
-              <TextField source="name" />
-            </ReferenceField>
-            <TextField source="poRef" label="PO Reference" />
-            <ReferenceField source="garmentTypeId" label="Garment Type" reference="garmentTypes" allowEmpty={true}>
-              <TextField source="name" />
-            </ReferenceField>
-            <ReferenceField source="seasonId" reference="seasons" allowEmpty={true}>
-              <TextField source="name" />
-            </ReferenceField>
-            <TextField source="style" label="Style" />
-            <NumberField source="orderQty" label="Order Quantity" />
-            <TextField source="remarks" />
-            <FunctionField source="orderDate" label="Order Date" render={record => moment(record.orderDate).format("ll")} />
-            <FunctionField source="exFactoryDate" label="Ex Factory Date" render={record => moment(record.exFactoryDate).format("ll")} />
-          </SimpleShowLayout>
-        </Paper>
-        <Paper style={{ padding: "1.5em", marginTop: "2em" }}>
-          <PageHeader title="Activities" className={classes.pageHeader} />
-          <Divider style={{ marginTop: "-2em" }} />
-          {initialValues && initialValues.length && (
-            <MaterialTable
-              columns={activityColumns}
-              data={initialValues}
-              parentChildData={
-                !grassRoot
-                  ? null
-                  : (row, rows) =>
-                      rows.find(a => {
-                        return a.id === row.oActivityId;
-                      })
-              }
-              options={{
-                selection: false,
-                search: false,
-                paging: false,
-                header: true,
-                toolbar: false,
-                actionsColumnIndex: -1
-              }}
-              icons={Icons}
-              style={{
-                boxShadow: "none",
-                width: "100%"
-              }}
-              editable={{
-                onRowUpdate: this.onRowUpdate
-              }}
-            />
-          )}
-        </Paper>
-        <PageFooter>
-          <BackButton variant="contained" />
-        </PageFooter>
+
+        <FormDialog
+          open={dialogActive}
+          data={{ [id]: order }}
+          ids={[id]}
+          onClose={_ => this.setState({ dialogActive: false })}
+          onSubmit={this.onEditSubmit}
+        />
+
+        <div className={classes.content}>
+          <Card>
+            <CardHeader title="Basic Details" />
+            <Divider />
+            <SimpleShowLayout style={{ padding: "1.5em" }} footer={false} record={order}>
+              <ReferenceField source="buyerId" reference="buyers" allowEmpty={true}>
+                <TextField source="name" />
+              </ReferenceField>
+              <TextField source="poRef" label="PO Reference" />
+              <ReferenceField source="garmentTypeId" label="Garment Type" reference="garmentTypes" allowEmpty={true}>
+                <TextField source="name" />
+              </ReferenceField>
+              <ReferenceField source="seasonId" reference="seasons" allowEmpty={true}>
+                <TextField source="name" />
+              </ReferenceField>
+              <TextField source="style" label="Style" />
+              <NumberField source="orderQty" label="Order Quantity" />
+              <TextField source="remarks" />
+              <FunctionField source="orderDate" label="Order Date" render={record => moment(record.orderDate).format("ll")} />
+              <FunctionField source="exFactoryDate" label="Ex Factory Date" render={record => moment(record.exFactoryDate).format("ll")} />
+            </SimpleShowLayout>
+          </Card>
+          <Card style={{ marginTop: "2em" }}>
+            <CardHeader title="Activities" />
+            <Divider />
+            {initialValues && initialValues.length && (
+              <MaterialTable
+                columns={columns}
+                data={initialValues}
+                onTreeExpandChange={this.onTreeExpandChanged}
+                parentChildData={
+                  !grassRoot
+                    ? null
+                    : (row, rows) =>
+                        rows.find(a => {
+                          return a.id === row.oActivityId;
+                        })
+                }
+                options={{
+                  selection: false,
+                  search: false,
+                  paging: false,
+                  header: true,
+                  toolbar: false,
+                  actionsColumnIndex: -1
+                }}
+                icons={Icons}
+                style={{
+                  boxShadow: "none",
+                  width: "100%"
+                }}
+              />
+            )}
+          </Card>
+          <PageFooter>
+            <Button
+              label="Update Activity"
+              variant="contained"
+              color="primary"
+              style={{ marginRight: "1.5em" }}
+              onClick={_ => this.setState({ dialogActive: true })}
+            >
+              <EditIcon />
+            </Button>
+            <BackButton variant="contained" />
+          </PageFooter>
+        </div>
       </div>
     );
   }

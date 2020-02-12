@@ -15,14 +15,12 @@ const activityColumns = [
 ];
 
 class TimelineView extends Component {
-  
   onEdit = id => {
     this.props.history.push(`/timelines/${id}/edit`);
   };
 
   render() {
     const { roles, hasAccess, basePath, classes, tActivityList, ...props } = this.props;
-    console.log({ props });
 
     return (
       <div>

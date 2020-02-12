@@ -1,9 +1,12 @@
 package com.jazasoft.tna.service;
 
 import com.jazasoft.tna.entity.Activity;
+import com.jazasoft.tna.entity.Department;
 import com.jazasoft.tna.entity.SubActivity;
+import com.jazasoft.tna.entity.TActivity;
 import com.jazasoft.tna.repository.ActivityRepository;
 import com.jazasoft.tna.repository.DepartmentRepository;
+import com.jazasoft.tna.repository.TActivityRepository;
 import org.hibernate.Hibernate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,13 +27,14 @@ public class ActivityService {
     private final Logger logger = LoggerFactory.getLogger(ActivityService.class);
 
     private final ActivityRepository activityRepository;
+    private final TActivityRepository tActivityRepository;
     private final DepartmentRepository departmentRepository;
 
-    public ActivityService(ActivityRepository activityRepository, DepartmentRepository departmentRepository) {
+    public ActivityService(ActivityRepository activityRepository, TActivityRepository tActivityRepository, DepartmentRepository departmentRepository) {
         this.activityRepository = activityRepository;
+        this.tActivityRepository = tActivityRepository;
         this.departmentRepository = departmentRepository;
     }
-
 
     public Page<Activity> findAll(Pageable pageable, String action) {
         Page<Activity> page = activityRepository.findAll(pageable);
@@ -79,14 +83,25 @@ public class ActivityService {
     public Activity updateActivity(Activity activity) {
         Activity mActivity = activityRepository.findById(activity.getId()).orElseThrow();
         mActivity.setName(activity.getName());
-        mActivity.setSerialNo(activity.getSerialNo());
-        mActivity.setDelayReasons(activity.getDelayReasons());
         mActivity.setNotify(activity.getNotify());
         mActivity.setIsDefault(activity.getIsDefault());
         mActivity.setCLevel(activity.getCLevel());
-        mActivity.setOverridable(activity.getOverridable());
 
-        mActivity.setDepartment(departmentRepository.findById(activity.getDepartmentId()).orElse(null));
+
+        mActivity.setSerialNo(activity.getSerialNo());
+        mActivity.setDelayReasons(activity.getDelayReasons());
+        mActivity.setOverridable(activity.getOverridable());
+        Department department = departmentRepository.findById(activity.getDepartmentId()).orElse(null);
+        mActivity.setDepartment(department);
+
+        // Changes above four fields must be propagated to all children
+        List<TActivity> tActivityList = tActivityRepository.findAllByActivity(mActivity);
+        for (TActivity tActivity: tActivityList) {
+            tActivity.setSerialNo(activity.getSerialNo());
+            tActivity.setDelayReasons(activity.getDelayReasons());
+            tActivity.setOverridable(activity.getOverridable());
+            tActivity.setDepartment(department);
+        }
 
         Set<Long> existingIds = activity.getSubActivityList().stream().filter(subActivity -> subActivity.getId() != null).map(SubActivity::getId).collect(Collectors.toSet());
         Set<SubActivity> removeSubActivityList = mActivity.getSubActivityList().stream().filter(subActivity -> !existingIds.contains(subActivity.getId())).collect(Collectors.toSet());
@@ -113,6 +128,9 @@ public class ActivityService {
             Activity activity = activityList.stream().filter(a -> mActivity.getId().equals(a.getId())).findAny().orElse(null);
             if (activity != null) {
                 mActivity.setSerialNo(activity.getSerialNo());
+                //Change is serial no should be propagated to all children
+                List<TActivity> tActivityList = tActivityRepository.findAllByActivity(mActivity);
+                tActivityList.forEach(tActivity -> tActivity.setSerialNo(activity.getSerialNo()));
             }
         }
         return mActivityList;

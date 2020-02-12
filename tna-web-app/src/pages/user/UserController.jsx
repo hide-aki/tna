@@ -69,7 +69,6 @@ export class UserController extends Component {
       .then(response => {
         if (response.status === 200) {
           const roleList = response.data && response.data.content;
-          console.log({ roleList });
           this.setState({ roleList });
         }
         this.props.dispatch({ type: FETCH_END });
@@ -93,7 +92,6 @@ export class UserController extends Component {
       .then(response => {
         if (response.status === 200) {
           const permissionList = response.data && response.data.content;
-          console.log({ permissionList });
           this.setState({ permissionList });
         }
         this.props.dispatch({ type: FETCH_END });

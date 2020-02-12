@@ -118,7 +118,7 @@ class ActivityEdit extends Component {
               }}
             </FormDataConsumer>
             <TextInput
-              source="delayReason"
+              source="delayReasons"
               validate={[minLength(2)]}
               {...inputOptions(4)}
             />

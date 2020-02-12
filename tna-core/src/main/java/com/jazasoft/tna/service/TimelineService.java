@@ -76,9 +76,12 @@ public class TimelineService {
         if (tActivity.getActivityId() != null) {
           Activity activity = activityRepository.findById(tActivity.getActivityId()).orElseThrow(() -> new RuntimeException("Activity with id = " + tActivity.getActivityId() + " not found."));
           tActivity.setActivity(activity);
+          // Copy of Parent: Activity
           tActivity.setSerialNo(activity.getSerialNo());
           tActivity.setName(activity.getName());
           tActivity.setOverridable(activity.getOverridable());
+          tActivity.setDelayReasons(activity.getDelayReasons());
+          tActivity.setDepartment(activity.getDepartment());
         }
 
         if (tActivity.getTSubActivityList() != null) {
@@ -113,8 +116,6 @@ public class TimelineService {
     //update Own fields
     mTimeline.setName(timeline.getName());
     mTimeline.setTnaType(timeline.getTnaType());
-//        mTimeline.setApproved(timeline.getApproved());
-//        mTimeline.setApprovedBy(timeline.getApprovedBy());
     mTimeline.setBuyer(buyerRepository.findById(timeline.getBuyerId()).orElse(null));
     mTimeline.setBuyerId(timeline.getBuyerId());
 
@@ -136,9 +137,14 @@ public class TimelineService {
       tActivity.setTimeline(mTimeline);
       Activity activity = activityRepository.findById(tActivity.getActivityId()).orElseThrow(() -> new RuntimeException("Activity with id = " + tActivity.getActivityId() + " not found."));
       tActivity.setActivity(activity);
+
+      // Copy of Parent: Activity
       tActivity.setSerialNo(activity.getSerialNo());
       tActivity.setName(activity.getName());
       tActivity.setOverridable(activity.getOverridable());
+      tActivity.setDelayReasons(activity.getDelayReasons());
+      tActivity.setDepartment(activity.getDepartment());
+
       if (tActivity.getTSubActivityList() == null) continue;
       for (TSubActivity tSubActivity : tActivity.getTSubActivityList()) {
         tSubActivity.setTActivity(tActivity);
@@ -153,9 +159,6 @@ public class TimelineService {
       TActivity tActivity = timeline.getTActivityList().stream().filter(a -> id.equals(a.getId())).findAny().orElse(null);
       TActivity mTActivity = mTimeline.getTActivityList().stream().filter(a -> id.equals(a.getId())).findAny().orElse(null);
       if (tActivity != null && mTActivity != null) {
-        mTActivity.setSerialNo(tActivity.getSerialNo());
-        mTActivity.setName(tActivity.getName());
-        mTActivity.setOverridable(tActivity.getOverridable());
         mTActivity.setLeadTime(tActivity.getLeadTime());
         mTActivity.setTimeFrom(tActivity.getTimeFrom());
 

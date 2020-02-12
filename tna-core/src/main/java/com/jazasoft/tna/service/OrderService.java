@@ -158,25 +158,34 @@ public class OrderService {
   }
 
   @Transactional(value = "tenantTransactionManager")
-  public List<Order> updateAll(List<Order> orderList) {
+  public List<Order> updateAll(List<Order> orderList, Long departmentId) {
+    // Fetch Orders from database
     Set<Long> ids = orderList.stream().map(Order::getId).collect(Collectors.toSet());
     List<Order> mOrderList = orderRepository.findAllById(ids);
 
     for (Order order: orderList) {
       Order mOrder = mOrderList.stream().filter(o -> o.getId().equals(order.getId())).findAny().orElseThrow(() -> new RuntimeException("Order with id " + order.getId() + " not found."));
       if (order.getOActivityList() == null || mOrder.getOActivityList() == null) continue;
+
       for (OActivity oActivity: order.getOActivityList()) {
+
         OActivity mActivity = mOrder.getOActivityList().stream().filter(a -> a.getId().equals(oActivity.getId())).findAny().orElse(null);
-        if (mActivity == null) continue;
-        mActivity.setCompletedDate(oActivity.getCompletedDate());
-        mActivity.setDelayReason(oActivity.getDelayReason());
-        mActivity.setRemarks(oActivity.getRemarks());
-        if (oActivity.getOSubActivityList() == null || mActivity.getOSubActivityList() == null) continue;
-        for (OSubActivity oSubActivity: oActivity.getOSubActivityList()) {
-          OSubActivity mSubActivity = mActivity.getOSubActivityList().stream().filter(sa -> sa.getId().equals(oSubActivity.getId())).findAny().orElse(null);
-          if (mSubActivity == null) continue;
-          mSubActivity.setCompletedDate(oSubActivity.getCompletedDate());
-          mSubActivity.setRemarks(oSubActivity.getRemarks());
+        if (mActivity != null) {
+          if (departmentId == -1L || (mActivity.getTActivity() != null && mActivity.getTActivity().getDepartment() != null && !departmentId.equals(mActivity.getTActivity().getDepartment().getId()))){
+            mActivity.setCompletedDate(oActivity.getCompletedDate());
+            mActivity.setDelayReason(oActivity.getDelayReason());
+            mActivity.setRemarks(oActivity.getRemarks());
+            if (oActivity.getOSubActivityList() == null || mActivity.getOSubActivityList() == null) continue;
+
+            for (OSubActivity oSubActivity: oActivity.getOSubActivityList()) {
+              OSubActivity mSubActivity = mActivity.getOSubActivityList().stream().filter(sa -> sa.getId().equals(oSubActivity.getId())).findAny().orElse(null);
+              if (mSubActivity == null) continue;
+              mSubActivity.setCompletedDate(oSubActivity.getCompletedDate());
+              mSubActivity.setRemarks(oSubActivity.getRemarks());
+            }
+          } else {
+            Hibernate.initialize(mActivity.getOSubActivityList());
+          }
         }
       }
     }
@@ -184,8 +193,7 @@ public class OrderService {
   }
 
   @Transactional(value = "tenantTransactionManager")
-  public OActivity updateOrderActivity(Long orderId, OActivity oActivity) {
-
+  public OActivity updateActivity(Long orderId, OActivity oActivity) {
     Order mOrder = orderRepository.getOne(orderId);
 
     OActivity mOActivity = oActivityRepository.findOneByOrderAndId(mOrder, oActivity.getId()).orElseThrow(() -> new RuntimeException("Activity with id = " + oActivity.getId() + " not found for orderId = " + orderId));
@@ -197,7 +205,7 @@ public class OrderService {
   }
 
   @Transactional(value = "tenantTransactionManager")
-  public OSubActivity updateOrderOSubActivity(Long oActivityId, OSubActivity oSubActivity) {
+  public OSubActivity updateSubActivity(Long oActivityId, OSubActivity oSubActivity) {
 
     OActivity mOActivity = oActivityRepository.getOne(oActivityId);
 

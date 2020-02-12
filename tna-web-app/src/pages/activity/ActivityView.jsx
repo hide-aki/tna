@@ -56,7 +56,7 @@ class ActivityView extends Component {
             <FunctionField label="C-Level" render={record => (record.cLevel ? "Yes" : "No")} />
             <FunctionField label="Default Activity" render={record => (record.isDefault ? "Yes" : "No")} />
             <FunctionField label="Overridable" render={record => (record.overridable ? "Yes" : "No")} />
-            <TextField source="delayReason" label="Delay Reason" />
+            <TextField source="delayReasons" label="Delay Reason" />
           </ShowCard>
           <ShowCard
             title="Subactivities"
