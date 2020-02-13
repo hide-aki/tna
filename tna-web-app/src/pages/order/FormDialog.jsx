@@ -48,7 +48,7 @@ class FormDialog extends React.Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    if (!isEqual(this.props.data, nextProps.data) || !isEqual(this.props.ids, nextProps.ids)) {
+    if (!isEqual(this.props.data, nextProps.data) || !isEqual(this.props.ids, nextProps.ids) || (nextProps.open && !this.props.open)) {
       this.init(nextProps);
     }
   }
