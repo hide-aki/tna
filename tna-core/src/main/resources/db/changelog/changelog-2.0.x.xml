@@ -622,6 +622,17 @@
                                  initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
                                  referencedColumnNames="id" referencedTableName="department"/>
     </changeSet>
+    
+    <changeSet id="v2.0.x-id26" author="aditya">
+        <dropColumn tableName="timeline" columnName="tna_type"/>
+
+        <rollback>
+           <addColumn tableName="timeline" >
+               <column name="tna_type" type="VARCHAR(255)"/>
+           </addColumn>
+        </rollback>
+    </changeSet>
+
 </databaseChangeLog>
 
 

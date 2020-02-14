@@ -54,10 +54,6 @@ public class Timeline extends Auditable {
   @Column(nullable = false)
   private String name;
 
-  @NotEmpty
-  @Column(nullable = false)
-  private String tnaType;
-
   private Boolean approved;
 
   private String approvedBy;
@@ -89,13 +85,12 @@ public class Timeline extends Auditable {
         Timeline timeline = (Timeline) o;
         return Objects.equals(id, timeline.id) &&
                 Objects.equals(name, timeline.name) &&
-                Objects.equals(tnaType, timeline.tnaType) &&
                 Objects.equals(buyerId, timeline.buyerId);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, tnaType, buyerId);
+        return Objects.hash(id, name, buyerId);
     }
 
     @Override
@@ -103,7 +98,6 @@ public class Timeline extends Auditable {
         return "Timeline{" +
                 "id=" + id +
                 ", name='" + name + '\'' +
-                ", tnaType='" + tnaType + '\'' +
                 ", approved=" + approved +
                 ", approvedBy='" + approvedBy + '\'' +
                 ", buyerId=" + buyerId +

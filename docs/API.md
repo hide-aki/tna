@@ -827,12 +827,12 @@
             }
 ```
 
-4 . update 
+4 . update default and approve action
 
 ```$xslt
     url: ~/v1/api/timelines/{timelineId}
     method: PUT
-    action: 
+    action: default, aaprove
     params:
     request data: 
             {
@@ -887,8 +887,51 @@
                        ]
             }
 ```
+5. Update approval_edit action
+```$xslt
+    url: ~/v1/api/timelines/{timelineId}
+    method: PUT
+    action: approval_edit
+    params:
+    request data: 
+            {
+               "id": 2
+               "name": "Time line 3",
+               "tnaType":"Forward",
+               "approved": false,
+               "approvedBy": "",
+               "buyerId": 1,
+               "tActivityList":[
+                            {
+                                "id": 1
+                                "leadTime":2,
+                                "timeFrom":"1,2,3",
+                                "activityId": 1,
+                                "timlineId": 1
+                            }
+                       ]
+            }
+    response data: 
+ {
+               "id": 2
+               "name": "Time line 3",
+               "tnaType":"Forward",
+               "approved": false,
+               "approvedBy": "",
+               "buyerId": 1,
+               "tActivityList":[
+                            {
+                                "id": 1
+                                "leadTime":2,
+                                "timeFrom":"1,2,3"
+                                "activityId": 1,
+                                "timlineId": 1,
+                            }
+                       ]
+            }
+```
 
-5 . Delete 
+6 . Delete 
 
 ```$xslt
     url: ~/v1/api/timelines/{timelineId}

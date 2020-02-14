@@ -1,5 +1,6 @@
 package com.jazasoft.tna.restcontroller;
 
+import com.jazasoft.mtdb.IConfigKeys;
 import com.jazasoft.mtdb.specification.CustomRsqlVisitor;
 import com.jazasoft.tna.ApiUrls;
 import com.jazasoft.tna.entity.TActivity;
@@ -17,8 +18,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.net.URI;
+import java.util.regex.Pattern;
 
 @RestController
 @RequestMapping(ApiUrls.ROOT_URL_TIMELINES)
@@ -100,13 +103,22 @@ public class TimelineRestController {
     }
 
     @PutMapping(ApiUrls.URL_TIMELINES_TIMELINE)
-    private ResponseEntity<?> update(@PathVariable("timelineId") Long id, @RequestBody Timeline timeline) {
+    private ResponseEntity<?> update(@PathVariable("timelineId") Long id,
+                                     @RequestParam(value = "action", defaultValue = "default") String action,
+                                     @RequestBody Timeline timeline, HttpServletRequest request) {
         logger.trace("update(): id = {}", id);
+        Pattern pattern = Pattern.compile("default|approve|approval_edit", Pattern.CASE_INSENSITIVE);
+        if (!pattern.matcher(action).matches()) {
+            return ResponseEntity.badRequest().body("Invalid action. Supported actions are " + pattern.pattern());
+        }
+        String username = (String)request.getAttribute(IConfigKeys.REQ_ATTRIBUTE_KEY_USER_NAME);
         if (!timelineService.exists(id)) {
             return ResponseEntity.notFound().build();
         }
         timeline.setId(id);
-        Timeline mTimeline = timelineService.update(timeline);
+        timeline.setApprovedBy(username);
+        Timeline mTimeline = timelineService.update(timeline, action);
+
         mTimeline.getTActivityList().forEach(tActivity -> {
             if (tActivity.getActivity() != null) {
                 tActivity.getActivity().setSubActivityList(null);
