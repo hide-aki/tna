@@ -83,6 +83,11 @@ public class Order extends Auditable {
   @ManyToOne(optional = false, fetch = FetchType.LAZY)
   private GarmentType garmentType;
 
+  @NotEmpty
+  @Temporal(TemporalType.TIMESTAMP)
+  private Date etdDate;
+
+
   @OneToMany(mappedBy = "order", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
   @JsonProperty("oActivityList")
   private Set<OActivity> oActivityList = new HashSet<>();

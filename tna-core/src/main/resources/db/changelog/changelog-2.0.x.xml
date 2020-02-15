@@ -633,6 +633,16 @@
         </rollback>
     </changeSet>
 
+    <changeSet id="v2.0.x-id27" author="aditya">
+        <addColumn tableName="orders">
+            <column name="etd_date" type="TIMESTAMP WITHOUT TIME ZONE"/>
+        </addColumn>
+
+        <rollback>
+            <dropColumn tableName="orders" columnName="etd_date"/>
+        </rollback>
+    </changeSet>
+
 </databaseChangeLog>
 
 
