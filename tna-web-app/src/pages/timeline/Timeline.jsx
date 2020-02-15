@@ -57,8 +57,6 @@ export default withStyles(homeStyle)(({ classes, ...props }) => {
         <ReferenceField source="buyerId" reference="buyers">
           <TextField label="Buyer" source="name" />
         </ReferenceField>
-
-        <TextField label="TNA Type" source="tnaType" />
         <ShowButton cellClassName={classes.button} />
         {hasPrivilege(roles, hasAccess, "timeline", "update") && <EditButton cellClassName={classes.button} />}
         {hasPrivilege(roles, hasAccess, "timeline", "delete") && <DeleteButton cellClassName={classes.button} />}
