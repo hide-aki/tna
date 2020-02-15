@@ -7,6 +7,7 @@ import com.jazasoft.tna.repository.ActivityRepository;
 import com.jazasoft.tna.repository.BuyerRepository;
 import com.jazasoft.tna.repository.SubActivityRepository;
 import com.jazasoft.tna.repository.TimelineRepository;
+import com.jazasoft.tna.util.TnaUtils;
 import com.jazasoft.util.Utils;
 import org.hibernate.Hibernate;
 import org.slf4j.Logger;
@@ -100,12 +101,14 @@ public class TimelineService {
         Timeline mTimeline = timelineRepository.save(timeline);
 
         for (TActivity mActivity : mTimeline.getTActivityList()) {
-            if (mActivity.getTimeFrom() != null && !(mActivity.getTimeFrom().equals("O") || mActivity.getTimeFrom().equals("E"))) {
+            if (mActivity.getTimeFrom() != null && !Constants.FROM_ORDER_DATE.equalsIgnoreCase(mActivity.getTimeFrom())) {
                 Set<Long> activityIds = Utils.getListFromCsv(mActivity.getTimeFrom()).stream().map(String::trim).map(Long::parseLong).collect(Collectors.toSet());
                 List<String> tActivityIds = mTimeline.getTActivityList().stream().filter(ta -> ta.getActivity() != null && activityIds.contains(ta.getActivity().getId())).map(TActivity::getId).map(String::valueOf).collect(Collectors.toList());
                 mActivity.setTimeFrom(Utils.getCsvFromIterable(tActivityIds));
             }
         }
+
+        mTimeline.setStdLeadTime(TnaUtils.getStdLeadTime(mTimeline.getTActivityList()));
 
         return mTimeline;
     }
@@ -216,13 +219,17 @@ public class TimelineService {
             });
 
             for (TActivity mActivity : mTimeline.getTActivityList()) {
-                if (mActivity.getTimeFrom() != null && !(mActivity.getTimeFrom().equals("O"))) {
+                if (mActivity.getTimeFrom() != null && !Constants.FROM_ORDER_DATE.equalsIgnoreCase(mActivity.getTimeFrom())) {
                     Set<Long> activityIds = Utils.getListFromCsv(mActivity.getTimeFrom()).stream().map(String::trim).map(Long::parseLong).collect(Collectors.toSet());
                     List<String> tActivityIds = mTimeline.getTActivityList().stream().filter(ta -> ta.getActivity() != null && activityIds.contains(ta.getActivity().getId())).map(TActivity::getId).map(String::valueOf).collect(Collectors.toList());
                     mActivity.setTimeFrom(Utils.getCsvFromIterable(tActivityIds));
                 }
             }
             mTimeline.setApproved(false);
+        }
+
+        if (!action.equalsIgnoreCase("approve")) {
+            mTimeline.setStdLeadTime(TnaUtils.getStdLeadTime(mTimeline.getTActivityList()));
         }
 
         return mTimeline;

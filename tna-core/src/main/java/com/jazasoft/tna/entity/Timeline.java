@@ -54,6 +54,8 @@ public class Timeline extends Auditable {
   @Column(nullable = false)
   private String name;
 
+  private Integer stdLeadTime;
+
   private Boolean approved;
 
   private String approvedBy;

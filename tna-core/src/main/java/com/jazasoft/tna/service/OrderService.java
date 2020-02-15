@@ -1,10 +1,8 @@
 package com.jazasoft.tna.service;
 
-import com.jazasoft.tna.Constants;
 import com.jazasoft.tna.entity.*;
 import com.jazasoft.tna.repository.*;
 import com.jazasoft.tna.util.TnaUtils;
-import com.jazasoft.util.Assert;
 import com.jazasoft.util.DateUtils;
 import org.hibernate.Hibernate;
 import org.slf4j.Logger;
@@ -15,7 +13,6 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -93,9 +90,7 @@ public class OrderService {
     }
 
     // Calculate Standard Lead Time
-    int standardLeadTime = TnaUtils.getStandardLeadTime(timeline.getTActivityList());
     int currentLeadTime = (int) DAYS.between(DateUtils.toLocalDate(order.getOrderDate()), DateUtils.toLocalDate(order.getExFactoryDate()));
-
 
     Set<OActivity> oActivityList = new HashSet<>();
     for (TActivity tActivity : timeline.getTActivityList()) {
@@ -103,7 +98,7 @@ public class OrderService {
       oActivity.setOrder(order);
       oActivity.setTActivity(tActivity);
 
-      int leadTime = TnaUtils.getLeadTime(tActivity.getLeadTime(), currentLeadTime, standardLeadTime);
+      int leadTime = TnaUtils.getLeadTime(tActivity.getLeadTime(), currentLeadTime, timeline.getStdLeadTime());
 
       oActivity.setName(tActivity.getName());
       oActivity.setLeadTime(leadTime);

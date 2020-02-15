@@ -643,6 +643,13 @@
         </rollback>
     </changeSet>
 
+
+    <changeSet author="razamd" id="v2.0.x-id28">
+        <addColumn tableName="timeline">
+            <column name="std_lead_time" type="INT"/>
+        </addColumn>
+    </changeSet>
+
 </databaseChangeLog>
 
 

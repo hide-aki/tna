@@ -43,7 +43,7 @@ class TimelineView extends Component {
                 <TextField source="name" />
               </ReferenceField>
               <TextField source="name" />
-              <TextField source="tnaType" label="TNA Type" />
+              <TextField source="stdLeadTime" label="Standard Lead Time" />
             </ShowCard>
             <ShowCard
               title="Activities"

@@ -1,3 +1,18 @@
+-- Rolling Back ChangeSet: db/changelog/changelog-2.0.x.xml::v2.0.x-id28::razamd
+ALTER TABLE public.timeline DROP COLUMN std_lead_time;
+
+DELETE FROM public.databasechangelog WHERE ID = 'v2.0.x-id28' AND AUTHOR = 'razamd' AND FILENAME = 'db/changelog/changelog-2.0.x.xml';
+
+-- Rolling Back ChangeSet: db/changelog/changelog-2.0.x.xml::v2.0.x-id27::aditya
+ALTER TABLE public.orders DROP COLUMN etd_date;
+
+DELETE FROM public.databasechangelog WHERE ID = 'v2.0.x-id27' AND AUTHOR = 'aditya' AND FILENAME = 'db/changelog/changelog-2.0.x.xml';
+
+-- Rolling Back ChangeSet: db/changelog/changelog-2.0.x.xml::v2.0.x-id26::aditya
+ALTER TABLE public.timeline ADD tna_type VARCHAR(255);
+
+DELETE FROM public.databasechangelog WHERE ID = 'v2.0.x-id26' AND AUTHOR = 'aditya' AND FILENAME = 'db/changelog/changelog-2.0.x.xml';
+
 -- Rolling Back ChangeSet: db/changelog/changelog-2.0.x.xml::v2.0.x-id25::razamd
 ALTER TABLE public.t_activity DROP CONSTRAINT fk_t_activity_department_id;
 
