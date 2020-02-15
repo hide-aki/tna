@@ -1,6 +1,9 @@
 export const Role = {
+  MASTER: "master",
   SUPER_USER: "super_user",
   ADMIN_USER: "admin",
+  MERCHANT: "merchant",
+  USER: "user",
 };
 
 export const SectionTypes = {

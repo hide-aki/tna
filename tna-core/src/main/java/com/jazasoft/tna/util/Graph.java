@@ -23,7 +23,7 @@ public class Graph {
     }
   }
 
-  public int getStdLeadTime(Long start) {
+  public int getFinalLeadTime(Long start) {
     return DFSVisit(nodeMap.get(start));
   }
 

@@ -32,10 +32,10 @@ public class TnaUtils {
     TActivity lastActivity = tActivityList.stream().max(Comparator.comparing(TActivity::getSerialNo)).orElse(null);
     Assert.notNull(lastActivity, "Unable to Detect last activity");
 
-    return graph.getStdLeadTime(lastActivity.getId());
+    return graph.getFinalLeadTime(lastActivity.getId());
   }
 
   public static int getLeadTime(int leadTime, int currLeadTime, int stdLeadTime) {
-    return  (leadTime * currLeadTime)/stdLeadTime;
+    return (int)Math.round ( (double) (leadTime * currLeadTime)/stdLeadTime);
   }
 }

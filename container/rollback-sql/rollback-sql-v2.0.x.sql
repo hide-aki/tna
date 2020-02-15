@@ -1,3 +1,10 @@
+-- Rolling Back ChangeSet: db/changelog/changelog-2.0.x.xml::v2.0.x-id29::razamd
+ALTER TABLE public.o_activity DROP COLUMN final_lead_time;
+
+ALTER TABLE public.o_activity ADD time_from VARCHAR(255);
+
+DELETE FROM public.databasechangelog WHERE ID = 'v2.0.x-id29' AND AUTHOR = 'razamd' AND FILENAME = 'db/changelog/changelog-2.0.x.xml';
+
 -- Rolling Back ChangeSet: db/changelog/changelog-2.0.x.xml::v2.0.x-id28::razamd
 ALTER TABLE public.timeline DROP COLUMN std_lead_time;
 

@@ -1,9 +1,13 @@
 package com.jazasoft.tna.service;
 
+import com.jazasoft.tna.Constants;
 import com.jazasoft.tna.entity.*;
 import com.jazasoft.tna.repository.*;
+import com.jazasoft.tna.util.Graph;
+import com.jazasoft.tna.util.Node;
 import com.jazasoft.tna.util.TnaUtils;
 import com.jazasoft.util.DateUtils;
+import com.jazasoft.util.Utils;
 import org.hibernate.Hibernate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -98,11 +102,8 @@ public class OrderService {
       oActivity.setOrder(order);
       oActivity.setTActivity(tActivity);
 
-      int leadTime = TnaUtils.getLeadTime(tActivity.getLeadTime(), currentLeadTime, timeline.getStdLeadTime());
-
       oActivity.setName(tActivity.getName());
-      oActivity.setLeadTime(leadTime);
-      oActivity.setTimeFrom(tActivity.getTimeFrom());
+      oActivity.setLeadTime(TnaUtils.getLeadTime(tActivity.getLeadTime(), currentLeadTime, timeline.getStdLeadTime()));
 
       Set<OSubActivity> oSubActivityList = new HashSet<>();
 
@@ -112,7 +113,7 @@ public class OrderService {
         oSubActivity.setOActivity(oActivity);
 
         //TODO: implement actual logic
-        oSubActivity.setLeadTime(tSubActivity.getLeadTime());
+        oSubActivity.setLeadTime(TnaUtils.getLeadTime(tSubActivity.getLeadTime(), currentLeadTime, timeline.getStdLeadTime()));
         oSubActivity.setName(tSubActivity.getSubActivity().getName());
 
         oSubActivityList.add(oSubActivity);
@@ -123,6 +124,24 @@ public class OrderService {
     }
 
     order.setOActivityList(oActivityList);
+
+    // Set FinalLeadTime
+    List<Node> nodeList = order.getOActivityList().stream().map(oActivity -> new Node(oActivity.getTActivity().getId(), oActivity.getLeadTime(), oActivity.getTActivity().getTimeFrom())).collect(Collectors.toList());
+    Graph graph = new Graph(nodeList);
+
+    // Create Edges
+    for (OActivity oActivity: order.getOActivityList()) {
+      if (!Constants.FROM_ORDER_DATE.equals(oActivity.getTActivity().getTimeFrom())) {
+        List<Long> ids = Utils.getListFromCsv(oActivity.getTActivity().getTimeFrom()).stream().map(Long::parseLong).collect(Collectors.toList());
+        for (Long id: ids) {
+          graph.addEdge(oActivity.getTActivity().getId(), id);
+        }
+      }
+    }
+
+    for (OActivity oActivity: order.getOActivityList()) {
+      oActivity.setFinalLeadTime(graph.getFinalLeadTime(oActivity.getTActivity().getId()));
+    }
 
     return orderRepository.save(order);
   }

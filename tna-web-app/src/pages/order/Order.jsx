@@ -34,6 +34,7 @@ import {
   SAVING_END
 } from "jazasoft";
 import Table, { CheckBox, Toolbar } from "jazasoft/lib/mui/components/Table";
+import { LinkField } from "../../components/Table";
 
 import FormDialog from "./FormDialog";
 
@@ -92,7 +93,7 @@ const MyTextField = ({ column, record }) => {
   );
 };
 
-const getColumns = (orderList, onChange) => {
+const getColumns = (orderList, onChange, onLinkClick) => {
   let activityList = [];
   let activitySet = new Set();
   const aList = orderList
@@ -111,7 +112,7 @@ const getColumns = (orderList, onChange) => {
   let columns = [
     { dataKey: "selector", element: <CheckBox onChange={onChange} /> },
     { dataKey: "edit" },
-    { dataKey: "poRef", title: "PO Ref. No" },
+    { dataKey: "poRef", title: "PO Ref. No", element: <LinkField onClick={onLinkClick} /> },
     { dataKey: "buyerName", title: "Buyer" },
     { dataKey: "seasonName", title: "Season" },
     { dataKey: "style", title: "Style" },
@@ -122,7 +123,7 @@ const getColumns = (orderList, onChange) => {
   return columns;
 };
 
-const CustomDatagrid = ({ classes, view, roles, hasAccess, onEditClick, ...props }) => {
+const CustomDatagrid = ({ classes, view, roles, hasAccess, onEditClick, onLinkClick, ...props }) => {
   const [selectedIds, setSelectedIds] = React.useState([]);
 
   const onChange = ({ record, column }) => event => {
@@ -191,7 +192,7 @@ const CustomDatagrid = ({ classes, view, roles, hasAccess, onEditClick, ...props
         </React.Fragment>
       )}
       <PerfectScrollbar>
-        <Table classes={{ table: classes.nowrapTable }} columns={getColumns(rows, onChange)} rows={rows} />
+        <Table classes={{ table: classes.nowrapTable }} columns={getColumns(rows, onChange, onLinkClick)} rows={rows} />
       </PerfectScrollbar>
     </div>
   );
@@ -293,6 +294,10 @@ class Order extends React.Component {
     this.setState({ dialogActive: true, ids });
   };
 
+  onLinkClick = ({ record }) => e => {
+    this.props.history.push(`/orders/${record.id}/view`);
+  };
+
   onClose = () => {
     this.setState({ dialogActive: false });
   };
@@ -320,7 +325,14 @@ class Order extends React.Component {
           requestConfig={{ params: { view } }}
           {...props}
         >
-          <CustomDatagrid classes={classes} view={view} roles={roles} hasAccess={hasAccess} onEditClick={this.onEditClick} />
+          <CustomDatagrid
+            classes={classes}
+            view={view}
+            roles={roles}
+            hasAccess={hasAccess}
+            onEditClick={this.onEditClick}
+            onLinkClick={this.onLinkClick}
+          />
         </List>
       </div>
     );

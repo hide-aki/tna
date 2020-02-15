@@ -26,6 +26,9 @@ public class OActivity extends Auditable {
     @Column(nullable = false)
     private Integer leadTime;
 
+    // Final Lead Time using Order Date as Reference
+    private Integer finalLeadTime;
+
     @Temporal(value = TemporalType.TIMESTAMP)
     private Date completedDate;
 
@@ -33,8 +36,6 @@ public class OActivity extends Auditable {
 
     @Column(columnDefinition = "TEXT")
     private String remarks;
-
-    private String timeFrom;
 
     @JsonIgnore
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
@@ -85,7 +86,6 @@ public class OActivity extends Auditable {
                 ", delayReason='" + delayReason + '\'' +
                 ", remarks='" + remarks + '\'' +
                 ", name='" + name + '\'' +
-                ", timeFrom='" + timeFrom + '\'' +
                 ", order=" + order +
                 ", tActivity=" + tActivity +
                 '}';

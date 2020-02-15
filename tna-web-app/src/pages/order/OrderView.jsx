@@ -1,10 +1,11 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
+import moment from "moment";
+
 import {
   TextField,
   NumberField,
   SimpleShowLayout,
-  ReferenceField,
   crudGetOne,
   PageFooter,
   Button,
@@ -17,9 +18,6 @@ import {
   FETCH_END,
   PageHeader
 } from "jazasoft";
-
-import isEqual from "lodash/isEqual";
-import moment from "moment";
 
 import { dataProvider } from "../../App";
 
@@ -39,6 +37,83 @@ import CardHeader from "../../components/CardHeader";
 import FormDialog from "./FormDialog";
 
 import handleError from "../../utils/handleError";
+import { Role } from "../../utils/types";
+
+const fieldOptions = sm => ({
+  xs: 12,
+  sm,
+  fullWidth: true
+});
+
+const leadTime = lt =>
+  `O + ${Array(3 - `${lt}`.length)
+    .fill("0")
+    .join("")}${lt}`;
+
+const columns = [
+  { field: "name", title: "Name" },
+  {
+    field: "viewLeadTime",
+    title: "Lead Time",
+    type: "numeric"
+  },
+  { field: "dueDate", title: "Due Date", type: "date" },
+  {
+    field: "compDate",
+    title: "Completed Date",
+    type: "date"
+  },
+  { field: "delayReason", title: "Delay Reason" },
+  { field: "remarks", title: "Remarks" }
+];
+
+const format = (isGrassRootUser, order) => {
+  let activityList =
+    order.oActivityList &&
+    order.oActivityList
+      .map(e => ({ ...e.tActivity, ...e }))
+      .sort((a, b) => a.serialNo - b.serialNo)
+      .flatMap(({ oSubActivityList, ...oActivity }) =>
+        isGrassRootUser && oSubActivityList
+          ? [
+              {
+                ...oActivity,
+                dueDate: moment(order.orderDate)
+                  .add(oActivity.finalLeadTime, "day")
+                  .format("ll"),
+                viewLeadTime: leadTime(oActivity.finalLeadTime),
+                compDate:
+                  oActivity.completedDate == null || oActivity.completedDate === "" ? undefined : moment(oActivity.completedDate).format("ll"),
+                delayReason: oActivity.delayReason == null ? undefined : oActivity.delayReason,
+                remarks: oActivity.remarks == null ? undefined : oActivity.remarks
+              },
+              ...oSubActivityList.map(e => ({
+                ...e,
+                dueDate: moment(order.orderDate)
+                  .add(oActivity.finalLeadTime + e.leadTime, "day")
+                  .format("ll"),
+                viewLeadTime: leadTime(oActivity.finalLeadTime + e.leadTime),
+                compDate: e.completedDate == null || e.completedDate === "" ? undefined : moment(e.completedDate).format("ll"),
+                delayReason: e.delayReason == null ? undefined : e.delayReason,
+                remarks: e.remarks == null ? undefined : e.remarks
+              }))
+            ]
+          : [
+              {
+                ...oActivity,
+                dueDate: moment(order.orderDate)
+                  .add(oActivity.finalLeadTime, "day")
+                  .format("ll"),
+                viewLeadTime: leadTime(oActivity.finalLeadTime),
+                compDate:
+                  oActivity.completedDate == null || oActivity.completedDate === "" ? undefined : moment(oActivity.completedDate).format("ll"),
+                delayReason: oActivity.delayReason == null ? undefined : oActivity.delayReason,
+                remarks: oActivity.remarks == null ? undefined : oActivity.remarks
+              }
+            ]
+      );
+  return activityList;
+};
 
 const styles = {
   root: {},
@@ -60,94 +135,14 @@ const styles = {
   }
 };
 
-const grassRoot = true;
-
-const columns = [
-  { field: "name", title: "Name" },
-  {
-    field: "viewLeadTime",
-    title: "Lead Time",
-    type: "numeric"
-  },
-  { field: "viewDueDate", title: "Due Date", type: "date" },
-  {
-    field: "compDate",
-    title: "Completed Date",
-    type: "date"
-  },
-  { field: "delayReason", title: "Delay Reason" },
-  { field: "remarks", title: "Remarks" }
-];
-
-const format = order => {
-  let orderView =
-    order.oActivityList &&
-    order.oActivityList
-      .map(e => ({ ...e.tActivity, ...e }))
-      .sort((a, b) => a.serialNo - b.serialNo)
-      .flatMap(({ oSubActivityList, ...oActivity }) => [
-        {
-          ...oActivity,
-          viewDueDate:
-            oActivity.timeFrom === "O"
-              ? moment(order.orderDate)
-                  .add(oActivity.leadTime, "day")
-                  .format("ll")
-              : moment(order.exFactoryDate)
-                  .subtract(oActivity.leadTime, "day")
-                  .format("ll"),
-          compDate: oActivity.completedDate == null || oActivity.completedDate === "" ? undefined : moment(oActivity.completedDate).format("ll"),
-          delayReason: oActivity.delayReason == null ? undefined : oActivity.delayReason,
-          remarks: oActivity.remarks == null ? undefined : oActivity.remarks,
-          actId: oActivity.id
-        },
-        ...oSubActivityList.map(e => ({
-          ...e,
-          viewDueDate:
-            oActivity.timeFrom === "O"
-              ? moment(order.orderDate)
-                  .add(e.leadTime, "day")
-                  .format("ll")
-              : moment(order.exFactoryDate)
-                  .subtract(e.leadTime, "day")
-                  .format("ll"),
-          compDate: e.completedDate == null || e.completedDate === "" ? undefined : moment(e.completedDate).format("ll"),
-          delayReason: e.delayReason == null ? undefined : e.delayReason,
-          remarks: e.remarks == null ? undefined : e.remarks
-        }))
-      ]);
-  return orderView;
-};
-
 class OrderView extends Component {
   state = {
-    initialValues: {},
     dialogActive: false
   };
 
   componentDidMount() {
-    this.init();
     this.props.dispatch(crudGetOne("orders", this.props.id));
   }
-
-  componentWillReceiveProps(nextProps) {
-    if (!isEqual(this.props.order, nextProps.order)) {
-      this.init(nextProps);
-    }
-  }
-
-  init = (props = this.props) => {
-    const { order } = props;
-    if (!order) return;
-    let initialValues = grassRoot ? format(order) : order.oActivityList;
-    initialValues =
-      initialValues &&
-      initialValues.map(e => ({
-        ...e,
-        viewLeadTime: e.timeFrom === "O" ? `O + ` + e.leadTime : `E - ` + e.leadTime
-      }));
-    this.setState({ initialValues });
-  };
 
   onEditSubmit = (page, rows, activity) => {
     const { order } = this.props;
@@ -218,8 +213,10 @@ class OrderView extends Component {
   };
 
   render() {
-    const { id, order = {}, classes } = this.props;
-    const { initialValues, dialogActive } = this.state;
+    const { id, roles = [], order = {}, classes } = this.props;
+    const { dialogActive } = this.state;
+    const isGrassRootUser = roles.includes(Role.MERCHANT) || roles.includes(Role.USER);
+    const activityList = format(isGrassRootUser, order);
     return (
       <div className={classes.root}>
         <PageHeader title="Order View" />
@@ -237,33 +234,36 @@ class OrderView extends Component {
             <CardHeader title="Basic Details" />
             <Divider />
             <SimpleShowLayout style={{ padding: "1.5em" }} footer={false} record={order}>
-              <ReferenceField source="buyerId" reference="buyers" allowEmpty={true}>
-                <TextField source="name" />
-              </ReferenceField>
-              <TextField source="poRef" label="PO Reference" />
-              <ReferenceField source="garmentTypeId" label="Garment Type" reference="garmentTypes" allowEmpty={true}>
-                <TextField source="name" />
-              </ReferenceField>
-              <ReferenceField source="seasonId" reference="seasons" allowEmpty={true}>
-                <TextField source="name" />
-              </ReferenceField>
-              <TextField source="style" label="Style" />
-              <NumberField source="orderQty" label="Order Quantity" />
-              <TextField source="remarks" />
-              <FunctionField source="orderDate" label="Order Date" render={record => moment(record.orderDate).format("ll")} />
-              <FunctionField source="exFactoryDate" label="Ex Factory Date" render={record => moment(record.exFactoryDate).format("ll")} />
+              <TextField source="poRef" label="PO Reference" {...fieldOptions(3)} />
+              <TextField source="buyer.name" label="Buyer" {...fieldOptions(3)} />
+              <TextField source="garmentType.name" label="Garment Type" {...fieldOptions(3)} />
+              <TextField source="season.name" label="Season" {...fieldOptions(3)} />
+              <TextField source="style" label="Style" {...fieldOptions(3)} />
+              <NumberField source="orderQty" label="Order Quantity" {...fieldOptions(3)} />
+              <FunctionField source="orderDate" label="Order Date" render={record => moment(record.orderDate).format("ll")} {...fieldOptions(3)} />
+              {!roles.includes(Role.USER) && (
+                <FunctionField
+                  label="Ex Factory Date"
+                  render={record => record.exFactoryDate && moment(record.exFactoryDate).format("ll")}
+                  {...fieldOptions(3)}
+                />
+              )}
+              {!roles.includes(Role.USER) && (
+                <FunctionField label="ETD Date" render={record => record.etdDate && moment(record.etdDate).format("ll")} {...fieldOptions(3)} />
+              )}
+              <TextField source="remarks" {...fieldOptions(9)} />
             </SimpleShowLayout>
           </Card>
           <Card style={{ marginTop: "2em" }}>
             <CardHeader title="Activities" />
             <Divider />
-            {initialValues && initialValues.length && (
+            {activityList && activityList.length && (
               <MaterialTable
                 columns={columns}
-                data={initialValues}
+                data={activityList}
                 onTreeExpandChange={this.onTreeExpandChanged}
                 parentChildData={
-                  !grassRoot
+                  !isGrassRootUser
                     ? null
                     : (row, rows) =>
                         rows.find(a => {

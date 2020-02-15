@@ -650,6 +650,20 @@
         </addColumn>
     </changeSet>
 
+
+    <changeSet author="razamd" id="v2.0.x-id29">
+        <addColumn tableName="o_activity">
+            <column name="final_lead_time" type="INT"/>
+        </addColumn>
+        <dropColumn tableName="o_activity" columnName="time_from"/>
+
+        <rollback>
+            <dropColumn tableName="o_activity" columnName="final_lead_time" />
+            <addColumn tableName="o_activity">
+                <column name="time_from" type="VARCHAR(255)"/>
+            </addColumn>
+        </rollback>
+    </changeSet>
 </databaseChangeLog>
 
 

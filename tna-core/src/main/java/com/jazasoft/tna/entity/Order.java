@@ -83,7 +83,6 @@ public class Order extends Auditable {
   @ManyToOne(optional = false, fetch = FetchType.LAZY)
   private GarmentType garmentType;
 
-  @NotEmpty
   @Temporal(TemporalType.TIMESTAMP)
   private Date etdDate;
 
