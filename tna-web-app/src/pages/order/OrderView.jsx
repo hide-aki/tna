@@ -46,6 +46,7 @@ const fieldOptions = sm => ({
 });
 
 const leadTime = lt =>
+  lt &&
   `O + ${Array(3 - `${lt}`.length)
     .fill("0")
     .join("")}${lt}`;

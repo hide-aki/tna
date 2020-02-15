@@ -67,14 +67,25 @@ const MyTextField = ({ column, record }) => {
   const activity = record[column.dataKey];
   let value, bgColor;
   if (activity) {
-    let dueDate;
-    if (activity.timeFrom === "O") {
-      dueDate = moment(record.orderDate).add(activity.leadTime, "days");
-    } else if (activity.timeFrom === "E") {
-      dueDate = moment(record.exFactoryDate).subtract(activity.leadTime, "days");
-    }
+    let dueDate = moment(record.orderDate).add(activity.finalLeadTime, "days");
     value = activity.completedDate ? moment(activity.completedDate).format("ll") : dueDate ? dueDate.format("ll") : null;
-    bgColor = "yellow";
+    if (activity.completedDate) {
+      if (moment(activity.completedDate).isSameOrBefore(dueDate)) {
+        bgColor = "#c9f7c6"; // Green
+      } else {
+        bgColor = "#ffc87a"; //Orange
+      }
+    } else {
+      if (
+        moment()
+          .startOf("day")
+          .isSameOrBefore(dueDate)
+      ) {
+        bgColor = "#d4f1ff"; // Blue
+      } else {
+        bgColor = "#ffcac4"; // Red
+      }
+    }
   }
   return (
     <div style={{ display: "flex", justifyContent: "center" }}>
@@ -82,9 +93,10 @@ const MyTextField = ({ column, record }) => {
         style={{
           backgroundColor: bgColor,
           display: "block",
-          // width: 30,
-          padding: "3px 3px",
-          textAlign: "center"
+          textAlign: "center",
+          width: 100,
+          paddingTop: 4,
+          paddingBottom: 4
         }}
       >
         {value}
@@ -118,7 +130,9 @@ const getColumns = (orderList, onChange, onLinkClick) => {
     { dataKey: "style", title: "Style" },
     { dataKey: "orderQty", title: "Order Qty" },
     { dataKey: "exFactory", title: "Ex Factory" },
-    ...activityList.sort((a, b) => a.serialNo - b.serialNo).map(({ name }) => ({ dataKey: btoa(name), title: name, element: <MyTextField /> }))
+    ...activityList
+      .sort((a, b) => a.serialNo - b.serialNo)
+      .map(({ name }) => ({ dataKey: btoa(name), title: name.length > 20 ? `${name.substring(0, 17)}...` : name, element: <MyTextField /> }))
   ];
   return columns;
 };
