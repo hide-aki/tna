@@ -15,6 +15,7 @@ import {
   SimpleFormIterator,
   required,
   minLength,
+  maxLength,
   FormDataConsumer,
   SelectArrayInput
 } from "jazasoft";
@@ -53,7 +54,7 @@ class ActivityCreate extends Component {
           <FormCard title="Activity Details">
             <TextInput
               source="name"
-              validate={[required(), minLength(2)]}
+              validate={[required(), minLength(2), maxLength(30),]}
               {...inputOptions(3)}
             />
 
@@ -88,6 +89,8 @@ class ActivityCreate extends Component {
                       label="Notify Departments"
                       optionText="name"
                       choices={choices}
+                      fullWidth= {true}
+                      options={{ fullWidth: true }}
                       {...inputOptions(5)}
                     />
                   );

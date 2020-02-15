@@ -14,6 +14,7 @@ import {
   SimpleFormIterator,
   required,
   minLength,
+  maxLength,
   FormDataConsumer,
   SelectArrayInput
 } from "jazasoft";
@@ -64,7 +65,7 @@ class ActivityEdit extends Component {
           <FormCard title="Activity Details">
             <TextInput
               source="name"
-              validate={[required(), minLength(2)]}
+              validate={[required(), minLength(2), maxLength(30)]}
               {...inputOptions(3)}
             />
             {

@@ -45,6 +45,8 @@ import {
   crudGetOne,
   RestMethods,
   minValue,
+  maxValue,
+  maxLength,
   showNotification,
   FETCH_START,
   FETCH_END,
@@ -183,7 +185,7 @@ const renderActivities = ({ fields, activities, classes, expanded, handleExpansi
                             name
                           };
                         });
-                        choices.unshift({ id: "O", name: "Order Date" }, { id: "E", name: "Ex-Factory Date" });
+                        choices.unshift({ id: "O", name: "Order Date" });
                         return (
                           <SelectArrayInput
                             source={`${activity}.timeFrom`}
@@ -213,7 +215,7 @@ const renderActivities = ({ fields, activities, classes, expanded, handleExpansi
                           />
                         )}
 
-                        <NumberInput source="leadTime" label="Lead Time" {...inputOptions(6)} validate={[required(), minValue(1)]} />
+                        <NumberInput source="leadTime" label="Lead Time" {...inputOptions(6)} validate={[required(), maxValue(0)]} />
                       </SimpleFormIterator>
                     </ArrayInput>
                   )}
@@ -277,8 +279,7 @@ class TimelineEdit extends Component {
               name: activity.name,
               serialNo: activity.serialNo,
               timeFrom:
-                tActivity.timeFrom === "O" || tActivity.timeFrom === "E"
-                  ? [tActivity.timeFrom]
+                tActivity.timeFrom === "O" ? [tActivity.timeFrom]
                   : tActivity.timeFrom
                       .split(",")
                       .map(e => {
@@ -372,30 +373,13 @@ class TimelineEdit extends Component {
         for (let i = 0; i < timeFromLength; i++) {
           for (let j = 1; j < timeFromLength; j++) {
             if (typeof activity.timeFrom[i] !== typeof activity.timeFrom[j]) {
-              tActivity.timeFrom = "Value should be either single selection of Order date and Ex-Factory date or multi-selection of activities";
+              tActivity.timeFrom = "Value should be either single selection of Order date or multi-selection of activities";
               tActivityList[activityIdx] = tActivity;
             } else if (typeof activity.timeFrom[i] === "string" && typeof activity.timeFrom[j] === "string") {
-              tActivity.timeFrom = "Value should be either single selection of Order date and Ex-Factory date or multi-selection of activities";
+              tActivity.timeFrom = "Value should be either single selection of Order date or multi-selection of activities";
               tActivityList[activityIdx] = tActivity;
             }
           }
-        }
-        const tSubActivityList = [];
-        let sortedSubActivityList = activity.tSubActivityList && activity.tSubActivityList.map(a => a.subActivityId);
-        activity.tSubActivityList &&
-          activity.tSubActivityList.forEach((subActivity, subActivityIdx) => {
-            const tSubActivity = {};
-            if (subActivity.leadTime > activity.leadTime) {
-              tSubActivity.leadTime = "Value should be less than Activity's Lead Time";
-              tSubActivityList[subActivityIdx] = tSubActivity;
-            } else if (sortedSubActivityList.some((a, index) => sortedSubActivityList.indexOf(a) !== index)) {
-              tSubActivity.subActivityId = "Subactivities should not be same";
-              tSubActivityList[subActivityIdx] = tSubActivity;
-            }
-          });
-        if (tSubActivityList.length) {
-          tActivity.tSubActivityList = tSubActivityList;
-          tActivityList[activityIdx] = tActivity;
         }
       });
     if (tActivityList.length) {
@@ -466,17 +450,8 @@ class TimelineEdit extends Component {
                       <ReferenceInput source="buyerId" reference="buyers" {...inputOptions(4)} validate={required()}>
                         <SelectInput optionText="name" />
                       </ReferenceInput>
-                      <TextInput source="name" validate={[required()]} {...inputOptions(4)} />
-                      <SelectInput
-                        source="tnaType"
-                        label="TNA Type"
-                        choices={[
-                          { id: "Backward", name: "Backward" },
-                          { id: "Forward", name: "Forward" }
-                        ]}
-                        validate={[required()]}
-                        {...inputOptions(4)}
-                      />
+                      <TextInput source="name" validate={[maxLength(30), required()]} {...inputOptions(3)} />
+                      
                     </SimpleForm>
                   </div>
                 </Card>
