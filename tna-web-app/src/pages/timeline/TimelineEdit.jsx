@@ -425,7 +425,7 @@ class TimelineEdit extends Component {
   render() {
     const { hasAccess, roles, history, classes, activities } = this.props;
     const { dialogActive, rActivityList, fields, initialValues, expanded } = this.state;
-    if (!hasPrivilege(roles, hasAccess, "timeline", "update")) {
+    if (!hasPrivilege(roles, hasAccess, "timeline", "update", "default")) {
       return <Forbidden history={history} />;
     }
     return (

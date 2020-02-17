@@ -44,6 +44,7 @@ const filters = (
 
 export default withStyles(homeStyle)(({ classes, ...props }) => {
   const { roles, hasAccess } = props;
+  
   return (
     <List
       actions={({ basePath, roles, hasAccess }) => (
@@ -58,7 +59,7 @@ export default withStyles(homeStyle)(({ classes, ...props }) => {
           <TextField label="Buyer" source="name" />
         </ReferenceField>
         <ShowButton cellClassName={classes.button} />
-        {hasPrivilege(roles, hasAccess, "timeline", "update") && <EditButton cellClassName={classes.button} />}
+        {hasPrivilege(roles, hasAccess, "timeline", "update", "default") && <EditButton cellClassName={classes.button} />}
         {hasPrivilege(roles, hasAccess, "timeline", "delete") && <DeleteButton cellClassName={classes.button} />}
       </Datagrid>
     </List>
