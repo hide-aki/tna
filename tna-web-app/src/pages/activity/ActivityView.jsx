@@ -6,7 +6,6 @@ import {
   ShowCard,
   TextField,
   Datagrid,
-  ReferenceField,
   ReferenceArrayField,
   SingleFieldList,
   ChipField,
@@ -43,10 +42,7 @@ class ActivityView extends Component {
         <MultiCardShowLayout footer={<Footer />}>
           <ShowCard title="Activity Details">
             <TextField source="name" />
-            <ReferenceField source="departmentId" reference="departments">
-              <TextField source="name" />
-            </ReferenceField>
-
+            <FunctionField label="Department" render={record => (record.department ? record.department.name : "")} />
             <ReferenceArrayField label="Notify Departments" reference="departments" source="notify">
               <SingleFieldList>
                 <ChipField allowEmpty={true} source="name" />

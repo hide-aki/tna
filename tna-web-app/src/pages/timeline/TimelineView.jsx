@@ -5,7 +5,7 @@ import {
   TextField,
   ShowCard,
   MultiCardShowLayout,
-  ReferenceField,
+  FunctionField,
   PageFooter,
   Button,
   BackButton,
@@ -288,9 +288,7 @@ class TimelineView extends Component {
           }
         >
           <ShowCard title="Timeline Details">
-            <ReferenceField source="buyerId" reference="buyers">
-              <TextField source="name" />
-            </ReferenceField>
+            <FunctionField label="Buyer" render={record => (record.buyer ? record.buyer.name : "-")} />
             <TextField source="name" />
             <TextField source="stdLeadTime" label="Standard Lead Time" />
           </ShowCard>

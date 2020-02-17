@@ -143,8 +143,8 @@ class Activity extends Component {
       department: activity.department.name,
       action: editing ? (
         <div style={{ width: 65 }}>
-          {idx !== 0 && <ArrowUp onClick={this.onActionClick("up", idx)} />}
-          {idx !== activityList.length - 1 && <ArrowDown onClick={this.onActionClick("down", idx)} />}
+          {idx !== 0 && <ArrowUp onClick={this.onActionClick("up", idx)} style={{ cursor: "pointer" }} />}
+          {idx !== activityList.length - 1 && <ArrowDown onClick={this.onActionClick("down", idx)} style={{ cursor: "pointer" }} />}
         </div>
       ) : (
         <div style={{ display: "flex", justifyContent: "flex-end" }}>

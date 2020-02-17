@@ -50,31 +50,16 @@ class ActivityEdit extends Component {
   };
   render() {
     const { roles, hasAccess, history, departments, classes, dispatch, activity, ...props } = this.props;
-    if (!hasPrivilege(roles, hasAccess, "activity", "update")){
-      return <Forbidden history={history} />
+    if (!hasPrivilege(roles, hasAccess, "activity", "update")) {
+      return <Forbidden history={history} />;
     }
     return (
-      <Edit
-        cardWrapper={false}
-        record={{ subActivityList: [{}] }}
-        parse={this.parse}
-        format={this.format}
-        {...props}
-      >
+      <Edit cardWrapper={false} record={{ subActivityList: [{}] }} parse={this.parse} format={this.format} {...props}>
         <MultiCardForm redirect="home">
           <FormCard title="Activity Details">
-            <TextInput
-              source="name"
-              validate={[required(), minLength(2), maxLength(30)]}
-              {...inputOptions(3)}
-            />
+            <TextInput source="name" validate={[required(), minLength(2), maxLength(30)]} {...inputOptions(3)} />
             {
-              <ReferenceInput
-                source="departmentId"
-                reference="departments"
-                {...inputOptions(4)}
-                validate={required()}
-              >
+              <ReferenceInput source="departmentId" reference="departments" {...inputOptions(4)} validate={required()}>
                 <SelectInput optionText="name" />
               </ReferenceInput>
             }
@@ -83,12 +68,8 @@ class ActivityEdit extends Component {
               {({ formData }) => {
                 if (formData.departmentId) {
                   let selectedDeptId = formData && formData.departmentId;
-                  let totalDepartmentList = Object.keys(departments).map(
-                    e => departments[e]
-                  );
-                  const rDepartments =
-                    formData.departmentId &&
-                    totalDepartmentList.filter(e => selectedDeptId !== e.id);
+                  let totalDepartmentList = Object.keys(departments).map(e => departments[e]);
+                  const rDepartments = formData.departmentId && totalDepartmentList.filter(e => selectedDeptId !== e.id);
                   const choices =
                     rDepartments &&
                     Object.values(rDepartments).map(({ id, name }) => ({
@@ -96,71 +77,27 @@ class ActivityEdit extends Component {
                       name
                     }));
 
-                  return (
-                    <SelectArrayInput
-                      source="notify"
-                      label="Notify Departments"
-                      optionText="name"
-                      choices={choices}
-                      {...inputOptions(5)}
-                    />
-                  );
+                  return <SelectArrayInput source="notify" label="Notify Departments" optionText="name" choices={choices} {...inputOptions(5)} />;
                 } else {
-                  return (
-                    <SelectArrayInput
-                      source="notify"
-                      label="Notify Departments"
-                      optionText="name"
-                      choices={[]}
-                      {...inputOptions(5)}
-                    />
-                  )
+                  return <SelectArrayInput source="notify" label="Notify Departments" optionText="name" choices={[]} {...inputOptions(5)} />;
                 }
               }}
             </FormDataConsumer>
-            <TextInput
-              source="delayReasons"
-              validate={[minLength(2)]}
-              {...inputOptions(4)}
-            />
-            <BooleanInput
-              defaultValue={false}
-              source="cLevel"
-              label="C Level"
-              style={{ marginLeft: "2em", marginTop: "1.5em" }}
-            />
+            <TextInput source="delayReasons" validate={[minLength(2)]} {...inputOptions(4)} />
+            <BooleanInput defaultValue={false} source="cLevel" label="C Level" style={{ marginLeft: "2em", marginTop: "1.5em" }} />
             <BooleanInput
               defaultValue={false}
               source="isDefault"
               label="Default Activity"
-              style={{marginTop: "1.5em", marginLeft: "-3em", marginRight: "-2em" }}
+              style={{ marginTop: "1.5em", marginLeft: "-3em", marginRight: "-2em" }}
             />
-            <BooleanInput
-              defaultValue={false}
-              source="overridable"
-              label="Overridable"
-              style={{ marginTop: "1.5em",}}
-            />
+            <BooleanInput defaultValue={false} source="overridable" label="Overridable" style={{ marginTop: "1.5em" }} />
           </FormCard>
           <FormCard title="Subactivities">
-            <ArrayInput
-              label="Subactivity List"
-              source="subActivityList"
-              xs={12}
-              fullWidth={true}
-            >
+            <ArrayInput label="Subactivity List" source="subActivityList" xs={12} fullWidth={true}>
               <SimpleFormIterator>
-                <TextInput
-                  label="Name"
-                  source="name"
-                  validate={[required(), minLength(2)]}
-                  {...inputOptions(4)}
-                />
-                <TextInput
-                  label="Description"
-                  source="desc"
-                  {...inputOptions(8)}
-                />
+                <TextInput label="Name" source="name" validate={[required(), minLength(2)]} {...inputOptions(4)} />
+                <TextInput label="Description" source="desc" {...inputOptions(8)} />
               </SimpleFormIterator>
             </ArrayInput>
           </FormCard>
@@ -171,9 +108,7 @@ class ActivityEdit extends Component {
 }
 
 const mapStateToProps = state => ({
-  departments:
-    state.jazasoft.resources["departments"] &&
-    state.jazasoft.resources["departments"].data
+  departments: state.jazasoft.resources["departments"] && state.jazasoft.resources["departments"].data
 });
 
 export default connect(mapStateToProps)(withStyles(styles)(ActivityEdit));

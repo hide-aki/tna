@@ -64,7 +64,7 @@ export const SelectInput = ({ rowIdx, colIdx, column, record, onChange, choices,
   return (
     <Select style={{ width }} multiple={multiple} value={value} onChange={onChange && onChange({ rowIdx, colIdx, column, record })}>
       {options.map((option, idx) => (
-        <MenuItem key={idx} value={option.name} style={{ padding: allowEmpty && idx === 0 ? "16px" : "8px" }}>
+        <MenuItem key={idx} value={option.id} style={{ padding: allowEmpty && idx === 0 ? "16px" : "8px" }}>
           {option.name}
         </MenuItem>
       ))}
