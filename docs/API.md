@@ -959,6 +959,7 @@
                 "poRef": "CT-123",
                 "orderDate": "2020-01-2",
                 "exFactoryDate": "2020-01-3",
+                "etdDate": "20-01-05",
                 "buyerId": 1,
                 "timelineId": 1
             }
@@ -980,6 +981,7 @@
                 "style": "Style 1",
                 "orderDate": "2020-01-2",
                 "exFactoryData": "2020-01-3",
+                "etdDate": "20-01-05",
                 "buyerId": 1,
                 "timelineId": 1,
                 "garmentTypeId":1,
@@ -1020,6 +1022,7 @@
                 "style": "Style 1",
                 "orderDate": "2020-01-2",
                 "exFactoryDate": "2020-01-3",
+                "etdDate": "20-01-05",
                 "buyerId": 1,
                 "timelineId": 1,
                 "garmentTypeId":1,
@@ -1033,6 +1036,7 @@
                 "style": "Style 1",
                 "orderDate": "2020-01-2",
                 "exFactoryData": "2020-01-3",
+                "etdDate": "20-01-05",
                 "buyerId": 1,
                 "timelineId": 1,
                 "garmentTypeId":1,
@@ -1055,10 +1059,13 @@
                 "style": "Style 4",
                 "orderDate": "2020-01-2",
                 "exFactoryData": "2020-01-3",
+                "etdDate": "20-01-05",
                 "buyerId": 1,
                 "timelineId": 1,
                 "garmentTypeId":1,
                 "seasonId":1
+                "overridable":"true",
+                
             }
     response data: 
             {
@@ -1068,6 +1075,7 @@
                 "style": "Style 4",
                 "orderDate": "2020-01-2",
                 "exFactoryData": "2020-01-3",
+                "etdDate": "20-01-05",
                 "buyerId": 1,
                 "timelineId": 1,
                 "garmentTypeId":1,
@@ -1102,6 +1110,7 @@
                 "style": "Style 4",
                 "orderDate": "2020-01-2",
                 "exFactoryData": "2020-01-3",
+                "etdDate": "20-01-05",
                 "buyerId": 1,
                 "timelineId": 1,
                 "garmentTypeId":1,

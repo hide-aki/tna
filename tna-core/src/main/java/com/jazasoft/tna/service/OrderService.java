@@ -171,9 +171,9 @@ public class OrderService {
         if (mOActivity != null && Boolean.TRUE.equals(mOActivity.getTActivity().getOverridable())) {
           int diff =  oActivity.getFinalLeadTime() - mOActivity.getFinalLeadTime();
           mOActivity.setLeadTime(mOActivity.getLeadTime() + diff);
+          mOActivity.getTActivity().setOverridable(mOActivity.getTActivity().getOverridable());
         }
       }
-
       // Set FinalLeadTime
       List<Node> nodeList = mOrder.getOActivityList().stream().map(oActivity -> new Node(oActivity.getTActivity().getId(), oActivity.getLeadTime(), oActivity.getTActivity().getTimeFrom())).collect(Collectors.toList());
       Graph graph = new Graph(nodeList);
