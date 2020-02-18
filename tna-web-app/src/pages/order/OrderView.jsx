@@ -79,9 +79,7 @@ const format = (isGrassRootUser, order) => {
           ? [
               {
                 ...oActivity,
-                dueDate: moment(order.orderDate)
-                  .add(oActivity.finalLeadTime, "day")
-                  .format("ll"),
+                dueDate: moment(oActivity.dueDate).format("ll"),
                 viewLeadTime: leadTime(oActivity.finalLeadTime),
                 compDate:
                   oActivity.completedDate == null || oActivity.completedDate === "" ? undefined : moment(oActivity.completedDate).format("ll"),
@@ -90,9 +88,7 @@ const format = (isGrassRootUser, order) => {
               },
               ...oSubActivityList.map(e => ({
                 ...e,
-                dueDate: moment(order.orderDate)
-                  .add(oActivity.finalLeadTime + e.leadTime, "day")
-                  .format("ll"),
+                dueDate: moment(e.dueDate).format("ll"),
                 viewLeadTime: leadTime(oActivity.finalLeadTime + e.leadTime),
                 compDate: e.completedDate == null || e.completedDate === "" ? undefined : moment(e.completedDate).format("ll"),
                 delayReason: e.delayReason == null ? undefined : e.delayReason,
@@ -102,9 +98,7 @@ const format = (isGrassRootUser, order) => {
           : [
               {
                 ...oActivity,
-                dueDate: moment(order.orderDate)
-                  .add(oActivity.finalLeadTime, "day")
-                  .format("ll"),
+                dueDate: moment(oActivity.dueDate).format("ll"),
                 viewLeadTime: leadTime(oActivity.finalLeadTime),
                 compDate:
                   oActivity.completedDate == null || oActivity.completedDate === "" ? undefined : moment(oActivity.completedDate).format("ll"),

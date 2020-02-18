@@ -5,6 +5,7 @@ import com.jazasoft.tna.entity.TActivity;
 import com.jazasoft.util.Assert;
 import com.jazasoft.util.Utils;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
@@ -37,5 +38,42 @@ public class TnaUtils {
 
   public static int getLeadTime(int leadTime, int currLeadTime, int stdLeadTime) {
     return (int)Math.round ( (double) (leadTime * currLeadTime)/stdLeadTime);
+  }
+
+  public static String removeKeyFromSearch(String search, String key) {
+    if (search.contains(key)) {
+      String[] splits = search.split(";");
+      List<String> list = new ArrayList<>();
+      for (int i = 0; i < splits.length; i++) {
+        if (!splits[i].contains(key)) {
+          list.add(splits[i]);
+        }
+      }
+      StringBuilder builder = new StringBuilder();
+      for (String s : list) {
+        builder.append(s).append(";");
+      }
+      if (builder.length() > 0) {
+        builder.setLength(builder.length() - 1);
+      }
+      search = builder.toString();
+
+      splits = search.split(",");
+      list = new ArrayList<>();
+      for (int i = 0; i < splits.length; i++) {
+        if (!splits[i].contains(key)) {
+          list.add(splits[i]);
+        }
+      }
+      builder = new StringBuilder();
+      for (String s : list) {
+        builder.append(s).append(",");
+      }
+      if (builder.length() > 0) {
+        builder.setLength(builder.length() - 1);
+      }
+      search = builder.toString();
+    }
+    return search;
   }
 }

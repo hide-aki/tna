@@ -100,6 +100,7 @@ public class ActivityService {
             tActivity.setSerialNo(activity.getSerialNo());
             tActivity.setDelayReasons(activity.getDelayReasons());
             tActivity.setOverridable(activity.getOverridable());
+            tActivity.setCLevel(activity.getCLevel());
             tActivity.setDepartment(department);
         }
 

@@ -42,6 +42,8 @@ public class TActivity extends Auditable {
     // Copy of Parent: Activity
     private String delayReasons;
 
+    private Boolean cLevel;
+
     // Copy of Parent: Activity
     @ManyToOne(optional = false, fetch = FetchType.EAGER)
     private Department department;

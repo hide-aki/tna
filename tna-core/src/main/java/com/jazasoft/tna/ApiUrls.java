@@ -38,5 +38,7 @@ public interface ApiUrls {
   String URL_ORDERS_ORDER_ACTIVITIES_ACTIVITY= "/activities/{activityId}";
   String URL_ORDERS_ORDER_SUBACTIVITIES_SUBACTIVITY= "/subActivities/{subActivityId}";
 
+  String ROOT_URL_CALENDAR = "api/calendar";
+
   public static final String ROOT_URL_TEMPLATES = "/api/templates";
 }

@@ -664,6 +664,15 @@
             </addColumn>
         </rollback>
     </changeSet>
+
+    <changeSet author="razamd" id="v2.0.x-id30">
+        <addColumn tableName="t_activity">
+            <column name="c_level" type="BOOL"/>
+        </addColumn>
+        <addColumn tableName="o_sub_activity">
+            <column name="due_date" type="TIMESTAMP WITHOUT TIME ZONE"/>
+        </addColumn>
+    </changeSet>
 </databaseChangeLog>
 
 

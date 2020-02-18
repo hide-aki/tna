@@ -32,6 +32,9 @@ public class OSubActivity extends Auditable {
     @Temporal(value = TemporalType.TIMESTAMP)
     private Date completedDate;
 
+    @Temporal(value = TemporalType.TIMESTAMP)
+    private Date dueDate;
+
     private String remarks;
 
     @JsonIgnore

@@ -140,6 +140,12 @@ authenticated:
       - read
 
   - !com.jazasoft.mtdb.dto.UrlInterceptor
+    url: /api/calendar
+    resourceId: calendar
+    scopes:
+      - read
+
+  - !com.jazasoft.mtdb.dto.UrlInterceptor
     url: /api/settings
     resourceId: setting
     scopes:

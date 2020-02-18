@@ -112,7 +112,6 @@ public class OrderService {
         oSubActivity.setTSubActivity(tSubActivity);
         oSubActivity.setOActivity(oActivity);
 
-        //TODO: implement actual logic
         oSubActivity.setLeadTime(TnaUtils.getLeadTime(tSubActivity.getLeadTime(), currentLeadTime, timeline.getStdLeadTime()));
         oSubActivity.setName(tSubActivity.getSubActivity().getName());
 
@@ -141,6 +140,11 @@ public class OrderService {
 
     for (OActivity oActivity : order.getOActivityList()) {
       oActivity.setFinalLeadTime(graph.getFinalLeadTime(oActivity.getTActivity().getId()));
+      oActivity.setDueDate(DateUtils.fromLocalDate(DateUtils.toLocalDate(order.getOrderDate()).plusDays(oActivity.getFinalLeadTime())));
+
+      for (OSubActivity oSubActivity: oActivity.getOSubActivityList()) {
+        oSubActivity.setDueDate(DateUtils.fromLocalDate(DateUtils.toLocalDate(oActivity.getDueDate()).plusDays(oSubActivity.getLeadTime())));
+      }
     }
     return orderRepository.save(order);
   }
@@ -171,7 +175,6 @@ public class OrderService {
         if (mOActivity != null && Boolean.TRUE.equals(mOActivity.getTActivity().getOverridable())) {
           int diff =  oActivity.getFinalLeadTime() - mOActivity.getFinalLeadTime();
           mOActivity.setLeadTime(mOActivity.getLeadTime() + diff);
-          mOActivity.getTActivity().setOverridable(mOActivity.getTActivity().getOverridable());
         }
       }
       // Set FinalLeadTime
@@ -190,6 +193,11 @@ public class OrderService {
 
       for (OActivity oActivity : mOrder.getOActivityList()) {
         oActivity.setFinalLeadTime(graph.getFinalLeadTime(oActivity.getTActivity().getId()));
+        oActivity.setDueDate(DateUtils.fromLocalDate(DateUtils.toLocalDate(mOrder.getOrderDate()).plusDays(oActivity.getFinalLeadTime())));
+
+        for (OSubActivity oSubActivity: oActivity.getOSubActivityList()) {
+          oSubActivity.setDueDate(DateUtils.fromLocalDate(DateUtils.toLocalDate(oActivity.getDueDate()).plusDays(oSubActivity.getLeadTime())));
+        }
       }
     }
 
