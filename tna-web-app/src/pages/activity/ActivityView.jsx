@@ -15,10 +15,18 @@ import {
 } from "jazasoft";
 import hasPrivilege from "../../utils/hasPrivilege";
 
-const Footer = ({ roles, hasAccess, resource, i18nKey, basePath }) => (
+const Footer = ({ roles, hasAccess, resource, i18nKey, basePath, record }) => (
   <PageFooter>
     {hasPrivilege(roles, hasAccess, "activity", "update") && (
-      <EditButton style={{ marginLeft: "1em" }} resource={resource} i18nKey={i18nKey} basePath={basePath} color="primary" variant="contained" />
+      <EditButton
+        style={{ marginLeft: "1em" }}
+        resource={resource}
+        record={record}
+        i18nKey={i18nKey}
+        basePath={basePath}
+        color="primary"
+        variant="contained"
+      />
     )}
     <BackButton style={{ marginLeft: "1em" }} variant="contained" />
   </PageFooter>
@@ -35,11 +43,10 @@ class ActivityView extends Component {
   };
 
   render() {
-    const { roles, hasAccess, classes, ...props } = this.props;
-
+    const { classes, dispatch, ...props } = this.props;
     return (
       <Show format={this.format} cardWrapper={false} {...props}>
-        <MultiCardShowLayout footer={<Footer />}>
+        <MultiCardShowLayout footer={<Footer roles={props.roles} hasAccess={props.hasAccess} />}>
           <ShowCard title="Activity Details">
             <TextField source="name" />
             <FunctionField label="Department" render={record => (record.department ? record.department.name : "")} />
