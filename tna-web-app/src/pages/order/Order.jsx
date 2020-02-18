@@ -64,6 +64,7 @@ const filters = (buyerIds = []) => (
 );
 
 const MyTextField = ({ column, record }) => {
+  // Values to be displayed on Grid View with and without color coding
   const activity = record[column.dataKey];
   let value, bgColor;
   if (activity) {
@@ -139,7 +140,6 @@ const getColumns = (orderList, onChange, onLinkClick) => {
 
 const CustomDatagrid = ({ classes, view, roles, hasAccess, onEditClick, onLinkClick, ...props }) => {
   const [selectedIds, setSelectedIds] = React.useState([]);
-
   const onChange = ({ record, column }) => event => {
     let ids = selectedIds.slice();
     const dataKey = column.dataKey;
@@ -153,7 +153,6 @@ const CustomDatagrid = ({ classes, view, roles, hasAccess, onEditClick, onLinkCl
     }
     setSelectedIds(ids);
   };
-
   const { data, ids } = props;
   let rows = [];
   if (view === "grid") {
@@ -166,7 +165,7 @@ const CustomDatagrid = ({ classes, view, roles, hasAccess, onEditClick, onLinkCl
           selector: selectedIds.includes(e.id),
           edit: (
             <div>
-              <EditIcon onClick={selectedIds.length === 0 && onEditClick ? onEditClick([e.id]) : null} />
+              <EditIcon onClick={selectedIds.length === 0 && onEditClick ? onEditClick([e.id]) : null} style={{ cursor: "pointer" }} />
             </div>
           ),
           buyerName: e.buyer && e.buyer.name,
@@ -315,15 +314,16 @@ class Order extends React.Component {
   onClose = () => {
     this.setState({ dialogActive: false });
   };
-
   render() {
     const { classes, orders, dispatch, ...props } = this.props;
     const { view, dialogActive, ids } = this.state;
     const { roles, hasAccess, getPermissions } = props;
     const buyerIds = getPermissions && getPermissions("buyerId");
+    const departmentId = getPermissions && getPermissions("departmentId") && getPermissions("departmentId")[0];
+
     return (
       <div>
-        <FormDialog open={dialogActive} data={orders} ids={ids} onClose={this.onClose} onSubmit={this.onEditSubmit} />
+        <FormDialog open={dialogActive} departmentId={departmentId} data={orders} ids={ids} onClose={this.onClose} onSubmit={this.onEditSubmit} />
         <List
           filters={filters(buyerIds)}
           searchKeys={["poRef", "style"]}

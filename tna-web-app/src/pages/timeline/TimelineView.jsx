@@ -33,6 +33,12 @@ import isEqual from "lodash/isEqual";
 import PerfectScrollbar from "react-perfect-scrollbar";
 import { Role } from "../../utils/types";
 
+const leadTime = lt =>
+  lt &&
+  ` + ${Array(3 - `${lt}`.length)
+    .fill("0")
+    .join("")}${lt}`;
+
 const matActivityColumns = approvalStatus => {
   return approvalStatus
     ? [
@@ -307,7 +313,7 @@ class TimelineView extends Component {
                             ...tActivity,
                             leadTime:
                               tActivity.timeFrom && tActivity.timeFrom === "O"
-                                ? `Order Date + ${tActivity.leadTime}`
+                                ? `Order Date` + leadTime(tActivity.leadTime)
                                 : tActivity.timeFrom
                                     .split(",")
                                     .map(e => {
@@ -321,7 +327,7 @@ class TimelineView extends Component {
                                     })
                                     .sort((a, b) => a.serialNo - b.serialNo)
                                     .map(e => e.name)
-                                    .join(", "),
+                                    .join(", ") + leadTime(tActivity.leadTime),
                             key: `P-${tActivity.id}`
                           },
                           ...tSubActivityList.map(e => ({
@@ -338,7 +344,7 @@ class TimelineView extends Component {
                           ...tActivity,
                           leadTime:
                             tActivity.timeFrom && tActivity.timeFrom === "O"
-                              ? `Order Date + ${tActivity.leadTime}`
+                              ? `Order Date` + leadTime(tActivity.leadTime)
                               : tActivity.timeFrom
                                   .split(",")
                                   .map(e => {
@@ -352,7 +358,7 @@ class TimelineView extends Component {
                                   })
                                   .sort((a, b) => a.serialNo - b.serialNo)
                                   .map(e => e.name)
-                                  .join(", ") + ` + ${tActivity.leadTime}`
+                                  .join(", ") + leadTime(tActivity.leadTime)
                         };
                       });
                 return (

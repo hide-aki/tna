@@ -10,6 +10,7 @@ import DialogTitle from "@material-ui/core/DialogTitle";
 import Table, { TextInput } from "jazasoft/lib/mui/components/Table";
 import { SelectInput, DateInput, LinkField } from "../../components/Table";
 import { getDistinctValues } from "../../utils/helpers";
+import moment from "moment";
 
 const columnsActivity = (onClick, onChange) => [
   { dataKey: "activity", title: "Activity", element: <LinkField color="#6d9dc7" onClick={onClick} /> },
@@ -54,17 +55,31 @@ class FormDialog extends React.Component {
   }
 
   init = (props = this.props) => {
-    const { data = {}, ids = [] } = props;
+    const { data = {}, ids = [], departmentId } = props;
 
     const orderList = ids.map(id => data[id]).filter(e => e);
+    // orderList = selected order List
     if (orderList.length === 0) return;
-    // find common activities
-    const aIds = getDistinctValues(orderList.flatMap(e => (e.oActivityList ? e.oActivityList : [])).map(a => btoa(a.name)));
+
+    // Finding common activities
+
+    const encodedANames = getDistinctValues(orderList.flatMap(e => (e.oActivityList ? e.oActivityList : [])).map(a => btoa(a.name)));
+    // Intersection of activity names/Unique activity names
 
     let commonActivityIds = [];
-    for (let i = 0; i < aIds.length; i++) {
-      if (orderList.length === orderList.filter(e => e.oActivityList && e.oActivityList.map(oa => btoa(oa.name)).includes(aIds[i])).length) {
-        commonActivityIds.push(aIds[i]);
+    for (let i = 0; i < encodedANames.length; i++) {
+      const filteredOrders = orderList.filter(e => e.oActivityList && e.oActivityList.map(oa => btoa(oa.name)).includes(encodedANames[i]));
+      if (orderList.length === filteredOrders.length) {
+        // Same activity but across orders
+        const filteredActivityList = filteredOrders.flatMap(e =>
+          e.oActivityList ? e.oActivityList.filter(a => encodedANames[i] === btoa(a.name)) : []
+        );
+
+        if (getDistinctValues(filteredActivityList.map(e => (e.completedDate ? moment(e.completedDate).format("ll") : "-"))).length === 1) {
+          if (filteredActivityList[0].tActivity && filteredActivityList[0].tActivity.departmentId === Number(departmentId)) {
+            commonActivityIds.push(encodedANames[i]);
+          }
+        }
       }
     }
 
@@ -113,11 +128,10 @@ class FormDialog extends React.Component {
 
   onClick = ({ rowIdx }) => e => {
     const activity = this.state.rowsActivity[rowIdx];
-
     const { data = {}, ids = [] } = this.props;
-    const orderList = ids.map(id => data[id]).filter(e => e);
 
-    const saIds = getDistinctValues(
+    const orderList = ids.map(id => data[id]).filter(e => e);
+    const encodedSANames = getDistinctValues(
       orderList
         .flatMap(e => {
           const oActivity = e.oActivityList && e.oActivityList.find(a => a.name === activity.name);
@@ -127,14 +141,14 @@ class FormDialog extends React.Component {
     );
 
     let commonSubActivityIds = [];
-    for (let i = 0; i < saIds.length; i++) {
+    for (let i = 0; i < encodedSANames.length; i++) {
       const count = orderList.filter(e => {
         const oActivity = e.oActivityList && e.oActivityList.find(a => a.name === activity.name);
-        return oActivity && oActivity.oSubActivityList && oActivity.oSubActivityList.map(osa => btoa(osa.name).includes(saIds[i]));
+        return oActivity && oActivity.oSubActivityList && oActivity.oSubActivityList.map(osa => btoa(osa.name).includes(encodedSANames[i]));
       }).length;
 
       if (orderList.length === count) {
-        commonSubActivityIds.push(saIds[i]);
+        commonSubActivityIds.push(encodedSANames[i]);
       }
     }
 
@@ -165,7 +179,7 @@ class FormDialog extends React.Component {
 
   render() {
     const { page, rowsActivity, rowsSubActivity, activity = {} } = this.state;
-
+    
     return (
       <Dialog open={this.props.open} maxWidth="md" fullWidth onClose={this.handleClose} aria-labelledby="form-dialog-title">
         <DialogTitle id="form-dialog-title">{page === "Activity" ? "Activities" : `${activity.name} --> Sub Activities`}</DialogTitle>

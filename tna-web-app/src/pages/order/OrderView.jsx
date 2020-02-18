@@ -16,6 +16,7 @@ import {
   SAVING_END,
   FETCH_START,
   FETCH_END,
+  showNotification,
   PageHeader
 } from "jazasoft";
 
@@ -28,6 +29,8 @@ import withStyles from "@material-ui/styles/withStyles";
 
 // Icons
 import EditIcon from "@material-ui/icons/Edit";
+
+import OverridableFormDialog from "./OverridableFormDialog";
 
 //material-Table
 import MaterialTable from "material-table";
@@ -138,7 +141,8 @@ const styles = {
 
 class OrderView extends Component {
   state = {
-    dialogActive: false
+    dialogActive: false,
+    overridableDialogActive: false
   };
 
   componentDidMount() {
@@ -213,21 +217,57 @@ class OrderView extends Component {
       });
   };
 
+  onOverrideSubmit = values => {
+    const options = {
+      url: `orders/${this.props.id}`,
+      method: "put",
+      params: { action: "override" },
+      data: values
+    };
+    this.props.dispatch({ type: FETCH_START });
+    this.props.dispatch({ type: SAVING_START });
+    dataProvider(RestMethods.CUSTOM, null, options)
+      .then(response => {
+        if (response.status === 200 || response.status === 201) {
+          this.props.dispatch(showNotification("Order updated successfully."));
+          this.props.dispatch(crudGetOne("orders", this.props.id));
+          this.setState({ overridableDialogActive: false });
+        }
+        this.props.dispatch({ type: FETCH_END });
+        this.props.dispatch({ type: SAVING_END });
+      })
+      .catch(error => {
+        handleError(error, this.props.dispatch);
+        this.props.dispatch({ type: FETCH_END });
+        this.props.dispatch({ type: SAVING_END });
+      });
+  };
+
   render() {
-    const { id, roles = [], order = {}, classes } = this.props;
-    const { dialogActive } = this.state;
+    const { id, roles = [], order = {}, getPermissions, classes } = this.props;
+    const { dialogActive, overridableDialogActive } = this.state;
     const isGrassRootUser = roles.includes(Role.MERCHANT) || roles.includes(Role.USER);
+
     const activityList = format(isGrassRootUser, order);
+    const departmentId = getPermissions && getPermissions("departmentId") && getPermissions("departmentId")[0];
+
     return (
       <div className={classes.root}>
         <PageHeader title="Order View" />
-
         <FormDialog
           open={dialogActive}
           data={{ [id]: order }}
           ids={[id]}
           onClose={_ => this.setState({ dialogActive: false })}
           onSubmit={this.onEditSubmit}
+          departmentId={departmentId}
+        />
+        <OverridableFormDialog
+          open={overridableDialogActive}
+          data={order}
+          id={id}
+          onClose={_ => this.setState({ overridableDialogActive: false })}
+          onSubmit={this.onOverrideSubmit}
         />
 
         <div className={classes.content}>
@@ -288,6 +328,7 @@ class OrderView extends Component {
             )}
           </Card>
           <PageFooter>
+            <BackButton variant="contained" style={{ marginRight: "1.5em" }} />
             <Button
               label="Update Activity"
               variant="contained"
@@ -297,7 +338,11 @@ class OrderView extends Component {
             >
               <EditIcon />
             </Button>
-            <BackButton variant="contained" />
+            {roles.includes(Role.MERCHANT) && (
+              <Button label="Override" variant="contained" color="primary" onClick={_ => this.setState({ overridableDialogActive: true })}>
+                <EditIcon />
+              </Button>
+            )}
           </PageFooter>
         </div>
       </div>
