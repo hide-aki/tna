@@ -130,46 +130,72 @@ public class OrderService {
     Graph graph = new Graph(nodeList);
 
     // Create Edges
-    for (OActivity oActivity: order.getOActivityList()) {
+    for (OActivity oActivity : order.getOActivityList()) {
       if (!Constants.FROM_ORDER_DATE.equals(oActivity.getTActivity().getTimeFrom())) {
         List<Long> ids = Utils.getListFromCsv(oActivity.getTActivity().getTimeFrom()).stream().map(Long::parseLong).collect(Collectors.toList());
-        for (Long id: ids) {
+        for (Long id : ids) {
           graph.addEdge(oActivity.getTActivity().getId(), id);
         }
       }
     }
 
-    for (OActivity oActivity: order.getOActivityList()) {
+    for (OActivity oActivity : order.getOActivityList()) {
       oActivity.setFinalLeadTime(graph.getFinalLeadTime(oActivity.getTActivity().getId()));
     }
-
     return orderRepository.save(order);
   }
 
   @Transactional(value = "tenantTransactionManager")
-  public Order update(Order order) {
+  public Order update(Order order, String action) {
     Order mOrder = orderRepository.findById(order.getId()).orElseThrow();
 
-    mOrder.setPoRef(order.getPoRef());
-    mOrder.setOrderQty(order.getOrderQty());
-    mOrder.setStyle(order.getStyle());
-    mOrder.setOrderDate(order.getOrderDate());
-    mOrder.setRemarks(order.getRemarks());
-    mOrder.setExFactoryDate(order.getExFactoryDate());
+    if (action.equalsIgnoreCase("default")) {
+      mOrder.setOrderQty(order.getOrderQty());
+      mOrder.setStyle(order.getStyle());
+      mOrder.setOrderDate(order.getOrderDate());
+      mOrder.setRemarks(order.getRemarks());
+      mOrder.setExFactoryDate(order.getExFactoryDate());
 
-    if (order.getBuyerId() != null) {
-      mOrder.setBuyer(buyerRepository.findById(order.getBuyerId()).orElse(null));
-    }
-    if (order.getGarmentTypeId() != null) {
-      mOrder.setGarmentType(garmentTypeRepository.findById(order.getGarmentTypeId()).orElse(null));
-    }
-    if (order.getSeasonId() != null) {
-      mOrder.setSeason(seasonRepository.findById(order.getSeasonId()).orElse(null));
+      if (order.getBuyerId() != null) {
+        mOrder.setBuyer(buyerRepository.findById(order.getBuyerId()).orElse(null));
+      }
+      if (order.getGarmentTypeId() != null) {
+        mOrder.setGarmentType(garmentTypeRepository.findById(order.getGarmentTypeId()).orElse(null));
+      }
+      if (order.getSeasonId() != null) {
+        mOrder.setSeason(seasonRepository.findById(order.getSeasonId()).orElse(null));
+      }
+    } else if (action.equalsIgnoreCase("override")) {
+      for (OActivity oActivity : order.getOActivityList()) {
+        OActivity mOActivity = mOrder.getOActivityList().stream().filter(a -> a.getId().equals(oActivity.getId())).findAny().orElse(null);
+        if (mOActivity != null && Boolean.TRUE.equals(mOActivity.getTActivity().getOverridable())) {
+          int diff =  oActivity.getFinalLeadTime() - mOActivity.getFinalLeadTime();
+          mOActivity.setLeadTime(mOActivity.getLeadTime() + diff);
+        }
+      }
 
+      // Set FinalLeadTime
+      List<Node> nodeList = mOrder.getOActivityList().stream().map(oActivity -> new Node(oActivity.getTActivity().getId(), oActivity.getLeadTime(), oActivity.getTActivity().getTimeFrom())).collect(Collectors.toList());
+      Graph graph = new Graph(nodeList);
+
+      // Create Edges
+      for (OActivity oActivity : mOrder.getOActivityList()) {
+        if (!Constants.FROM_ORDER_DATE.equals(oActivity.getTActivity().getTimeFrom())) {
+          List<Long> ids = Utils.getListFromCsv(oActivity.getTActivity().getTimeFrom()).stream().map(Long::parseLong).collect(Collectors.toList());
+          for (Long id : ids) {
+            graph.addEdge(oActivity.getTActivity().getId(), id);
+          }
+        }
+      }
+
+      for (OActivity oActivity : mOrder.getOActivityList()) {
+        oActivity.setFinalLeadTime(graph.getFinalLeadTime(oActivity.getTActivity().getId()));
+      }
     }
 
     return mOrder;
   }
+
 
   @Transactional(value = "tenantTransactionManager")
   public List<Order> updateAll(List<Order> orderList, Long departmentId) {
@@ -177,21 +203,22 @@ public class OrderService {
     Set<Long> ids = orderList.stream().map(Order::getId).collect(Collectors.toSet());
     List<Order> mOrderList = orderRepository.findAllById(ids);
 
-    for (Order order: orderList) {
+    for (Order order : orderList) {
       Order mOrder = mOrderList.stream().filter(o -> o.getId().equals(order.getId())).findAny().orElseThrow(() -> new RuntimeException("Order with id " + order.getId() + " not found."));
       if (order.getOActivityList() == null || mOrder.getOActivityList() == null) continue;
 
-      for (OActivity oActivity: order.getOActivityList()) {
+      for (OActivity oActivity : order.getOActivityList()) {
 
         OActivity mActivity = mOrder.getOActivityList().stream().filter(a -> a.getId().equals(oActivity.getId())).findAny().orElse(null);
         if (mActivity != null) {
-          if (departmentId == -1L || (mActivity.getTActivity() != null && mActivity.getTActivity().getDepartment() != null && departmentId.equals(mActivity.getTActivity().getDepartment().getId()))){
+          if (departmentId == -1L || (mActivity.getTActivity() != null && mActivity.getTActivity().getDepartment() != null && departmentId.equals(mActivity.getTActivity().getDepartment().getId()))) {
             mActivity.setCompletedDate(oActivity.getCompletedDate());
             mActivity.setDelayReason(oActivity.getDelayReason());
             mActivity.setRemarks(oActivity.getRemarks());
-            if (oActivity.getOSubActivityList() == null || mActivity.getOSubActivityList() == null) continue;
+            if (oActivity.getOSubActivityList() == null || mActivity.getOSubActivityList() == null)
+              continue;
 
-            for (OSubActivity oSubActivity: oActivity.getOSubActivityList()) {
+            for (OSubActivity oSubActivity : oActivity.getOSubActivityList()) {
               OSubActivity mSubActivity = mActivity.getOSubActivityList().stream().filter(sa -> sa.getId().equals(oSubActivity.getId())).findAny().orElse(null);
               if (mSubActivity == null) continue;
               mSubActivity.setCompletedDate(oSubActivity.getCompletedDate());
@@ -209,12 +236,11 @@ public class OrderService {
   @Transactional(value = "tenantTransactionManager")
   public OActivity updateActivity(Long orderId, OActivity oActivity) {
     Order mOrder = orderRepository.getOne(orderId);
-
     OActivity mOActivity = oActivityRepository.findOneByOrderAndId(mOrder, oActivity.getId()).orElseThrow(() -> new RuntimeException("Activity with id = " + oActivity.getId() + " not found for orderId = " + orderId));
+
     mOActivity.setCompletedDate(oActivity.getCompletedDate());
     mOActivity.setDelayReason(oActivity.getDelayReason());
     mOActivity.setRemarks(oActivity.getRemarks());
-
     return mOActivity;
   }
 

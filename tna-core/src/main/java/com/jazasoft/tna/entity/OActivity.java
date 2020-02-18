@@ -57,6 +57,9 @@ public class OActivity extends Auditable {
     @JsonProperty("tActivityId")
     private Long tActivityId;
 
+    @Temporal(value = TemporalType.TIMESTAMP)
+    private Date dueDate;
+
 
     public OActivity() {
     }
@@ -88,6 +91,7 @@ public class OActivity extends Auditable {
                 ", name='" + name + '\'' +
                 ", order=" + order +
                 ", tActivity=" + tActivity +
+                ", dueDate=" + dueDate +
                 '}';
     }
 }

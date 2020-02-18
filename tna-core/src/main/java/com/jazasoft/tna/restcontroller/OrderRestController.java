@@ -27,6 +27,7 @@ import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import static com.jazasoft.tna.ApiUrls.URL_ORDERS_ORDER_ACTIVITIES_ACTIVITY;
@@ -149,8 +150,14 @@ public class OrderRestController {
   }
 
   @PutMapping(ApiUrls.URL_ORDERS_ORDER)
-  private ResponseEntity<?> update(@PathVariable("orderId") Long id, @RequestBody Order order, HttpServletRequest request) {
+  private ResponseEntity<?> update(@PathVariable("orderId") Long id,
+                                   @RequestParam(value = "action", defaultValue = "default") String action,
+                                   @RequestBody Order order,HttpServletRequest request) {
     logger.trace("update(): id = {}", id);
+    Pattern pattern = Pattern.compile("default|override", Pattern.CASE_INSENSITIVE);
+    if (!pattern.matcher(action).matches()){
+      return ResponseEntity.badRequest().body("Invalid action. Supported actions are " + pattern.pattern());
+    }
     if (!orderService.exists(id)) {
       return ResponseEntity.notFound().build();
     }
@@ -170,9 +177,9 @@ public class OrderRestController {
     }
 
     order.setId(id);
-    Order mOrder = orderService.update(order);
+    Order mOrder = orderService.update(order,action);
 
-    sanitize(order);
+    sanitize(mOrder);
     return ResponseEntity.ok(mOrder);
   }
 
@@ -216,7 +223,6 @@ public class OrderRestController {
   public ResponseEntity<?> updateActivity(@PathVariable(value = "orderId") Long orderId,
                                           @PathVariable(value = "activityId") Long activityId,
                                           @RequestBody OActivity oActivity) {
-
     oActivity.setId(activityId);
     OActivity mActivity = orderService.updateActivity(orderId, oActivity);
     mActivity.setOSubActivityList(null);

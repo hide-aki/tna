@@ -219,7 +219,7 @@ public class TimelineService {
             });
 
             for (TActivity mActivity : mTimeline.getTActivityList()) {
-                if (mActivity.getTimeFrom() != null && !Constants.FROM_ORDER_DATE.equalsIgnoreCase(mActivity.getTimeFrom())) {
+                if (mActivity.getTimeFrom() != null && !(mActivity.getTimeFrom().equals("O"))) {
                     Set<Long> activityIds = Utils.getListFromCsv(mActivity.getTimeFrom()).stream().map(String::trim).map(Long::parseLong).collect(Collectors.toSet());
                     List<String> tActivityIds = mTimeline.getTActivityList().stream().filter(ta -> ta.getActivity() != null && activityIds.contains(ta.getActivity().getId())).map(TActivity::getId).map(String::valueOf).collect(Collectors.toList());
                     mActivity.setTimeFrom(Utils.getCsvFromIterable(tActivityIds));
