@@ -358,6 +358,23 @@ class TimelineCreate extends Component {
             }
           }
         }
+        const tSubActivityList = [];
+        let sortedSubActivityList = activity.tSubActivityList && activity.tSubActivityList.map(a => a.subActivityId);
+        activity.tSubActivityList &&
+          activity.tSubActivityList.forEach((subActivity, subActivityIdx) => {
+            const tSubActivity = {};
+            if (-subActivity.leadTime > activity.leadTime) {
+              tSubActivity.leadTime = "Value should be in Activity's Lead Time range";
+              tSubActivityList[subActivityIdx] = tSubActivity;
+            } else if (sortedSubActivityList.some((a, index) => sortedSubActivityList.indexOf(a) !== index)) {
+              tSubActivity.subActivityId = "Subactivities should not be same";
+              tSubActivityList[subActivityIdx] = tSubActivity;
+            }
+          });
+        if (tSubActivityList.length) {
+          tActivity.tSubActivityList = tSubActivityList;
+          tActivityList[activityIdx] = tActivity;
+        }
       });
     if (tActivityList.length) {
       errors.tActivityList = tActivityList;

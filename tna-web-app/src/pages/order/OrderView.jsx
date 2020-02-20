@@ -59,7 +59,8 @@ const columns = [
   {
     field: "viewLeadTime",
     title: "Lead Time",
-    type: "numeric"
+    type: "numeric",
+    cellStyle: { paddingRight: "2em" }
   },
   { field: "dueDate", title: "Due Date", type: "date" },
   {

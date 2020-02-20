@@ -279,18 +279,17 @@ class TimelineEdit extends Component {
               name: activity.name,
               serialNo: activity.serialNo,
               timeFrom:
-                tActivity.timeFrom === "O" ? [tActivity.timeFrom]
-                  : tActivity.timeFrom
-                      .split(",")
-                      .map(e => {
-                        // Tranforming t_activity Id back to activityId
-                        for (let i = 0; i < tActivityList.length; i++) {
-                          if (Number(e) === tActivityList[i].id) {
-                            return tActivityList[i].activity.id;
-                          }
+                tActivity.timeFrom === "O"
+                  ? [tActivity.timeFrom]
+                  : tActivity.timeFrom.split(",").map(e => {
+                      // Tranforming t_activity Id back to activityId
+                      for (let i = 0; i < tActivityList.length; i++) {
+                        if (Number(e) === tActivityList[i].id) {
+                          return tActivityList[i].activity.id;
                         }
-                        return e;
-                      })
+                      }
+                      return e;
+                    })
             }))
             .sort((a, b) => a.serialNo - b.serialNo)
         : []
@@ -381,6 +380,23 @@ class TimelineEdit extends Component {
             }
           }
         }
+        const tSubActivityList = [];
+        let sortedSubActivityList = activity.tSubActivityList && activity.tSubActivityList.map(a => a.subActivityId);
+        activity.tSubActivityList &&
+          activity.tSubActivityList.forEach((subActivity, subActivityIdx) => {
+            const tSubActivity = {};
+            if (-subActivity.leadTime > activity.leadTime) {
+              tSubActivity.leadTime = "Value should be in Activity's Lead Time range";
+              tSubActivityList[subActivityIdx] = tSubActivity;
+            } else if (sortedSubActivityList.some((a, index) => sortedSubActivityList.indexOf(a) !== index)) {
+              tSubActivity.subActivityId = "Subactivities should not be same";
+              tSubActivityList[subActivityIdx] = tSubActivity;
+            }
+          });
+        if (tSubActivityList.length) {
+          tActivity.tSubActivityList = tSubActivityList;
+          tActivityList[activityIdx] = tActivity;
+        }
       });
     if (tActivityList.length) {
       errors.tActivityList = tActivityList;
@@ -451,7 +467,6 @@ class TimelineEdit extends Component {
                         <SelectInput optionText="name" />
                       </ReferenceInput>
                       <TextInput source="name" validate={[maxLength(30), required()]} {...inputOptions(3)} />
-                      
                     </SimpleForm>
                   </div>
                 </Card>
