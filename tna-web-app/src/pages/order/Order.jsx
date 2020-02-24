@@ -190,8 +190,8 @@ const CustomDatagrid = ({ classes, view, roles, hasAccess, onEditClick, onLinkCl
       <FunctionField source="orderDate" label="Order Date" render={record => moment(record.orderDate).format("ll")} />
       <FunctionField source="exFactoryDate" label="Ex-factory Date" render={record => moment(record.exFactoryDate).format("ll")} />
       <ShowButton cellClassName={classes.button} />
-      {hasPrivilege(roles, hasAccess, "buyer", "update") && <EditButton cellClassName={classes.button} />}
-      {hasPrivilege(roles, hasAccess, "buyer", "delete") && <DeleteButton cellClassName={classes.button} />}
+      {hasPrivilege(roles, hasAccess, "order", "update") && <EditButton cellClassName={classes.button} />}
+      {hasPrivilege(roles, hasAccess, "order", "delete") && <DeleteButton cellClassName={classes.button} />}
     </Datagrid>
   ) : (
     <div>
