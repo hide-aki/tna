@@ -125,6 +125,17 @@ public class OrderRestController {
     return ResponseEntity.ok(mOrder);
   }
 
+
+  @GetMapping(ApiUrls.URL_ORDERS_ORDER + ApiUrls.URL_ORDERS_ORDER_LOGS)
+  public ResponseEntity<?> findOrderLogs(@PathVariable("orderId") Long id) {
+    return ResponseEntity.ok(orderService.findOrderLogs(id));
+  }
+
+  @GetMapping(ApiUrls.URL_ORDERS_ORDER + ApiUrls.URL_ORDERS_ORDER_LOGS_ACTIVITY_LOGS)
+  public ResponseEntity<?> findActivityLogs(@PathVariable("orderId") Long orderId, @PathVariable("activityId") Long activityId) {
+    return ResponseEntity.ok(orderService.findActivityLogs(orderId, activityId));
+  }
+
   @PostMapping
   public ResponseEntity<?> save(@RequestBody Order order, HttpServletRequest request) {
     // Extract Buyer Privilege from Request

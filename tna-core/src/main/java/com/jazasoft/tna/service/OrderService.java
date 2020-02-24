@@ -1,18 +1,25 @@
 package com.jazasoft.tna.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.jazasoft.tna.Constants;
+import com.jazasoft.tna.dto.Log;
 import com.jazasoft.tna.entity.*;
 import com.jazasoft.tna.repository.*;
 import com.jazasoft.tna.util.Graph;
 import com.jazasoft.tna.util.Node;
 import com.jazasoft.tna.util.TnaUtils;
 import com.jazasoft.util.DateUtils;
+import com.jazasoft.util.JsonUtils;
 import com.jazasoft.util.Utils;
 import org.hibernate.Hibernate;
+import org.javers.core.Javers;
+import org.javers.core.diff.Diff;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.history.Revision;
+import org.springframework.data.history.Revisions;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -35,8 +42,9 @@ public class OrderService {
   private final SeasonRepository seasonRepository;
   private final OActivityRepository oActivityRepository;
   private final OSubActivityRepository oSubActivityRepository;
+  private final Javers javers;
 
-  public OrderService(OrderRepository orderRepository, BuyerRepository buyerRepository, TimelineRepository timelineRepository, GarmentTypeRepository garmentTypeRepository, SeasonRepository seasonRepository, OActivityRepository oActivityRepository, OSubActivityRepository oSubActivityRepository) {
+  public OrderService(OrderRepository orderRepository, BuyerRepository buyerRepository, TimelineRepository timelineRepository, GarmentTypeRepository garmentTypeRepository, SeasonRepository seasonRepository, OActivityRepository oActivityRepository, OSubActivityRepository oSubActivityRepository, Javers javers) {
     this.orderRepository = orderRepository;
     this.buyerRepository = buyerRepository;
     this.timelineRepository = timelineRepository;
@@ -44,6 +52,7 @@ public class OrderService {
     this.seasonRepository = seasonRepository;
     this.oActivityRepository = oActivityRepository;
     this.oSubActivityRepository = oSubActivityRepository;
+    this.javers = javers;
   }
 
   public Page<Order> findAll(Pageable pageable, String view) {
@@ -78,6 +87,91 @@ public class OrderService {
     Order order = orderRepository.findById(id).orElse(null);
     return order;
   }
+
+  public List<Log> findOrderLogs(Long id) {
+    Revisions<Integer, Order> revisions = orderRepository.findRevisions(id);
+    
+    List<Revision<Integer, Order>> revisionList = revisions.getContent().stream().sorted((a, b) -> a.getRevisionNumber().isPresent() && b.getRevisionNumber().isPresent() ? a.getRevisionNumber().get() - b.getRevisionNumber().get() : 0).collect(Collectors.toList());
+
+    List<Log> logs = new ArrayList<>();
+    
+    Revision<Integer, Order> prev = null;
+    for (Revision<Integer, Order> curr: revisionList) {
+      Log log = new Log();
+
+      MyRevisionEntity myRevisionEntity = curr.getMetadata().getDelegate();
+      log.setTimestamp(myRevisionEntity.getTimestamp());
+      log.setUser(myRevisionEntity.getUsername());
+
+      String data = null;
+      try {
+        Order order = curr.getEntity();
+        order.setOActivityList(null);
+        data = JsonUtils.toString(order);
+      } catch (JsonProcessingException e) {
+        e.printStackTrace();
+      }
+
+      String diffStr = null;
+      String event = null;
+      if (prev == null) { // Created Event
+        event = "Order Created";
+      } else {
+        event = "Order Updated";
+        Diff diff = javers.compare(new com.jazasoft.tna.audit.Order(prev.getEntity()), new com.jazasoft.tna.audit.Order(curr.getEntity()));
+        if (diff.hasChanges()) {
+          diffStr = diff.prettyPrint();
+        }
+      }
+      log.setEvent(event);
+      log.setData(data);
+      log.setDiff(diffStr);
+
+      logs.add(log);
+      prev = curr;
+    }
+
+    return logs;
+  }
+
+  public List<Log> findActivityLogs(Long orderId, Long oActivityId) {
+    Revisions<Integer, OActivity> revisions = oActivityRepository.findRevisions(oActivityId);
+
+    List<Revision<Integer, OActivity>> revisionList = revisions.getContent().stream().sorted((a, b) -> a.getRevisionNumber().isPresent() && b.getRevisionNumber().isPresent() ? a.getRevisionNumber().get() - b.getRevisionNumber().get() : 0).collect(Collectors.toList());
+
+    List<Log> logs = new ArrayList<>();
+
+    Revision<Integer, OActivity> prev = null;
+    for (Revision<Integer, OActivity> curr: revisionList) {
+      if (prev != null) {
+        Log log = new Log();
+
+        MyRevisionEntity myRevisionEntity = curr.getMetadata().getDelegate();
+        log.setTimestamp(myRevisionEntity.getTimestamp());
+        log.setUser(myRevisionEntity.getUsername());
+
+        String diffStr = null;
+        String event = null;
+        Diff diff = javers.compare(new com.jazasoft.tna.audit.Activity(prev.getEntity()), new com.jazasoft.tna.audit.Activity(curr.getEntity()));
+        if (diff.hasChanges()) {
+          diffStr = diff.prettyPrint();
+          if (diff.getPropertyChanges("leadTime").size() == 0) {
+            event = "Activity Updated";
+          } else  {
+            event = "Timeline Overridden";
+          }
+        }
+        log.setEvent(event);
+        log.setDiff(diffStr);
+
+        logs.add(log);
+      }
+      prev = curr;
+    }
+
+    return logs;
+  }
+
 
   @Transactional(value = "tenantTransactionManager")
   public Order save(Order order) {

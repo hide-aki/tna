@@ -104,6 +104,18 @@ authenticated:
       - read
 
   - !com.jazasoft.mtdb.dto.UrlInterceptor
+    url: /api/orders/\d+/logs
+    resourceId: order
+    scopes:
+      - read
+
+  - !com.jazasoft.mtdb.dto.UrlInterceptor
+    url: /api/orders/\d+/activities/\d+/logs
+    resourceId: order
+    scopes:
+      - read
+
+  - !com.jazasoft.mtdb.dto.UrlInterceptor
     url: /api/seasons
     resourceId: season
     scopes:

@@ -8,6 +8,9 @@ import com.jazasoft.mtdb.service.ILicenseService;
 import com.jazasoft.mtdb.service.TenantService;
 import com.jazasoft.mtdb.util.RestUtils;
 import com.jazasoft.util.PropUtils;
+import org.javers.core.Javers;
+import org.javers.core.JaversBuilder;
+import org.javers.core.diff.ListCompareAlgorithm;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -115,6 +118,13 @@ public class Application extends AbstractApplication {
     return new RestUtils(restTemplate);
   }
 
+
+  @Bean
+  public Javers javers() {
+    return JaversBuilder.javers()
+        .withListCompareAlgorithm(ListCompareAlgorithm.AS_SET)
+        .build();
+  }
 
   private void checkLicenseAtStart(TenantService tenantService, ILicenseService licenseService) {
     logger.debug("checkLicense");

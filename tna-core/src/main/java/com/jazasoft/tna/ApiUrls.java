@@ -35,6 +35,8 @@ public interface ApiUrls {
 
   String ROOT_URL_ORDERS = "api/orders";
   String URL_ORDERS_ORDER ="/{orderId}";
+  String URL_ORDERS_ORDER_LOGS ="/logs";
+  String URL_ORDERS_ORDER_LOGS_ACTIVITY_LOGS ="/activities/{activityId}/logs";
   String URL_ORDERS_ORDER_ACTIVITIES_ACTIVITY= "/activities/{activityId}";
   String URL_ORDERS_ORDER_SUBACTIVITIES_SUBACTIVITY= "/subActivities/{subActivityId}";
 
