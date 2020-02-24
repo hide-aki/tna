@@ -16,9 +16,6 @@ import { PageHeader } from "jazasoft";
 const localizer = momentLocalizer(moment);
 
 var today = new Date();
-// var y = today.getFullYear();
-// var m = today.getMonth();
-// var d = today.getDate();
 
 const Category = {
   DUE_ON_TIME: "due-on-time",
@@ -91,12 +88,6 @@ class Calendar extends Component {
     this.fetchEvents(firstDay, lastDay);
   };
 
-  onNavigate = nav => {
-    const firstDay = new Date(moment(nav).startOf("month")).getTime();
-    const lastDay = new Date(moment(nav).endOf("month")).getTime();
-    this.fetchEvents(firstDay, lastDay);
-  };
-
   fetchEvents = async (firstDay, lastDay) => {
     const options = {
       url: "calendar",
@@ -135,6 +126,7 @@ class Calendar extends Component {
       }),
       {}
     );
+
     const events = Object.keys(result)
       .flatMap(date =>
         Object.keys(result[date]).map(category => ({
@@ -215,7 +207,6 @@ class Calendar extends Component {
             onSelectSlot={this.onSelectSlot}
             eventPropGetter={this.eventColors}
             onView={this.onView}
-            onNavigate={this.onNavigate}
           />
         </Paper>
       </div>
