@@ -67,7 +67,7 @@ class OverridableFormDialog extends Component {
 
   render() {
     return (
-      <Dialog open={this.props.open} maxWidth="md" fullWidth onClose={this.handleClose} aria-labelledby="form-dialog-title">
+      <Dialog open={this.props.open} maxWidth="md" fullWidth onClose={this.onBack} aria-labelledby="form-dialog-title">
         <DialogTitle id="form-dialog-title">Activities</DialogTitle>
         <DialogContent style={{ padding: 0 }}>
           <Table columns={overridableColumn(this.onChange)} rows={this.state.overridableActivityList} />

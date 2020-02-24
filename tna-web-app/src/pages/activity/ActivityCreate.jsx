@@ -39,43 +39,24 @@ class ActivityCreate extends Component {
 
   render() {
     const { roles, hasAccess, history, departments, dispatch, ...props } = this.props;
-    if(!hasPrivilege(roles, hasAccess, "activty", "write")){
-      return <Forbidden history={history} />
+    if (!hasPrivilege(roles, hasAccess, "activty", "write")) {
+      return <Forbidden history={history} />;
     }
     return (
-      <Create
-        title="Generate Activity and subactivities"
-        cardWrapper={false}
-        record={{ subActivityList: [{}] }}
-        parse={this.parse}
-        {...props}
-      >
+      <Create title="Generate Activity and subactivities" cardWrapper={false} record={{ subActivityList: [{}] }} parse={this.parse} {...props}>
         <MultiCardForm redirect="home">
           <FormCard title="Activity Details">
-            <TextInput
-              source="name"
-              validate={[required(), minLength(2), maxLength(30),]}
-              {...inputOptions(3)}
-            />
+            <TextInput source="name" validate={[required(), minLength(2), maxLength(30)]} {...inputOptions(3)} />
 
-            <ReferenceInput
-              source="departmentId"
-              reference="departments"
-              {...inputOptions(4)}
-              validate={required()}
-            >
+            <ReferenceInput source="departmentId" reference="departments" {...inputOptions(4)} validate={required()}>
               <SelectInput optionText="name" />
             </ReferenceInput>
             <FormDataConsumer {...inputOptions(5)}>
               {({ formData }) => {
                 if (formData.departmentId) {
                   let selectedDeptId = formData && formData.departmentId;
-                  let totalDepartmentList = Object.keys(departments).map(
-                    e => departments[e]
-                  );
-                  const rDepartments =
-                    formData.departmentId &&
-                    totalDepartmentList.filter(e => selectedDeptId !== e.id);
+                  let totalDepartmentList = Object.keys(departments).map(e => departments[e]);
+                  const rDepartments = formData.departmentId && totalDepartmentList.filter(e => selectedDeptId !== e.id);
                   const choices =
                     rDepartments &&
                     Object.values(rDepartments).map(({ id, name }) => ({
@@ -89,67 +70,34 @@ class ActivityCreate extends Component {
                       label="Notify Departments"
                       optionText="name"
                       choices={choices}
-                      fullWidth= {true}
+                      fullWidth={true}
                       options={{ fullWidth: true }}
                       {...inputOptions(5)}
                     />
                   );
                 } else {
-                  return (
-                    <SelectArrayInput
-                      source="notify"
-                      label="Notify Departments"
-                      optionText="name"
-                      choices={[]}
-                      {...inputOptions(5)}
-                    />
-                  );
+                  return <SelectArrayInput source="notify" label="Notify Departments" optionText="name" choices={[]} {...inputOptions(5)} />;
                 }
               }}
             </FormDataConsumer>
-            <TextInput
-              source="delayReasons"
-              validate={[minLength(2)]}
-              {...inputOptions(4)}
-            />
-            <BooleanInput
-              defaultValue={false}
-              source="cLevel"
-              label="C Level"
-              style={{ marginLeft: "2em", marginTop: "1.5em" }}
-            />
+            <TextInput source="delayReasons" validate={[minLength(2)]} {...inputOptions(4)} />
+            <div style={{ paddingTop: "1.5em", marginLeft: "3.5em", marginRight: "-2em" }}>
+              <BooleanInput defaultValue={false} source="cLevel" label="C Level" {...inputOptions(2)} />
+            </div>
             <BooleanInput
               defaultValue={false}
               source="isDefault"
               label="Default Activity"
-              style={{marginTop: "1.5em", marginLeft: "-3em", marginRight: "-2em" }}
+              style={{ paddingTop: "1.5em", marginLeft: "-2em" }}
+              {...inputOptions(2)}
             />
-            <BooleanInput
-              defaultValue={false}
-              source="overridable"
-              label="Overridable"
-              style={{ marginTop: "1.5em",}}
-            />
+            <BooleanInput defaultValue={false} source="overridable" label="Overridable" style={{ paddingTop: "1.5em"}} {...inputOptions(2)} />
           </FormCard>
           <FormCard title="Subactivities">
-            <ArrayInput
-              label="Subactivity List"
-              source="subActivityList"
-              xs={12}
-              fullWidth={true}
-            >
+            <ArrayInput label="Subactivity List" source="subActivityList" xs={12} fullWidth={true}>
               <SimpleFormIterator>
-                <TextInput
-                  label="Name"
-                  source="name"
-                  validate={[required(), minLength(2)]}
-                  {...inputOptions(4)}
-                />
-                <TextInput
-                  label="Description"
-                  source="desc"
-                  {...inputOptions(8)}
-                />
+                <TextInput label="Name" source="name" validate={[required(), minLength(2)]} {...inputOptions(4)} />
+                <TextInput label="Description" source="desc" {...inputOptions(8)} />
               </SimpleFormIterator>
             </ArrayInput>
           </FormCard>
@@ -160,9 +108,7 @@ class ActivityCreate extends Component {
 }
 
 const mapStateToProps = state => ({
-  departments:
-    state.jazasoft.resources["departments"] &&
-    state.jazasoft.resources["departments"].data
+  departments: state.jazasoft.resources["departments"] && state.jazasoft.resources["departments"].data
 });
 
 export default connect(mapStateToProps)(withStyles(styles)(ActivityCreate));

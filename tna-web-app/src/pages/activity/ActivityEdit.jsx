@@ -84,14 +84,17 @@ class ActivityEdit extends Component {
               }}
             </FormDataConsumer>
             <TextInput source="delayReasons" validate={[minLength(2)]} {...inputOptions(4)} />
-            <BooleanInput defaultValue={false} source="cLevel" label="C Level" style={{ marginLeft: "2em", marginTop: "1.5em" }} />
+            <div style={{ paddingTop: "1.5em", marginLeft: "3.5em", marginRight: "-2em" }}>
+              <BooleanInput defaultValue={false} source="cLevel" label="C Level" {...inputOptions(2)} />
+            </div>
             <BooleanInput
               defaultValue={false}
               source="isDefault"
               label="Default Activity"
-              style={{ marginTop: "1.5em", marginLeft: "-3em", marginRight: "-2em" }}
+              style={{ paddingTop: "1.5em", marginLeft: "-2em" }}
+              {...inputOptions(2)}
             />
-            <BooleanInput defaultValue={false} source="overridable" label="Overridable" style={{ marginTop: "1.5em" }} />
+            <BooleanInput defaultValue={false} source="overridable" label="Overridable" style={{ paddingTop: "1.5em" }} {...inputOptions(2)} />
           </FormCard>
           <FormCard title="Subactivities">
             <ArrayInput label="Subactivity List" source="subActivityList" xs={12} fullWidth={true}>

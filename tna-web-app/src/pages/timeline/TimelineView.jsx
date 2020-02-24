@@ -332,6 +332,7 @@ class TimelineView extends Component {
                           },
                           ...tSubActivityList.map(e => ({
                             ...e,
+                            leadTime: `Order Date + ` + Math.abs(e.leadTime),
                             key: `C-${e.id}`,
                             parentKey: `P-${tActivity.id}`
                           }))
