@@ -1,3 +1,6 @@
+-- Rolling Back ChangeSet: db/changelog/changelog-2.0.x.xml::v2.0.x-id36::razamd
+DELETE FROM public.databasechangelog WHERE ID = 'v2.0.x-id36' AND AUTHOR = 'razamd' AND FILENAME = 'db/changelog/changelog-2.0.x.xml';
+
 -- Rolling Back ChangeSet: db/changelog/changelog-2.0.x.xml::v2.0.x-id35::razamd
 ALTER TABLE public.orders_log DROP CONSTRAINT fk_orders_log_rev;
 

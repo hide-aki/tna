@@ -742,6 +742,12 @@
                                  referencedColumnNames="id" referencedTableName="rev_info"/>
     </changeSet>
 
+    <changeSet author="razamd" id="v2.0.x-id36">
+        <dropTable tableName="order_log" />
+
+        <rollback />
+    </changeSet>
+
 </databaseChangeLog>
 
 
