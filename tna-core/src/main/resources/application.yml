@@ -17,13 +17,13 @@ spring:
     masterdb: tna_master
 
   jpa:
-    show-sql: false
-    format-sql: true
-    hibernate:
-      ddl-auto: none
     properties:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
+        show_sql: false
+        format_sql: false
+        hbm2ddl:
+          auto: none
         jdbc:
           lob:
             non_contextual_creation: true

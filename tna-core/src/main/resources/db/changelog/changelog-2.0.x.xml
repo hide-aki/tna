@@ -571,10 +571,10 @@
             <addColumn tableName="orders">
                 <column name="timeline_id" type="BIGINT"/>
             </addColumn>
-            <dropColumn tableName="o_sub_activity" columnName="name" />
-            <dropColumn tableName="o_activity" columnName="overridable" />
-            <dropColumn tableName="t_sub_activity" columnName="name" />
-            <dropColumn tableName="t_activity" columnName="name" />
+            <dropColumn tableName="o_sub_activity" columnName="name"/>
+            <dropColumn tableName="o_activity" columnName="overridable"/>
+            <dropColumn tableName="t_sub_activity" columnName="name"/>
+            <dropColumn tableName="t_activity" columnName="name"/>
         </rollback>
     </changeSet>
 
@@ -598,12 +598,12 @@
         <addColumn tableName="t_activity">
             <column name="delay_reasons" type="TEXT"/>
         </addColumn>
-        <dropColumn tableName="o_activity" columnName="serial_no" />
-        <dropColumn tableName="o_activity" columnName="overridable" />
+        <dropColumn tableName="o_activity" columnName="serial_no"/>
+        <dropColumn tableName="o_activity" columnName="overridable"/>
 
         <rollback>
             <renameColumn tableName="activity" oldColumnName="delay_reasons" newColumnName="delay_reason"/>
-            <dropColumn tableName="t_activity" columnName="delay_reasons" />
+            <dropColumn tableName="t_activity" columnName="delay_reasons"/>
             <addColumn tableName="o_activity">
                 <column name="serial_no" type="INT"/>
             </addColumn>
@@ -622,14 +622,14 @@
                                  initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
                                  referencedColumnNames="id" referencedTableName="department"/>
     </changeSet>
-    
+
     <changeSet id="v2.0.x-id26" author="aditya">
         <dropColumn tableName="timeline" columnName="tna_type"/>
 
         <rollback>
-           <addColumn tableName="timeline" >
-               <column name="tna_type" type="VARCHAR(255)"/>
-           </addColumn>
+            <addColumn tableName="timeline">
+                <column name="tna_type" type="VARCHAR(255)"/>
+            </addColumn>
         </rollback>
     </changeSet>
 
@@ -658,7 +658,7 @@
         <dropColumn tableName="o_activity" columnName="time_from"/>
 
         <rollback>
-            <dropColumn tableName="o_activity" columnName="final_lead_time" />
+            <dropColumn tableName="o_activity" columnName="final_lead_time"/>
             <addColumn tableName="o_activity">
                 <column name="time_from" type="VARCHAR(255)"/>
             </addColumn>
@@ -673,6 +673,81 @@
             <column name="due_date" type="TIMESTAMP WITHOUT TIME ZONE"/>
         </addColumn>
     </changeSet>
+
+    <changeSet author="razamd" id="v2.0.x-id31">
+        <addColumn tableName="order_log">
+            <column name="event" type="VARCHAR(255)"/>
+        </addColumn>
+    </changeSet>
+
+    <changeSet author="razamd" id="v2.0.x-id32">
+        <createSequence sequenceName="hibernate_sequence"/>
+    </changeSet>
+
+    <changeSet author="razamd" id="v2.0.x-id33">
+        <createTable tableName="rev_info">
+            <column name="id" type="INT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="timestamp" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="username" type="VARCHAR(255)"/>
+        </createTable>
+
+        <addPrimaryKey columnNames="id" constraintName="rev_info_pkey" tableName="rev_info"/>
+    </changeSet>
+
+    <changeSet author="razamd" id="v2.0.x-id34">
+        <createTable tableName="o_activity_log">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="rev" type="INT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="revtype" type="SMALLINT"/>
+            <column name="completed_date" type="TIMESTAMP WITHOUT TIME ZONE"/>
+            <column name="delay_reason" type="VARCHAR(255)"/>
+            <column name="lead_time" type="INT"/>
+            <column name="remarks" type="TEXT"/>
+        </createTable>
+
+        <addForeignKeyConstraint baseColumnNames="rev" baseTableName="o_activity_log"
+                                 constraintName="fk_o_activity_log_rev" deferrable="false"
+                                 initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
+                                 referencedColumnNames="id" referencedTableName="rev_info"/>
+    </changeSet>
+
+    <changeSet author="razamd" id="v2.0.x-id35">
+        <createTable tableName="orders_log">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="rev" type="INT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="revtype" type="SMALLINT"/>
+            <column name="etd_date" type="TIMESTAMP WITHOUT TIME ZONE"/>
+            <column name="ex_factory_date" type="TIMESTAMP WITHOUT TIME ZONE"/>
+            <column name="order_date" type="TIMESTAMP WITHOUT TIME ZONE"/>
+            <column name="order_qty" type="INT"/>
+            <column name="po_ref" type="VARCHAR(255)"/>
+            <column name="style" type="VARCHAR(255)"/>
+        </createTable>
+
+        <addForeignKeyConstraint baseColumnNames="rev" baseTableName="orders_log"
+                                 constraintName="fk_orders_log_rev" deferrable="false"
+                                 initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
+                                 referencedColumnNames="id" referencedTableName="rev_info"/>
+    </changeSet>
+
+    <changeSet author="razamd" id="v2.0.x-id36">
+        <dropTable tableName="order_log" />
+
+        <rollback />
+    </changeSet>
+
 </databaseChangeLog>
 
 
