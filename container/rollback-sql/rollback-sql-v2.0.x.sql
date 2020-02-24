@@ -1,3 +1,29 @@
+-- Rolling Back ChangeSet: db/changelog/changelog-2.0.x.xml::v2.0.x-id35::razamd
+ALTER TABLE public.orders_log DROP CONSTRAINT fk_orders_log_rev;
+
+DROP TABLE public.orders_log;
+
+DELETE FROM public.databasechangelog WHERE ID = 'v2.0.x-id35' AND AUTHOR = 'razamd' AND FILENAME = 'db/changelog/changelog-2.0.x.xml';
+
+-- Rolling Back ChangeSet: db/changelog/changelog-2.0.x.xml::v2.0.x-id34::razamd
+ALTER TABLE public.o_activity_log DROP CONSTRAINT fk_o_activity_log_rev;
+
+DROP TABLE public.o_activity_log;
+
+DELETE FROM public.databasechangelog WHERE ID = 'v2.0.x-id34' AND AUTHOR = 'razamd' AND FILENAME = 'db/changelog/changelog-2.0.x.xml';
+
+-- Rolling Back ChangeSet: db/changelog/changelog-2.0.x.xml::v2.0.x-id33::razamd
+ALTER TABLE public.rev_info DROP CONSTRAINT rev_info_pkey;
+
+DROP TABLE public.rev_info;
+
+DELETE FROM public.databasechangelog WHERE ID = 'v2.0.x-id33' AND AUTHOR = 'razamd' AND FILENAME = 'db/changelog/changelog-2.0.x.xml';
+
+-- Rolling Back ChangeSet: db/changelog/changelog-2.0.x.xml::v2.0.x-id32::razamd
+DROP SEQUENCE public.hibernate_sequence CASCADE;
+
+DELETE FROM public.databasechangelog WHERE ID = 'v2.0.x-id32' AND AUTHOR = 'razamd' AND FILENAME = 'db/changelog/changelog-2.0.x.xml';
+
 -- Rolling Back ChangeSet: db/changelog/changelog-2.0.x.xml::v2.0.x-id31::razamd
 ALTER TABLE public.order_log DROP COLUMN event;
 

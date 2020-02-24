@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.jazasoft.mtdb.entity.Auditable;
 import lombok.Data;
-import lombok.NoArgsConstructor;
+import org.hibernate.envers.Audited;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotEmpty;
@@ -23,17 +23,21 @@ public class OActivity extends Auditable {
     @NotEmpty
     private String name;
 
+    @Audited
     @Column(nullable = false)
     private Integer leadTime;
 
     // Final Lead Time using Order Date as Reference
     private Integer finalLeadTime;
 
+    @Audited
     @Temporal(value = TemporalType.TIMESTAMP)
     private Date completedDate;
 
+    @Audited
     private String delayReason;
 
+    @Audited
     @Column(columnDefinition = "TEXT")
     private String remarks;
 

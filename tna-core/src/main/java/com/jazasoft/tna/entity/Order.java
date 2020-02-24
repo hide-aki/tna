@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.jazasoft.mtdb.entity.Auditable;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.envers.Audited;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotEmpty;
@@ -51,23 +52,28 @@ public class Order extends Auditable {
   private Long id;
 
   @NotEmpty
+  @Audited
   @Column(nullable = false)
   private String poRef;
 
   @NotNull
+  @Audited
   @Column(nullable = false)
   private Integer orderQty;
 
   @NotEmpty
+  @Audited
   @Column(nullable = false)
   private String style;
 
   @NotNull
+  @Audited
   @Temporal(TemporalType.TIMESTAMP)
   @Column(nullable = false)
   private Date orderDate;
 
   @NotNull
+  @Audited
   @Temporal(TemporalType.TIMESTAMP)
   @Column(nullable = false)
   private Date exFactoryDate;
@@ -83,6 +89,7 @@ public class Order extends Auditable {
   @ManyToOne(optional = false, fetch = FetchType.LAZY)
   private GarmentType garmentType;
 
+  @Audited
   @Temporal(TemporalType.TIMESTAMP)
   private Date etdDate;
 
