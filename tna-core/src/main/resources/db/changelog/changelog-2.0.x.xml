@@ -673,6 +673,12 @@
             <column name="due_date" type="TIMESTAMP WITHOUT TIME ZONE"/>
         </addColumn>
     </changeSet>
+
+    <changeSet author="razamd" id="v2.0.x-id31">
+        <addColumn tableName="order_log">
+            <column name="event" type="VARCHAR(255)"/>
+        </addColumn>
+    </changeSet>
 </databaseChangeLog>
 
 

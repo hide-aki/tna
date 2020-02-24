@@ -1,3 +1,8 @@
+-- Rolling Back ChangeSet: db/changelog/changelog-2.0.x.xml::v2.0.x-id31::razamd
+ALTER TABLE public.order_log DROP COLUMN event;
+
+DELETE FROM public.databasechangelog WHERE ID = 'v2.0.x-id31' AND AUTHOR = 'razamd' AND FILENAME = 'db/changelog/changelog-2.0.x.xml';
+
 -- Rolling Back ChangeSet: db/changelog/changelog-2.0.x.xml::v2.0.x-id30::razamd
 ALTER TABLE public.o_sub_activity DROP COLUMN due_date;
 

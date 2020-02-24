@@ -3,6 +3,9 @@ package com.jazasoft.tna.entity;
 import com.jazasoft.mtdb.entity.Auditable;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.data.annotation.CreatedBy;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
 import java.security.PrivateKey;
@@ -12,16 +15,24 @@ import java.util.Objects;
 @NoArgsConstructor
 @Data
 @Entity
+@EntityListeners({AuditingEntityListener.class})
 public class OrderLog  {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @CreatedDate
     @Temporal(value = TemporalType.TIME)
     private Date createdAt;
 
+    @CreatedBy
     private String createdBy;
+
+    /**
+     * Events to log: [Order Created, Order Update, Activity Updated, Timeline Overridden]
+     */
+    private String event;
 
     private String diff;
 
