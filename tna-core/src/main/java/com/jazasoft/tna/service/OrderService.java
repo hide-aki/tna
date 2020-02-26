@@ -338,6 +338,7 @@ public class OrderService {
 
         OActivity mActivity = mOrder.getOActivityList().stream().filter(a -> a.getId().equals(oActivity.getId())).findAny().orElse(null);
         if (mActivity != null) {
+          Hibernate.initialize(mActivity.getOSubActivityList());
           if (departmentId == -1L || (mActivity.getTActivity() != null && mActivity.getTActivity().getDepartment() != null && departmentId.equals(mActivity.getTActivity().getDepartment().getId()))) {
             mActivity.setCompletedDate(oActivity.getCompletedDate());
             mActivity.setDelayReason(oActivity.getDelayReason());
@@ -351,8 +352,6 @@ public class OrderService {
               mSubActivity.setCompletedDate(oSubActivity.getCompletedDate());
               mSubActivity.setRemarks(oSubActivity.getRemarks());
             }
-          } else {
-            Hibernate.initialize(mActivity.getOSubActivityList());
           }
         }
       }

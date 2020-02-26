@@ -31,5 +31,5 @@ export const Icons = {
   Search: Search,
   SortArrow: ArrowUpward,
   ThirdStateCheck: Remove,
-  ViewColumn: ViewColumn
+  ViewColumn: ViewColumn,
 };

@@ -16,6 +16,9 @@ import { PageHeader } from "jazasoft";
 const localizer = momentLocalizer(moment);
 
 var today = new Date();
+// var y = today.getFullYear();
+// var m = today.getMonth();
+// var d = today.getDate();
 
 const Category = {
   DUE_ON_TIME: "due-on-time",
@@ -85,6 +88,12 @@ class Calendar extends Component {
   init = async () => {
     const firstDay = new Date(today.getFullYear(), today.getMonth(), 1).getTime();
     const lastDay = new Date(today.getFullYear(), today.getMonth() + 1).getTime();
+    this.fetchEvents(firstDay, lastDay);
+  };
+
+  onNavigate = nav => {
+    const firstDay = new Date(moment(nav).startOf("month")).getTime();
+    const lastDay = new Date(moment(nav).endOf("month")).getTime();
     this.fetchEvents(firstDay, lastDay);
   };
 
@@ -200,13 +209,14 @@ class Calendar extends Component {
             localizer={localizer}
             events={view === "month" ? monthEvents : weekAndDayEvents}
             defaultView="month"
-            views={["month", "week", "day"]}
+            // views={["month", "week", "day"]}
             scrollToTime={new Date(1970, 1, 1, 6)}
             defaultDate={new Date()}
             onSelectEvent={this.onSelectEvent}
             onSelectSlot={this.onSelectSlot}
             eventPropGetter={this.eventColors}
             onView={this.onView}
+            onNavigate={this.onNavigate}
           />
         </Paper>
       </div>
