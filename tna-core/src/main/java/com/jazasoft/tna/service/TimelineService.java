@@ -30,17 +30,15 @@ public class TimelineService {
     private final SubActivityRepository subActivityRepository;
     private final DepartmentRepository departmentRepository;
     private final UserRepository userRepository;
-    private final UserService userService;
     private final EmailServiceImpl emailService;
 
-    public TimelineService(TimelineRepository timelineRepository, BuyerRepository buyerRepository, ActivityRepository activityRepository, SubActivityRepository subActivityRepository, DepartmentRepository departmentRepository, UserRepository userRepository, UserService userService, EmailServiceImpl emailService) {
+    public TimelineService(TimelineRepository timelineRepository, BuyerRepository buyerRepository, ActivityRepository activityRepository, SubActivityRepository subActivityRepository, DepartmentRepository departmentRepository, UserRepository userRepository, EmailServiceImpl emailService) {
         this.timelineRepository = timelineRepository;
         this.buyerRepository = buyerRepository;
         this.activityRepository = activityRepository;
         this.subActivityRepository = subActivityRepository;
         this.departmentRepository = departmentRepository;
         this.userRepository = userRepository;
-        this.userService = userService;
         this.emailService = emailService;
     }
 
@@ -118,7 +116,7 @@ public class TimelineService {
         Optional<Department> departmentOp = departmentRepository.findByName(Constants.DEPARTMENT_MERCHANDISING);
         if (departmentOp.isPresent()) {
             Long departmentId = departmentOp.get().getId();
-            List<User> toUsers = userService.findAll(Specification.where(byRole(Constants.ROLE_HOD).and(byDepartmentId(departmentId))));
+            List<User> toUsers = userRepository.findAll(Specification.where(byRole(Constants.ROLE_HOD).and(byDepartmentId(departmentId))));
 
             if (!toUsers.isEmpty()) {
                 toUsers = toUsers.stream().filter(user -> user.getEmail() != null).collect(Collectors.toList());
