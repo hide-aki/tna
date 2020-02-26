@@ -15,6 +15,7 @@ public class Activity {
   @Id
   private Long id;
   private Integer leadTime;
+  private Integer finalLeadTime;
   private Date completedDate;
   private String delayReason;
   private String remarks;
@@ -22,6 +23,7 @@ public class Activity {
   public Activity(OActivity oActivity) {
     this.id = oActivity.getId();
     this.leadTime = oActivity.getLeadTime();
+    this.finalLeadTime = oActivity.getFinalLeadTime();
     this.completedDate = oActivity.getCompletedDate();
     this.delayReason = oActivity.getDelayReason();
     this.remarks = oActivity.getRemarks();

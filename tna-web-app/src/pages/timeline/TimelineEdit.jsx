@@ -110,7 +110,18 @@ const inputOptions = sm => ({
 
 // To populate Activity name on Expansion Panel
 const TextField = ({ className, input: { value } }) => {
+  //console.log({ className, value });
+
   return <Typography className={className}>{value}</Typography>;
+};
+
+const onChange = timeline => {
+  const { tActivityList } = timeline;
+  tActivityList &&
+    tActivityList.map(({ id, leadTime }) => {
+      console.log({ id, leadTime });
+      return "";
+    });
 };
 
 // Add Activity Dialog box Content
@@ -160,6 +171,11 @@ const renderActivities = ({ fields, activities, classes, expanded, handleExpansi
               <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
                 <div className={classes.panelBtn}>
                   <Field name={`${activity}.name`} component={TextField} className={classes.heading} />
+                  <Field
+                    name={`${activity}.LeadTime`}
+                    component={TextField}
+                    //className={classes.heading}
+                  />
                   <FormControlLabel
                     onClick={event => event.stopPropagation()}
                     onFocus={event => event.stopPropagation()}
@@ -438,6 +454,10 @@ class TimelineEdit extends Component {
     this.setState({ expanded: isExpanded ? panel : false });
   };
 
+  // onChange = val => {
+  //   console.log({ val });
+  // };
+
   render() {
     const { hasAccess, roles, history, classes, activities } = this.props;
     const { dialogActive, rActivityList, fields, initialValues, expanded } = this.state;
@@ -455,7 +475,7 @@ class TimelineEdit extends Component {
           fields={fields}
         />
         <div className={classes.container}>
-          <WithReduxForm initialValues={initialValues} validate={this.onValidate} onChange={this.onChange}>
+          <WithReduxForm initialValues={initialValues} validate={this.onValidate} onChange={onChange}>
             {({ handleSubmit }) => (
               <div>
                 <Card className={classes.card}>

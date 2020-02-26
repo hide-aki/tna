@@ -5,7 +5,7 @@ import { RestMethods } from "jazasoft";
 import { getDistinctValues } from "../../utils/helpers";
 import CalendarFormDialog from "./CalendarFormDialog";
 
-import "../../asset/css/react-big-calendar.min.css";
+import "../../asset/css/react-big-calendar.css";
 import { Calendar as BigCalendar, momentLocalizer } from "react-big-calendar";
 
 import Paper from "@material-ui/core/Paper";
@@ -16,6 +16,9 @@ import { PageHeader } from "jazasoft";
 const localizer = momentLocalizer(moment);
 
 var today = new Date();
+// var y = today.getFullYear();
+// var m = today.getMonth();
+// var d = today.getDate();
 
 const Category = {
   DUE_ON_TIME: "due-on-time",
@@ -50,7 +53,7 @@ const cbFilter = (task, day, category) => {
 const getColor = category => {
   switch (category) {
     case Category.DUE_ON_TIME:
-      return "default";
+      return "blue";
     case Category.DUE_DELAYED:
       return "red";
     case Category.COMPLETED_ON_TIME:
@@ -58,7 +61,22 @@ const getColor = category => {
     case Category.COMPLETED_DELAYED:
       return "orange";
     default:
-      return "default";
+      return "blue";
+  }
+};
+
+const getLabel = category => {
+  switch (category) {
+    case Category.DUE_ON_TIME:
+      return "Due";
+    case Category.DUE_DELAYED:
+      return "Due (Not Completed)";
+    case Category.COMPLETED_ON_TIME:
+      return "Completed";
+    case Category.COMPLETED_DELAYED:
+      return "Completed (Delayed)";
+    default:
+      return "blue";
   }
 };
 
@@ -85,6 +103,12 @@ class Calendar extends Component {
   init = async () => {
     const firstDay = new Date(today.getFullYear(), today.getMonth(), 1).getTime();
     const lastDay = new Date(today.getFullYear(), today.getMonth() + 1).getTime();
+    this.fetchEvents(firstDay, lastDay);
+  };
+
+  onNavigate = nav => {
+    const firstDay = new Date(moment(nav).startOf("month")).getTime();
+    const lastDay = new Date(moment(nav).endOf("month")).getTime();
     this.fetchEvents(firstDay, lastDay);
   };
 
@@ -130,7 +154,7 @@ class Calendar extends Component {
     const events = Object.keys(result)
       .flatMap(date =>
         Object.keys(result[date]).map(category => ({
-          title: `${result[date][category].length} tasks - ${category}`,
+          title: `${result[date][category].length} Task${result[date][category].length !== 1 ? "s" : ""} - ${getLabel(category)}`,
           start: date,
           end: date,
           allDay: true,
@@ -200,13 +224,14 @@ class Calendar extends Component {
             localizer={localizer}
             events={view === "month" ? monthEvents : weekAndDayEvents}
             defaultView="month"
-            views={["month", "week", "day"]}
+            views={["month", "agenda"]}
             scrollToTime={new Date(1970, 1, 1, 6)}
             defaultDate={new Date()}
             onSelectEvent={this.onSelectEvent}
             onSelectSlot={this.onSelectSlot}
             eventPropGetter={this.eventColors}
             onView={this.onView}
+            onNavigate={this.onNavigate}
           />
         </Paper>
       </div>

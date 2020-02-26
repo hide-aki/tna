@@ -87,16 +87,17 @@ public class OActivity extends Auditable {
     @Override
     public String toString() {
         return "OActivity{" +
-                "id=" + id +
-                ", leadTime=" + leadTime +
-                ", completedDate=" + completedDate +
-                ", delayReason='" + delayReason + '\'' +
-                ", remarks='" + remarks + '\'' +
-                ", name='" + name + '\'' +
-                ", order=" + order +
-                ", tActivity=" + tActivity +
-                ", dueDate=" + dueDate +
-                '}';
+            "id=" + id +
+            ", name='" + name + '\'' +
+            ", leadTime=" + leadTime +
+            ", finalLeadTime=" + finalLeadTime +
+            ", completedDate=" + completedDate +
+            ", delayReason='" + delayReason + '\'' +
+            ", remarks='" + remarks + '\'' +
+            ", orderId=" + orderId +
+            ", tActivityId=" + tActivityId +
+            ", dueDate=" + dueDate +
+            '}';
     }
 }
 

@@ -1,3 +1,27 @@
+-- Rolling Back ChangeSet: db/changelog/changelog-2.0.x.xml::v2.0.x-id40::razamd
+DROP VIEW public.task_sub_activity_view;
+
+DELETE FROM public.databasechangelog WHERE ID = 'v2.0.x-id40' AND AUTHOR = 'razamd' AND FILENAME = 'db/changelog/changelog-2.0.x.xml';
+
+-- Rolling Back ChangeSet: db/changelog/changelog-2.0.x.xml::v2.0.x-id39::razamd
+DROP VIEW public.task_activity_view;
+
+DELETE FROM public.databasechangelog WHERE ID = 'v2.0.x-id39' AND AUTHOR = 'razamd' AND FILENAME = 'db/changelog/changelog-2.0.x.xml';
+
+-- Rolling Back ChangeSet: db/changelog/changelog-2.0.x.xml::v2.0.x-id38::razamd
+ALTER TABLE public.orders DROP COLUMN timeline;
+
+DELETE FROM public.databasechangelog WHERE ID = 'v2.0.x-id38' AND AUTHOR = 'razamd' AND FILENAME = 'db/changelog/changelog-2.0.x.xml';
+
+-- Rolling Back ChangeSet: db/changelog/changelog-2.0.x.xml::v2.0.x-id37::razamd
+ALTER TABLE public.orders_log DROP COLUMN garment_type_id;
+
+ALTER TABLE public.orders_log DROP COLUMN buyer_id;
+
+ALTER TABLE public.orders_log DROP COLUMN season_id;
+
+DELETE FROM public.databasechangelog WHERE ID = 'v2.0.x-id37' AND AUTHOR = 'razamd' AND FILENAME = 'db/changelog/changelog-2.0.x.xml';
+
 -- Rolling Back ChangeSet: db/changelog/changelog-2.0.x.xml::v2.0.x-id36::razamd
 DELETE FROM public.databasechangelog WHERE ID = 'v2.0.x-id36' AND AUTHOR = 'razamd' AND FILENAME = 'db/changelog/changelog-2.0.x.xml';
 

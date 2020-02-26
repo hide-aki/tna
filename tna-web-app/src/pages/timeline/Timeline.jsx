@@ -5,13 +5,13 @@ import {
   Datagrid,
   TextField,
   EditButton,
-  ReferenceField,
+  FunctionField,
   DeleteButton,
   CreateButton,
   ShowButton,
   Filter,
   ReferenceInput,
-  SelectInput,
+  SelectInput
 } from "jazasoft";
 
 import hasPrivilege from "../../utils/hasPrivilege";
@@ -44,7 +44,7 @@ const filters = (
 
 export default withStyles(homeStyle)(({ classes, ...props }) => {
   const { roles, hasAccess } = props;
-  
+
   return (
     <List
       actions={({ basePath, roles, hasAccess }) => (
@@ -55,9 +55,9 @@ export default withStyles(homeStyle)(({ classes, ...props }) => {
     >
       <Datagrid>
         <TextField label="Name" source="name" />
-        <ReferenceField source="buyerId" reference="buyers">
-          <TextField label="Buyer" source="name" />
-        </ReferenceField>
+        <TextField label="Buyer" source="buyer.name" />
+        <FunctionField label="Std Lead Time" render={record => (record.stdLeadTime ? `${record.stdLeadTime} days` : "")} />
+        <FunctionField label="Approved" render={record => (record.approved ? "Yes" : "No")} />
         <ShowButton cellClassName={classes.button} />
         {hasPrivilege(roles, hasAccess, "timeline", "update", "default") && <EditButton cellClassName={classes.button} />}
         {hasPrivilege(roles, hasAccess, "timeline", "delete") && <DeleteButton cellClassName={classes.button} />}

@@ -19,6 +19,8 @@ spring:
   jpa:
     properties:
       hibernate:
+        implicit_naming_strategy: org.springframework.boot.orm.jpa.hibernate.SpringImplicitNamingStrategy
+        physical_naming_strategy: org.springframework.boot.orm.jpa.hibernate.SpringPhysicalNamingStrategy
         dialect: org.hibernate.dialect.PostgreSQLDialect
         show_sql: false
         format_sql: false
@@ -35,7 +37,7 @@ spring:
     port: 587
     from: noreply@jaza-soft.com
     username: admin@jaza-soft.com
-    password: tuksysvicjegaufu
+    password: arcutfrsuoduyivy
     properties:
       mail:
         smtp:

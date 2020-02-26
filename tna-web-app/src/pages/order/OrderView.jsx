@@ -29,15 +29,18 @@ import withStyles from "@material-ui/styles/withStyles";
 
 // Icons
 import EditIcon from "@material-ui/icons/Edit";
+import HistoryIcon from "@material-ui/icons/History";
 
+//Dialog
+import HistoryDialog from "./HistoryDialog";
 import OverridableFormDialog from "./OverridableFormDialog";
+import FormDialog from "./FormDialog";
 
 //material-Table
 import MaterialTable from "material-table";
 import { Icons } from "../../components/MaterialTableIcons";
 
 import CardHeader from "../../components/CardHeader";
-import FormDialog from "./FormDialog";
 
 import handleError from "../../utils/handleError";
 import { Role } from "../../utils/types";
@@ -137,7 +140,9 @@ const styles = {
 class OrderView extends Component {
   state = {
     dialogActive: false,
-    overridableDialogActive: false
+    overridableDialogActive: false,
+    historyDialogActive: false,
+    historyData: []
   };
 
   componentDidMount() {
@@ -238,14 +243,15 @@ class OrderView extends Component {
       });
   };
 
+  onHistoryClick = (type, OrderId, ActivityId) => {
+    this.setState({ historyData: [type, OrderId, ActivityId], historyDialogActive: true });
+  };
   render() {
     const { id, roles = [], order = {}, getPermissions, classes } = this.props;
-    const { dialogActive, overridableDialogActive } = this.state;
+    const { dialogActive, overridableDialogActive, historyDialogActive, historyData } = this.state;
     const isGrassRootUser = roles.includes(Role.MERCHANT) || roles.includes(Role.USER);
-
     const activityList = format(isGrassRootUser, order);
     const departmentId = getPermissions && getPermissions("departmentId") && getPermissions("departmentId")[0];
-
     return (
       <div className={classes.root}>
         <PageHeader title="Order View" />
@@ -264,7 +270,9 @@ class OrderView extends Component {
           onClose={_ => this.setState({ overridableDialogActive: false })}
           onSubmit={this.onOverrideSubmit}
         />
-
+        {historyDialogActive && (
+          <HistoryDialog open={historyDialogActive} data={historyData} onClose={_ => this.setState({ historyDialogActive: false })} />
+        )}
         <div className={classes.content}>
           <Card>
             <CardHeader title="Basic Details" />
@@ -272,6 +280,7 @@ class OrderView extends Component {
             <SimpleShowLayout style={{ padding: "1.5em" }} footer={false} record={order}>
               <TextField source="poRef" label="PO Reference" {...fieldOptions(3)} />
               <TextField source="buyer.name" label="Buyer" {...fieldOptions(3)} />
+              <TextField source="timeline" {...fieldOptions(3)} />
               <TextField source="garmentType.name" label="Garment Type" {...fieldOptions(3)} />
               <TextField source="season.name" label="Season" {...fieldOptions(3)} />
               <TextField source="style" label="Style" {...fieldOptions(3)} />
@@ -297,6 +306,7 @@ class OrderView extends Component {
               <MaterialTable
                 columns={columns}
                 data={activityList}
+                icons={Icons}
                 onTreeExpandChange={this.onTreeExpandChanged}
                 parentChildData={
                   !isGrassRootUser
@@ -306,6 +316,13 @@ class OrderView extends Component {
                           return a.id === row.oActivityId;
                         })
                 }
+                actions={[
+                  {
+                    icon: HistoryIcon,
+                    tooltip: "Activity History",
+                    onClick: (event, rowData) => this.onHistoryClick("Activity", Number(id), Number(rowData.id))
+                  }
+                ]}
                 options={{
                   selection: false,
                   search: false,
@@ -314,7 +331,6 @@ class OrderView extends Component {
                   toolbar: false,
                   actionsColumnIndex: -1
                 }}
-                icons={Icons}
                 style={{
                   boxShadow: "none",
                   width: "100%"
@@ -324,6 +340,9 @@ class OrderView extends Component {
           </Card>
           <PageFooter>
             <BackButton variant="contained" style={{ marginRight: "1.5em" }} />
+            <Button label="History" variant="contained" style={{ marginRight: "1.5em" }} onClick={_ => this.onHistoryClick("Order", Number(id))}>
+              <HistoryIcon />
+            </Button>
             <Button
               label="Update Activity"
               variant="contained"
@@ -333,6 +352,7 @@ class OrderView extends Component {
             >
               <EditIcon />
             </Button>
+
             {roles.includes(Role.MERCHANT) && (
               <Button label="Override" variant="contained" color="primary" onClick={_ => this.setState({ overridableDialogActive: true })}>
                 <EditIcon />

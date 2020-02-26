@@ -19,6 +19,9 @@ public class Order {
   private Date orderDate;
   private Date exFactoryDate;
   private Date etdDate;
+  private Long seasonId;
+  private Long buyerId;
+  private Long garmentTypeId;
 
   public Order(com.jazasoft.tna.entity.Order order) {
     this.id = order.getId();
@@ -27,5 +30,8 @@ public class Order {
     this.orderQty = order.getOrderQty();
     this.exFactoryDate = order.getExFactoryDate();
     this.etdDate = order.getEtdDate();
+    this.seasonId = order.getSeason() != null ? order.getSeason().getId() : null;
+    this.buyerId = order.getBuyer() != null ? order.getBuyer().getId() : null;
+    this.garmentTypeId = order.getGarmentType() != null ? order.getGarmentType().getId() : null;
   }
 }

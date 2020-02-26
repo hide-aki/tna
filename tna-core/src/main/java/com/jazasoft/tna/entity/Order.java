@@ -14,6 +14,8 @@ import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
+import static org.hibernate.envers.RelationTargetAuditMode.NOT_AUDITED;
+
 @NamedEntityGraphs({
     @NamedEntityGraph(
         name = "order.findAll",
@@ -51,6 +53,8 @@ public class Order extends Auditable {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
+  String timeline;
+
   @NotEmpty
   @Audited
   @Column(nullable = false)
@@ -80,12 +84,15 @@ public class Order extends Auditable {
 
   private String remarks;
 
+  @Audited(targetAuditMode = NOT_AUDITED)
   @ManyToOne(optional = false, fetch = FetchType.LAZY)
   private Season season;
 
+  @Audited(targetAuditMode = NOT_AUDITED)
   @ManyToOne(optional = false, fetch = FetchType.LAZY)
   private Buyer buyer;
 
+  @Audited(targetAuditMode = NOT_AUDITED)
   @ManyToOne(optional = false, fetch = FetchType.LAZY)
   private GarmentType garmentType;
 

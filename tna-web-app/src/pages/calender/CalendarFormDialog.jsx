@@ -4,12 +4,18 @@ import DialogActions from "@material-ui/core/DialogActions";
 import DialogContent from "@material-ui/core/DialogContent";
 import DialogTitle from "@material-ui/core/DialogTitle";
 import Table from "jazasoft/lib/mui/components/Table";
+import Grid from "@material-ui/core/Grid";
+import List from "@material-ui/core/List";
+import ListItem from "@material-ui/core/ListItem";
+import ListItemSecondaryAction from "@material-ui/core/ListItemSecondaryAction";
+import ListItemText from "@material-ui/core/ListItemText";
+import Typography from "@material-ui/core/Typography";
 
 import moment from "moment";
 import Button from "@material-ui/core/Button";
 
 const columns = [
-  { dataKey: "name", title: "Name" },
+  { dataKey: "name", title: "Activity/SubActivity" },
   { dataKey: "dueDate", title: "Due Date" },
   { dataKey: "completedDate", title: "Completed Date" },
   { dataKey: "poRef", title: "PO Ref. No." },
@@ -22,12 +28,13 @@ const columns = [
 class CalendarFormDialog extends Component {
   state = {};
 
-  onBack = () => {
+  onClose = () => {
     this.props.onClose && this.props.onClose();
   };
 
   render() {
     const { data } = this.props;
+    let listData = [];
     let rows = [];
     if (data.length) {
       // Checking if data is from month view or week view
@@ -40,24 +47,43 @@ class CalendarFormDialog extends Component {
         }));
       rows = monthData;
     } else {
-      let weekData = [
-        {
-          ...data,
-          name: data.title,
-          dueDate: moment(data.dueDate).format("ll"),
-          completedDate: data.completedDate ? moment(data.completedDate).format("ll") : "-"
-        }
+      let weekAndDayData = [
+        { label: "Name", value: data.name },
+        { label: "Due Date", value: moment(data.dueDate).format("ll") },
+        { label: "Completed Date", value: data.completedDate ? moment(data.completedDate).format("ll") : "-" },
+        { label: "PO Ref. No", value: data.poRef ? data.poRef : "-" },
+        { label: "Buyer", value: data.buyerName ? data.buyerName : "-" },
+        { label: "Season", value: data.seasonName ? data.seasonName : "-" },
+        { label: "Style", value: data.style ? data.style : "-" },
+        { label: "OrderQty", value: data.orderQty ? data.orderQty : "-" }
       ];
-      rows = weekData;
+      listData = weekAndDayData;
     }
+
     return (
-      <Dialog open={this.props.open} maxWidth="md" fullWidth onClose={this.handleClose} aria-labelledby="form-dialog-title">
+      <Dialog open={this.props.open} maxWidth={data.length ? "md" : "xs"} fullWidth onClose={this.onClose} aria-labelledby="form-dialog-title">
         <DialogTitle id="form-dialog-title">Task</DialogTitle>
         <DialogContent style={{ padding: 0 }}>
-          <Table columns={columns} rows={rows} />
+          {data.length ? (
+            <Table columns={columns} rows={rows} />
+          ) : (
+            <Grid item xs={12} sm={8}>
+              <List>
+                {listData.length > 0 &&
+                  listData.map(e => (
+                    <ListItem key={e.label}>
+                      <ListItemText secondary={e.label} secondaryTypographyProps={{ variant: "subtitle1" }} />
+                      <ListItemSecondaryAction>
+                        <Typography component="div">{e.value}</Typography>
+                      </ListItemSecondaryAction>
+                    </ListItem>
+                  ))}
+              </List>
+            </Grid>
+          )}
         </DialogContent>
         <DialogActions>
-          <Button onClick={this.onBack} color="primary">
+          <Button onClick={this.onClose} color="primary">
             Close
           </Button>
         </DialogActions>
