@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.criteria.JoinType;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -30,7 +31,7 @@ public class CalendarService {
   }
 
   public List<Task> findAll(String action, String search, Set<Long> buyerIds, Long departmentId) {
-
+    if (buyerIds.isEmpty() || departmentId == null) return new ArrayList<>();
     Node rootNode = new RSQLParser().parse(search);
     Specification<OActivity> aSpec = rootNode.accept(new CustomRsqlVisitor<>());
 
@@ -50,19 +51,19 @@ public class CalendarService {
     return taskList;
   }
 
-  Specification<OActivity> byABuyerIds(Set<Long> buyerIds) {
+  private Specification<OActivity> byABuyerIds(Set<Long> buyerIds) {
     return ((root, query, cb) -> root.join("order", JoinType.LEFT).join("buyer", JoinType.LEFT).get("id").in(buyerIds));
   }
 
-  Specification<OActivity> byADepartmentId(Long departmentId) {
+  private Specification<OActivity> byADepartmentId(Long departmentId) {
     return ((root, query, cb) -> cb.equal(root.join("tActivity", JoinType.LEFT).join("department").get("id"), departmentId));
   }
 
-  Specification<OSubActivity> bySABuyerIds(Set<Long> buyerIds) {
+  private Specification<OSubActivity> bySABuyerIds(Set<Long> buyerIds) {
     return ((root, query, cb) -> root.join("oActivity", JoinType.LEFT).join("order", JoinType.LEFT).join("buyer", JoinType.LEFT).get("id").in(buyerIds));
   }
 
-  Specification<OSubActivity> bySADepartmentId(Long departmentId) {
+  private Specification<OSubActivity> bySADepartmentId(Long departmentId) {
     return ((root, query, cb) -> cb.equal(root.join("oActivity").join("tActivity", JoinType.LEFT).join("department").get("id"), departmentId));
   }
 }

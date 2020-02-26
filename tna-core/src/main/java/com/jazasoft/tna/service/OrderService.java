@@ -14,6 +14,8 @@ import com.jazasoft.util.Utils;
 import org.hibernate.Hibernate;
 import org.javers.core.Javers;
 import org.javers.core.diff.Diff;
+import org.javers.core.diff.changetype.PropertyChange;
+import org.javers.core.diff.changetype.ValueChange;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
@@ -137,13 +139,20 @@ public class OrderService {
   public List<Log> findActivityLogs(Long orderId, Long oActivityId) {
     Revisions<Integer, OActivity> revisions = oActivityRepository.findRevisions(oActivityId);
 
-    List<Revision<Integer, OActivity>> revisionList = revisions.getContent().stream().sorted((a, b) -> a.getRevisionNumber().isPresent() && b.getRevisionNumber().isPresent() ? a.getRevisionNumber().get() - b.getRevisionNumber().get() : 0).collect(Collectors.toList());
+    List<Revision<Integer, OActivity>> revisionList = revisions.getContent().stream().sorted((a, b) -> a.getRevisionNumber().isPresent() && b.getRevisionNumber().isPresent() ? b.getRevisionNumber().get() - a.getRevisionNumber().get() : 0).collect(Collectors.toList());
 
     List<Log> logs = new ArrayList<>();
 
+    Integer finalLeadTime = null;
     Revision<Integer, OActivity> prev = null;
     for (Revision<Integer, OActivity> curr: revisionList) {
       if (prev != null) {
+        if (finalLeadTime == null) {
+          OActivity mActivity = oActivityRepository.findById(curr.getEntity().getId()).orElse(null);
+          if (mActivity != null) {
+            finalLeadTime = mActivity.getFinalLeadTime();
+          }
+        }
         Log log = new Log();
 
         MyRevisionEntity myRevisionEntity = curr.getMetadata().getDelegate();
@@ -152,13 +161,29 @@ public class OrderService {
 
         String diffStr = null;
         String event = null;
-        Diff diff = javers.compare(new com.jazasoft.tna.audit.Activity(prev.getEntity()), new com.jazasoft.tna.audit.Activity(curr.getEntity()));
+        Diff diff = javers.compare(new com.jazasoft.tna.audit.Activity(curr.getEntity()), new com.jazasoft.tna.audit.Activity(prev.getEntity()));
         if (diff.hasChanges()) {
-          diffStr = diff.prettyPrint();
+
           if (diff.getPropertyChanges("leadTime").size() == 0) {
             event = "Activity Updated";
           } else  {
             event = "Timeline Overridden";
+            PropertyChange propertyChange = diff.getPropertyChanges("leadTime").get(0);
+            if (propertyChange instanceof ValueChange) {
+              ValueChange valueChange = (ValueChange)propertyChange;
+              int difference = ((Integer) valueChange.getLeft()) - ((Integer) valueChange.getRight());
+
+              com.jazasoft.tna.audit.Activity oldEntity = new com.jazasoft.tna.audit.Activity(curr.getEntity());
+              com.jazasoft.tna.audit.Activity newEntity = new com.jazasoft.tna.audit.Activity(prev.getEntity());
+              newEntity.setFinalLeadTime(finalLeadTime);
+              finalLeadTime += difference;
+              oldEntity.setFinalLeadTime(finalLeadTime);
+              oldEntity.setLeadTime(null);
+              newEntity.setLeadTime(null);
+
+              diff = javers.compare(oldEntity, newEntity);
+              diffStr = diff.prettyPrint();
+            }
           }
         }
         log.setEvent(event);

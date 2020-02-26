@@ -748,6 +748,18 @@
         <rollback />
     </changeSet>
 
+    <changeSet author="razamd" id="v2.0.x-id37">
+        <addColumn tableName="orders_log">
+            <column name="season_id" type="BIGINT"/>
+        </addColumn>
+        <addColumn tableName="orders_log">
+            <column name="buyer_id" type="BIGINT"/>
+        </addColumn>
+        <addColumn tableName="orders_log">
+            <column name="garment_type" type="BIGINT"/>
+        </addColumn>
+    </changeSet>
+
 </databaseChangeLog>
 
 
