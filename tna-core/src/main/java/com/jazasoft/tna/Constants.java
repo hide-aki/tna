@@ -8,4 +8,7 @@ public interface Constants {
   String REQ_ATTRIBUTE_BUYER = "buyerId";
   String REQ_ATTRIBUTE_DEPARTMENT = "departmentId";
   String REQ_ATTRIBUTE_TEAM = "teamId";
+
+  String ROLE_HOD = "hod";
+  String DEPARTMENT_MERCHANDISING = "Merchandising";
 }

@@ -1049,7 +1049,7 @@
 ```$xslt
     url: ~/v1/api/orders/{orderId}
     method: PUT
-    action: default, timeline
+    action: default, override
     params:
     request data: 
             {
