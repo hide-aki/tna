@@ -53,6 +53,8 @@ public class Order extends Auditable {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
+  String timeline;
+
   @NotEmpty
   @Audited
   @Column(nullable = false)

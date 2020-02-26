@@ -760,6 +760,34 @@
         </addColumn>
     </changeSet>
 
+    <changeSet author="razamd" id="v2.0.x-id38">
+        <addColumn tableName="orders">
+            <column name="timeline" type="VARCHAR(255)"/>
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="v2.0.x-id39" author="razamd">
+        <createView
+                replaceIfExists="true"
+                schemaName="public"
+                viewName="task_activity_view">
+            SELECT a.id, b.id AS buyer_id, o.id AS order_id, d.id AS department_id, s.id AS season_id, b.name AS buyer, s.name AS season,  o.po_ref, o.style, o.order_qty, a.name, a.due_date, a.completed_date
+            FROM o_activity a, orders o, buyer b, season s, t_activity t, department d
+            WHERE a.order_id = o.id AND o.buyer_id = b.id AND o.season_id = s.id AND a.t_activity_id = t.id AND t.department_id = d.id;
+        </createView>
+    </changeSet>
+
+    <changeSet id="v2.0.x-id40" author="razamd">
+        <createView
+                replaceIfExists="true"
+                schemaName="public"
+                viewName="task_sub_activity_view">
+            SELECT sa.id, b.id AS buyer_id, o.id AS order_id, d.id AS department_id, s.id AS season_id, b.name AS buyer, s.name AS season,  o.po_ref, o.style, o.order_qty, sa.name, sa.due_date, a.completed_date
+            FROM o_sub_activity sa, o_activity a, orders o, buyer b, season s, t_activity t, department d
+            WHERE sa.o_activity_id = a.id AND a.order_id = o.id AND o.buyer_id = b.id AND o.season_id = s.id AND a.t_activity_id = t.id AND t.department_id = d.id;
+        </createView>
+    </changeSet>
+
 </databaseChangeLog>
 
 

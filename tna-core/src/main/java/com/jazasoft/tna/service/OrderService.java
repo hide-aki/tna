@@ -8,6 +8,7 @@ import com.jazasoft.tna.repository.*;
 import com.jazasoft.tna.util.Graph;
 import com.jazasoft.tna.util.Node;
 import com.jazasoft.tna.util.TnaUtils;
+import com.jazasoft.util.Assert;
 import com.jazasoft.util.DateUtils;
 import com.jazasoft.util.JsonUtils;
 import com.jazasoft.util.Utils;
@@ -201,6 +202,10 @@ public class OrderService {
   @Transactional(value = "tenantTransactionManager")
   public Order save(Order order) {
     Timeline timeline = timelineRepository.findById(order.getTimelineId()).orElseThrow();
+
+    Assert.isTrue(timeline.getApproved(), "Timeline not approved. Order for only approved timeline can be created.");
+
+    order.setTimeline(timeline.getName());
 
     if (order.getBuyerId() != null) {
       order.setBuyer(buyerRepository.findById(order.getBuyerId()).orElse(null));

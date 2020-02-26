@@ -288,6 +288,7 @@ class OrderView extends Component {
             <SimpleShowLayout style={{ padding: "1.5em" }} footer={false} record={order}>
               <TextField source="poRef" label="PO Reference" {...fieldOptions(3)} />
               <TextField source="buyer.name" label="Buyer" {...fieldOptions(3)} />
+              <TextField source="timeline" {...fieldOptions(3)} />
               <TextField source="garmentType.name" label="Garment Type" {...fieldOptions(3)} />
               <TextField source="season.name" label="Season" {...fieldOptions(3)} />
               <TextField source="style" label="Style" {...fieldOptions(3)} />
@@ -347,7 +348,7 @@ class OrderView extends Component {
           </Card>
           <PageFooter>
             <BackButton variant="contained" style={{ marginRight: "1.5em" }} />
-            <Button label="History" variant="contained" style={{ marginRight: "1.5em" }} 
+            <Button label="History" variant="contained" style={{ marginRight: "1.5em" }}
             //onClick={this.onActivityHistoryClick(type="Order", )}
             >
               <HistoryIcon />

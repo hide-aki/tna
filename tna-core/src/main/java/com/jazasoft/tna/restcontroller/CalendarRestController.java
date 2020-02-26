@@ -3,11 +3,9 @@ package com.jazasoft.tna.restcontroller;
 import com.jazasoft.mtdb.dto.RestError;
 import com.jazasoft.tna.ApiUrls;
 import com.jazasoft.tna.Constants;
-import com.jazasoft.tna.dto.Task;
-import com.jazasoft.tna.entity.Order;
+import com.jazasoft.tna.entity.view.Task;
 import com.jazasoft.tna.service.CalendarService;
 import com.jazasoft.tna.util.TnaUtils;
-import com.jazasoft.util.Utils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -72,7 +70,6 @@ public class CalendarRestController {
     }
 
     List<Task> taskList = calendarService.findAll(action, search, buyerIds, departmentId);
-
 
     return ResponseEntity.ok(taskList);
   }
