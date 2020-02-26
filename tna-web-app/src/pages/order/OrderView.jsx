@@ -32,7 +32,7 @@ import EditIcon from "@material-ui/icons/Edit";
 import HistoryIcon from "@material-ui/icons/History";
 
 //Dialog
-import HistoryDialog from "./HistoryDialog";
+// import HistoryDialog from "./HistoryDialog";
 import OverridableFormDialog from "./OverridableFormDialog";
 import FormDialog from "./FormDialog";
 
@@ -348,8 +348,11 @@ class OrderView extends Component {
           </Card>
           <PageFooter>
             <BackButton variant="contained" style={{ marginRight: "1.5em" }} />
-            <Button label="History" variant="contained" style={{ marginRight: "1.5em" }}
-            //onClick={this.onActivityHistoryClick(type="Order", )}
+            <Button
+              label="History"
+              variant="contained"
+              style={{ marginRight: "1.5em" }}
+              //onClick={this.onActivityHistoryClick(type="Order", )}
             >
               <HistoryIcon />
             </Button>

@@ -12,27 +12,24 @@ import OrderIcon from "@material-ui/icons/FiberManualRecordOutlined";
 import UserIcon from "mdi-material-ui/AccountGroup";
 import LibraryIcon from "@material-ui/icons/LibraryBooks";
 import SettingsIcon from "@material-ui/icons/Settings";
+import HelpIcon from "mdi-material-ui/Lifebuoy";
+import ManualIcon from "mdi-material-ui/FileDocument";
 // import DeveloperBoardIcon from "@material-ui/icons/DeveloperBoard";
 import DownloadsIcon from "@material-ui/icons/GetApp";
 import HourglassEmptyOutlinedIcon from "@material-ui/icons/HourglassEmptyOutlined";
 // import TicketIcon from "@material-ui/icons/ConfirmationNumber";
 import ActivityIcon from "mdi-material-ui/ClipboardList";
 
-import {
-  App as JApp,
-  Resource,
-  createAuthProvider,
-  createDataProvider
-  // WithPermissions
-} from "jazasoft";
+import { App as JApp, Resource, createAuthProvider, createDataProvider, WithPermissions } from "jazasoft";
 
-import Dashboard from "./pages/dashboard/Dashboard";
+// import Dashboard from "./pages/dashboard/Dashboard";
 import Calendar from "./pages/calender/Calendar";
 
 import englishMessage from "./i18n/en";
 import theme from "./theme";
 
 import hasPrivilege from "./utils/hasPrivilege";
+import { Role } from "./utils/types";
 
 import { OrderHome, OrderCreate, OrderEdit, OrderView } from "./pages/order";
 import { TimelineHome, TimelineCreate, TimelineView, TimelineEdit } from "./pages/timeline";
@@ -49,10 +46,12 @@ import { TeamHome, CreateTeam, EditTeam } from "./pages/library/Team";
 import Settings from "./pages/setting/Settings";
 import Downloads from "./pages/downloads/Downloads";
 
+import { Docs, Section, Topic, CreateTopic, EditTopic } from "./pages/docs";
+
 export const appId = "tna";
 
-// const rootUrl = window.location.protocol + "//" + window.location.hostname + (window.location.port ? ":" + window.location.port : "");
- const rootUrl = `http://${window.location.hostname}:8006`;
+const rootUrl = window.location.protocol + "//" + window.location.hostname + (window.location.port ? ":" + window.location.port : "");
+// const rootUrl = `http://${window.location.hostname}:8006`;
 // const rootUrl = `https://tna.jaza-soft.com`;
 
 ///// Env: Local IAM ///////
@@ -105,7 +104,35 @@ const resources = [
   { i18nKey: "buyers", resource: "buyers" }
 ];
 
-const customRoutes = [<Route name="users" resource="users" exact path="/users/upload" component={UserUpload} />];
+const customRoutes = [
+  <Route name="users" resource="users" exact path="/users/upload" component={UserUpload} />,
+  ...["help", "manual"].flatMap(type => [
+    <Route
+      name={type}
+      exact
+      path={`/${type}/:sectionId`}
+      render={routeProps => <WithPermissions render={props => React.createElement(Section, { ...props, type })} {...routeProps} />}
+    />,
+    <Route
+      name={type}
+      exact
+      path={`/${type}/topics/create`}
+      render={routeProps => <WithPermissions render={props => React.createElement(CreateTopic, { ...props, type })} {...routeProps} />}
+    />,
+    <Route
+      name={type}
+      exact
+      path={`/${type}/topics/:id/edit`}
+      render={routeProps => <WithPermissions render={props => React.createElement(EditTopic, { ...props, type })} {...routeProps} />}
+    />,
+    <Route
+      name={type}
+      exact
+      path={`/${type}/topics/:id/view`}
+      render={routeProps => <WithPermissions render={props => React.createElement(Topic, { ...props, type })} {...routeProps} />}
+    />
+  ])
+];
 
 class App extends React.Component {
   render() {
@@ -122,28 +149,16 @@ class App extends React.Component {
         customRoutes={customRoutes}
         logo={logo}
         avatar={avatar}
-        dashboard={Dashboard}
+        dashboard={() => {}}
         history={history}
         theme={theme}
       >
         {({ roles, hasAccess }) => {
           let resourceList = [];
 
-          // if (hasPrivilege(roles, hasAccess, "report", "read")) {
-          //   resourceList.push(
-          //     <Resource name="report" icon={ReportIcon}>
-          //       <Resource
-          //         name="operatorPerformance"
-          //         resource="users"
-          //         home={OperatorPerformace}
-          //         view={OperatorPerformaceView}
-          //         icon={MenuIcon}
-          //       />
-          //     </Resource>
-          //   );
-          // }
-
-          resourceList.push(<Resource name="calendar" home={Calendar} icon={CalendarIcon} />);
+          if (roles && (roles.includes(Role.USER) || roles.includes(Role.MERCHANT))) {
+            resourceList.push(<Resource name="calendar" home={Calendar} icon={CalendarIcon} />);
+          }
 
           if (hasPrivilege(roles, hasAccess, "order", "read")) {
             resourceList.push(
@@ -213,6 +228,11 @@ class App extends React.Component {
           }
 
           resourceList.push(<Resource name="downloads" home={Downloads} icon={DownloadsIcon} />);
+
+          resourceList.push(<Resource name="help" home={Docs} icon={HelpIcon} />);
+          if (roles && roles.includes(Role.MASTER)) {
+            resourceList.push(<Resource name="manual" home={Docs} icon={ManualIcon} />);
+          }
 
           return resourceList;
         }}

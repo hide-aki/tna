@@ -203,7 +203,7 @@ public class OrderService {
   public Order save(Order order) {
     Timeline timeline = timelineRepository.findById(order.getTimelineId()).orElseThrow();
 
-    Assert.isTrue(timeline.getApproved(), "Timeline not approved. Order for only approved timeline can be created.");
+    Assert.isTrue(timeline.getApproved(), "Timeline not approved. Only approved timeline can be used to create Order.");
 
     order.setTimeline(timeline.getName());
 

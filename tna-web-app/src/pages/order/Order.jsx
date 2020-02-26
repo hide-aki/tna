@@ -41,6 +41,7 @@ import FormDialog from "./FormDialog";
 import hasPrivilege from "../../utils/hasPrivilege";
 import handleError from "../../utils/handleError";
 import { dataProvider } from "../../App";
+import { ColorNotification } from "../../utils/colors";
 
 const filters = (buyerIds = []) => (
   <Filter
@@ -72,9 +73,9 @@ const MyTextField = ({ column, record }) => {
     value = activity.completedDate ? moment(activity.completedDate).format("ll") : dueDate ? dueDate.format("ll") : null;
     if (activity.completedDate) {
       if (moment(activity.completedDate).isSameOrBefore(dueDate)) {
-        bgColor = "#c9f7c6"; // Green
+        bgColor = ColorNotification.GREEN; // Green
       } else {
-        bgColor = "#ffc87a"; //Orange
+        bgColor = ColorNotification.ORANGE; //Orange
       }
     } else {
       if (
@@ -82,9 +83,9 @@ const MyTextField = ({ column, record }) => {
           .startOf("day")
           .isSameOrBefore(dueDate)
       ) {
-        bgColor = "#d4f1ff"; // Blue
+        bgColor = ColorNotification.BLUE; // Blue
       } else {
-        bgColor = "#ffcac4"; // Red
+        bgColor = ColorNotification.RED; // Red
       }
     }
   }
@@ -181,6 +182,10 @@ const CustomDatagrid = ({ classes, view, roles, hasAccess, onEditClick, onLinkCl
         };
       });
   }
+
+  if (view === "grid" && rows.length === 0) {
+    return <div />;
+  }
   return view === "list" ? (
     <Datagrid {...props}>
       <TextField source="poRef" label="PO Reference" />
@@ -205,7 +210,7 @@ const CustomDatagrid = ({ classes, view, roles, hasAccess, onEditClick, onLinkCl
         </React.Fragment>
       )}
       <PerfectScrollbar>
-        <Table classes={{ table: classes.nowrapTable }} columns={getColumns(rows, onChange, onLinkClick)} rows={rows} />
+        <Table classes={{ table: classes.nowrapTable }} columns={getColumns(rows, onChange, onLinkClick)} rows={rows} emptyMessage="" />
       </PerfectScrollbar>
     </div>
   );
