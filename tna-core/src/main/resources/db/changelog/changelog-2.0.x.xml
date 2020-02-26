@@ -756,7 +756,7 @@
             <column name="buyer_id" type="BIGINT"/>
         </addColumn>
         <addColumn tableName="orders_log">
-            <column name="garment_type" type="BIGINT"/>
+            <column name="garment_type_id" type="BIGINT"/>
         </addColumn>
     </changeSet>
 

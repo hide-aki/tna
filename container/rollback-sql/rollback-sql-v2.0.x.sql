@@ -1,5 +1,5 @@
 -- Rolling Back ChangeSet: db/changelog/changelog-2.0.x.xml::v2.0.x-id37::razamd
-ALTER TABLE public.orders_log DROP COLUMN garment_type;
+ALTER TABLE public.orders_log DROP COLUMN garment_type_id;
 
 ALTER TABLE public.orders_log DROP COLUMN buyer_id;
 
