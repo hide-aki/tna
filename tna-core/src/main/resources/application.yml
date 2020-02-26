@@ -37,7 +37,7 @@ spring:
     port: 587
     from: noreply@jaza-soft.com
     username: admin@jaza-soft.com
-    password: tuksysvicjegaufu
+    password: arcutfrsuoduyivy
     properties:
       mail:
         smtp:
