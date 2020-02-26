@@ -165,6 +165,7 @@ public class OrderService {
         Diff diff = javers.compare(new com.jazasoft.tna.audit.Activity(curr.getEntity()), new com.jazasoft.tna.audit.Activity(prev.getEntity()));
         if (diff.hasChanges()) {
 
+          diffStr = diff.prettyPrint();
           if (diff.getPropertyChanges("leadTime").size() == 0) {
             event = "Activity Updated";
           } else  {
