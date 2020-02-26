@@ -24,8 +24,6 @@ class HistoryDialog extends Component {
     dialogActive: false,
     dataStr: {},
     rows: {},
-    logs: [],
-    logId: null
   };
 
   componentDidMount() {
@@ -41,9 +39,7 @@ class HistoryDialog extends Component {
     try {
       dataProvider(RestMethods.CUSTOM, null, options).then(response => {
         if (response.status === 200 || response.status === 201) {
-          let logs = response.data && response.data.map(e => e.data);
-          this.setState({ logs });
-          this.formatOrderHistory(response && response.data);
+          this.formatHistory(response && response.data);
         }
       });
     } catch (err) {
@@ -59,11 +55,7 @@ class HistoryDialog extends Component {
     try {
       dataProvider(RestMethods.CUSTOM, null, options).then(response => {
         if (response.status === 200 || response.status === 201) {
-          console.log({ response });
-
-          // let logs = response.data && response.data.map(e => e.data);
-          // this.setState({ logs });
-          // this.formatActivityHistory(response && response.data);
+          this.formatHistory(response && response.data);
         }
       });
     } catch (err) {
@@ -71,7 +63,7 @@ class HistoryDialog extends Component {
     }
   };
 
-  formatOrderHistory = data => {
+  formatHistory = data => {
     let rows =
       data &&
       data
@@ -79,7 +71,7 @@ class HistoryDialog extends Component {
         .map(e => ({
           ...e,
           time: moment(e.timestamp).format("DD MMM, YY hh:mm a"),
-          data: e.data ? partialData(e.data, this.onViewClick(e)) : "-"
+          data: e.diff ? partialData(e.diff, this.onViewClick(e)) : e.data ? partialData(e.data, this.onViewClick(e)) : "-"
         }));
     this.setState({ rows });
   };
@@ -109,7 +101,7 @@ class HistoryDialog extends Component {
         <Dialog open={this.props.open} maxWidth="md" fullWidth onClose={this.onClose} aria-labelledby="form-dialog-title">
           <DialogTitle id="form-dialog-title">History</DialogTitle>
           <DialogContent style={{ padding: 0 }}>
-            <Table columns={historyColumn} rows={rows} />
+            <Table columns={historyColumn} rows={rows} emptyMessage="No History Available" />
           </DialogContent>
           <DialogActions>
             <Button onClick={this.onClose} color="primary">
@@ -118,7 +110,7 @@ class HistoryDialog extends Component {
           </DialogActions>
         </Dialog>
         <Dialog open={dialogActive} maxWidth="sm" fullWidth onClose={_ => this.setState({ dialogActive: false })} aria-labelledby="form-dialog-title">
-          <DialogContent style={{ padding: 0 }}>
+          <DialogContent style={{ padding: "1.5em" }}>
             <span style={{ whiteSpace: "pre", fontSize: 14 }} dangerouslySetInnerHTML={{ __html: dataStr }} />
           </DialogContent>
           <DialogActions>
