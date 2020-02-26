@@ -69,6 +69,7 @@ class OrederEdit extends Component {
         />
           <DateInput source="orderDate" validate={required()} {...inputOptions(3)}/>
           <DateInput source="exFactoryDate" validate={required()} {...inputOptions(2)}/>
+          <DateInput label="ETD Date" source="etdDate" {...inputOptions(3)} />
         </SimpleForm>
       </Edit>
     );

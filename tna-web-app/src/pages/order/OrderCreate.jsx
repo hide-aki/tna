@@ -46,7 +46,7 @@ class OrederCreate extends Component {
           <TextInput source="remarks" label="Remarks" validate={[minLength(2)]} {...inputOptions(3)} />
           <DateInput source="orderDate" validate={required()} {...inputOptions(3)} />
           <DateInput label="EX Factory Date" source="exFactoryDate" validate={required()} {...inputOptions(3)} />
-          <DateInput label="ETD Date" source="etdDate" validate={required()} {...inputOptions(3)} />
+          <DateInput label="ETD Date" source="etdDate" {...inputOptions(3)} />
         </SimpleForm>
       </Create>
     );

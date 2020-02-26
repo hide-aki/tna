@@ -15,7 +15,7 @@ import moment from "moment";
 import Button from "@material-ui/core/Button";
 
 const columns = [
-  { dataKey: "name", title: "Name" },
+  { dataKey: "name", title: "Activity/SubActivity" },
   { dataKey: "dueDate", title: "Due Date" },
   { dataKey: "completedDate", title: "Completed Date" },
   { dataKey: "poRef", title: "PO Ref. No." },

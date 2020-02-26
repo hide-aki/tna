@@ -141,7 +141,8 @@ class OrderView extends Component {
   state = {
     dialogActive: false,
     overridableDialogActive: false,
-    historyDialogActive: false
+    historyDialogActive: false,
+    historyData: []
   };
 
   componentDidMount() {
@@ -242,26 +243,15 @@ class OrderView extends Component {
       });
   };
 
-  onActivityHistoryClick = (type, rowData) => {
-    this.setState({ historyDialogActive: true });
-    return (
-      <OverridableFormDialog
-        open={this.state.historyDialogActive}
-        type={type}
-        id={rowData.id ? rowData.id : rowData}
-        onClose={_ => this.setState({ historyDialogActive: false })}
-      />
-    );
+  onHistoryClick = (type, OrderId, ActivityId) => {
+    this.setState({ historyData: [type, OrderId, ActivityId], historyDialogActive: true });
   };
-
   render() {
     const { id, roles = [], order = {}, getPermissions, classes } = this.props;
-    const { dialogActive, overridableDialogActive, historyDialogActive } = this.state;
+    const { dialogActive, overridableDialogActive, historyDialogActive, historyData } = this.state;
     const isGrassRootUser = roles.includes(Role.MERCHANT) || roles.includes(Role.USER);
-
     const activityList = format(isGrassRootUser, order);
     const departmentId = getPermissions && getPermissions("departmentId") && getPermissions("departmentId")[0];
-
     return (
       <div className={classes.root}>
         <PageHeader title="Order View" />
@@ -280,7 +270,9 @@ class OrderView extends Component {
           onClose={_ => this.setState({ overridableDialogActive: false })}
           onSubmit={this.onOverrideSubmit}
         />
-        {/* <HistoryDialog open={historyDialogActive} type={"Order"} id={id} onClose={_ => this.setState({ historyDialogActive: false })} /> */}
+        {historyDialogActive && (
+          <HistoryDialog open={historyDialogActive} data={historyData} onClose={_ => this.setState({ historyDialogActive: false })} />
+        )}
         <div className={classes.content}>
           <Card>
             <CardHeader title="Basic Details" />
@@ -327,7 +319,7 @@ class OrderView extends Component {
                   {
                     icon: HistoryIcon,
                     tooltip: "Activity History",
-                    onClick: (event, rowData) => this.onActivityHistoryClick(event, rowData)
+                    onClick: (event, rowData) => this.onHistoryClick("Activity", Number(id), Number(rowData.id))
                   }
                 ]}
                 options={{
@@ -347,9 +339,7 @@ class OrderView extends Component {
           </Card>
           <PageFooter>
             <BackButton variant="contained" style={{ marginRight: "1.5em" }} />
-            <Button label="History" variant="contained" style={{ marginRight: "1.5em" }} 
-            //onClick={this.onActivityHistoryClick(type="Order", )}
-            >
+            <Button label="History" variant="contained" style={{ marginRight: "1.5em" }} onClick={_ => this.onHistoryClick("Order", Number(id))}>
               <HistoryIcon />
             </Button>
             <Button
