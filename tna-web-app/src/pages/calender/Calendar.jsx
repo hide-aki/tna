@@ -7,18 +7,15 @@ import CalendarFormDialog from "./CalendarFormDialog";
 
 import "../../asset/css/react-big-calendar.css";
 import { Calendar as BigCalendar, momentLocalizer } from "react-big-calendar";
-
+import Radio from "@material-ui/core/Radio";
+import RadioGroup from "@material-ui/core/RadioGroup";
+import FormControlLabel from "@material-ui/core/FormControlLabel";
 import Paper from "@material-ui/core/Paper";
 import withStyles from "@material-ui/styles/withStyles";
 
 import { PageHeader } from "jazasoft";
 
 const localizer = momentLocalizer(moment);
-
-var today = new Date();
-// var y = today.getFullYear();
-// var m = today.getMonth();
-// var d = today.getDate();
 
 const Category = {
   DUE_ON_TIME: "due-on-time",
@@ -80,56 +77,98 @@ const getLabel = category => {
   }
 };
 
-const styles = {
-  root: {},
+const format = data => {
+  if (!data) return [];
+  const days = getDistinctValues(data.map(task => moment(task.dueDate).format("ll")));
+  const categoryList = [Category.DUE_ON_TIME, Category.DUE_DELAYED, Category.COMPLETED_ON_TIME, Category.COMPLETED_DELAYED];
+  const result = days.reduce(
+    (acc, day) => ({
+      ...acc,
+      [day]: categoryList.reduce((acc, category) => ({ ...acc, [category]: data.filter(task => cbFilter(task, day, category)) }), {})
+    }),
+    {}
+  );
+
+  const events = Object.keys(result)
+    .flatMap(date =>
+      Object.keys(result[date]).map(category => ({
+        title: `${result[date][category].length} Task${result[date][category].length !== 1 ? "s" : ""} - ${getLabel(category)}`,
+        start: date,
+        end: date,
+        allDay: true,
+        color: getColor(category),
+        taskList: result[date][category]
+      }))
+    )
+    .filter(e => e.taskList.length > 0);
+  return events;
+};
+
+const MyAgendaEvent = ({ event }) => (
+  <span>
+    <b>{event.name} </b>(PO Ref: {event.poRef}, Buyer: {event.buyer}, Season: {event.season}, Style: {event.style}, Order Qty: {event.orderQty})
+  </span>
+);
+
+const styles = theme => ({
+  group: {
+    display: "flex",
+    flexDirection: "row",
+    margin: `${theme.spacing()}px 0`
+  },
   content: {
     margin: "1.5em"
   }
-};
+});
 
 class Calendar extends Component {
   state = {
-    monthEvents: [],
-    weekAndDayEvents: [],
+    firstDay: moment()
+      .startOf("month")
+      .valueOf(),
+    lastDay: moment()
+      .endOf("month")
+      .valueOf(),
+    value: "activity", //activity view, Full view
+    events: [],
+    agendaEvents: [], //todo: remove
     dialogActive: false,
-    formData: [],
+    dialogData: [], // Data on event click
     view: "month" //month, week, day
   };
 
   componentDidMount() {
-    this.init();
+    this.fetchEvents();
   }
 
-  init = async () => {
-    const firstDay = new Date(today.getFullYear(), today.getMonth(), 1).getTime();
-    const lastDay = new Date(today.getFullYear(), today.getMonth() + 1).getTime();
-    this.fetchEvents(firstDay, lastDay);
-  };
-
   onNavigate = nav => {
-    const firstDay = new Date(moment(nav).startOf("month")).getTime();
-    const lastDay = new Date(moment(nav).endOf("month")).getTime();
+    const firstDay = moment(nav)
+      .startOf("month")
+      .valueOf();
+    const lastDay = moment(nav)
+      .endOf("month")
+      .valueOf();
     this.fetchEvents(firstDay, lastDay);
+    console.log({nav: moment(nav).format("lll"), firstDay: moment(firstDay).format("lll"), lastDay: moment(lastDay).format("lll")});
+    
   };
 
-  fetchEvents = async (firstDay, lastDay) => {
+  fetchEvents = (firstDay = this.state.firstDay, lastDay = this.state.lastDay, action = "activity") => {
     const options = {
       url: "calendar",
       method: "GET",
-      params: { search: `dueDate=gt=${firstDay};dueDate=lt=${lastDay}`, action: `full` }
+      params: { search: `dueDate=gt=${firstDay};dueDate=lt=${lastDay}`, action }
     };
-
-    try {
-      await dataProvider(RestMethods.CUSTOM, null, options).then(response => {
+    dataProvider(RestMethods.CUSTOM, null, options)
+      .then(response => {
         if (response.status === 200 || response.status === 201) {
-          this.formatDefault(response && response.data);
-          this.customFormat(response && response.data);
-          return;
+          const events = format(response && response.data);
+          this.setState({ firstDay, lastDay, events });
         }
+      })
+      .catch(err => {
+        console.log(err);
       });
-    } catch (err) {
-      console.log(err);
-    }
   };
 
   /**
@@ -140,62 +179,9 @@ class Calendar extends Component {
    *    }
    * }
    */
-  formatDefault = data => {
-    const days = getDistinctValues(data.map(task => moment(task.dueDate).format("ll")));
-    const categoryList = [Category.DUE_ON_TIME, Category.DUE_DELAYED, Category.COMPLETED_ON_TIME, Category.COMPLETED_DELAYED];
-    const result = days.reduce(
-      (acc, day) => ({
-        ...acc,
-        [day]: categoryList.reduce((acc, category) => ({ ...acc, [category]: data.filter(task => cbFilter(task, day, category)) }), {})
-      }),
-      {}
-    );
-
-    const events = Object.keys(result)
-      .flatMap(date =>
-        Object.keys(result[date]).map(category => ({
-          title: `${result[date][category].length} Task${result[date][category].length !== 1 ? "s" : ""} - ${getLabel(category)}`,
-          start: date,
-          end: date,
-          allDay: true,
-          color: getColor(category),
-          taskList: result[date][category]
-        }))
-      )
-      .filter(e => e.taskList.length > 0);
-
-    this.setState({ monthEvents: events });
-  };
-
-  customFormat = data => {
-    // Initializing view for month & week
-    let events =
-      data &&
-      data.flatMap(e => ({
-        ...e,
-        title: e.name,
-        start: moment(e.dueDate).format("ll"),
-        end: moment(e.dueDate).format("ll"),
-        allDay: true,
-        color: moment(e.completedDate).isSameOrBefore(moment(e.dueDate).endOf("day"))
-          ? "green"
-          : moment(e.completedDate).isAfter(moment(e.dueDate))
-          ? "orange"
-          : moment()
-              .startOf("day")
-              .isSameOrBefore(moment(e.dueDate).endOf("day"))
-          ? "blue"
-          : "red"
-      }));
-    this.setState({ weekAndDayEvents: events });
-  };
 
   onSelectEvent = event => {
-    this.setState({ dialogActive: true, formData: event.taskList ? event.taskList : event });
-  };
-
-  onSelectSlot = slotInfo => {
-    console.log({ slotInfo });
+    this.setState({ dialogActive: true, dialogData: event.taskList ? event.taskList : event });
   };
 
   onView = view => {
@@ -210,28 +196,56 @@ class Calendar extends Component {
     };
   };
 
+  onViewChange = event => {
+    const { firstDay, lastDay } = this.state;
+    const value = event.target.value;
+    this.setState({ value });
+    this.fetchEvents(firstDay, lastDay, value);
+  };
+
   render() {
     const { classes } = this.props;
-    const { monthEvents, weekAndDayEvents, view, dialogActive, formData } = this.state;
+    const { view, dialogActive, dialogData, value } = this.state;
+
+    const events =
+      view === "month"
+        ? this.state.events
+        : this.state.events.flatMap(({ taskList, ...event }) => (taskList ? taskList.map(e => ({ ...event, ...e })) : []));
+
+    const components = {
+      agenda: {
+        event: MyAgendaEvent
+      }
+    };
 
     return (
       <div>
-        <CalendarFormDialog open={dialogActive} data={formData} onClose={_ => this.setState({ dialogActive: false })} />
-        <PageHeader title="My Calendar" />
+        {/** Header Element */}
+        <PageHeader title="My Calendar">
+          <div>
+            <RadioGroup aria-label="View" className={classes.group} value={this.state.value} onChange={this.onViewChange}>
+              <FormControlLabel value="activity" control={<Radio />} label="Activity Only" />
+              <FormControlLabel value="full" control={<Radio />} label="Full" />
+            </RadioGroup>
+          </div>
+        </PageHeader>
+
+        <CalendarFormDialog open={dialogActive} data={dialogData} view={value} onClose={_ => this.setState({ dialogActive: false })} />
+
         <Paper className={classes.content}>
           <BigCalendar
             selectable
             localizer={localizer}
-            events={view === "month" ? monthEvents : weekAndDayEvents}
+            events={events}
             defaultView="month"
             views={["month", "agenda"]}
             scrollToTime={new Date(1970, 1, 1, 6)}
             defaultDate={new Date()}
             onSelectEvent={this.onSelectEvent}
-            onSelectSlot={this.onSelectSlot}
             eventPropGetter={this.eventColors}
             onView={this.onView}
             onNavigate={this.onNavigate}
+            components={components}
           />
         </Paper>
       </div>

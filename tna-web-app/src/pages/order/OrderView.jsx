@@ -335,6 +335,11 @@ class OrderView extends Component {
                   boxShadow: "none",
                   width: "100%"
                 }}
+                localization={{
+                  header: {
+                    actions: ""
+                  }
+                }}
               />
             )}
           </Card>
