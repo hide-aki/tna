@@ -33,13 +33,18 @@ const styles = {};
 
 class ActivityCreate extends Component {
   parse = record => {
-    const { notify, ...rest } = record;
-    return { ...rest, notify: notify && notify.join() }; // Parsing modified record to the API
+    if (record && record.notify !== null) {
+      const { notify, ...rest } = record;
+      let filteredNotify = notify && notify.filter(e => e !== record.departmentId);
+      return { ...rest, notify: filteredNotify && filteredNotify.join() }; // Parsing modified record to the API
+    } else {
+      return record;
+    }
   };
 
   render() {
     const { roles, hasAccess, history, departments, dispatch, ...props } = this.props;
-    if (!hasPrivilege(roles, hasAccess, "activty", "write")) {
+    if (!hasPrivilege(roles, hasAccess, "activity", "write")) {
       return <Forbidden history={history} />;
     }
     return (
@@ -91,7 +96,7 @@ class ActivityCreate extends Component {
               style={{ paddingTop: "1.5em", marginLeft: "-2em" }}
               {...inputOptions(2)}
             />
-            <BooleanInput defaultValue={false} source="overridable" label="Overridable" style={{ paddingTop: "1.5em"}} {...inputOptions(2)} />
+            <BooleanInput defaultValue={false} source="overridable" label="Overridable" style={{ paddingTop: "1.5em" }} {...inputOptions(2)} />
           </FormCard>
           <FormCard title="Subactivities">
             <ArrayInput label="Subactivity List" source="subActivityList" xs={12} fullWidth={true}>
