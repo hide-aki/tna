@@ -32,6 +32,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 
 import static java.time.temporal.ChronoUnit.DAYS;
@@ -52,10 +54,11 @@ public class OrderService {
   private final Javers javers;
   private final EmailServiceImpl emailService;
   private final UserRepository userRepository;
-  private final UserService userService;
+
+  private final ExecutorService threadPool = Executors.newFixedThreadPool(10);
 
 
-  public OrderService(OrderRepository orderRepository, BuyerRepository buyerRepository, TimelineRepository timelineRepository, GarmentTypeRepository garmentTypeRepository, SeasonRepository seasonRepository, OActivityRepository oActivityRepository, OSubActivityRepository oSubActivityRepository, Javers javers, EmailServiceImpl emailService, UserRepository userRepository, UserService userService) {
+  public OrderService(OrderRepository orderRepository, BuyerRepository buyerRepository, TimelineRepository timelineRepository, GarmentTypeRepository garmentTypeRepository, SeasonRepository seasonRepository, OActivityRepository oActivityRepository, OSubActivityRepository oSubActivityRepository, Javers javers, EmailServiceImpl emailService, UserRepository userRepository) {
     this.orderRepository = orderRepository;
     this.buyerRepository = buyerRepository;
     this.timelineRepository = timelineRepository;
@@ -66,7 +69,6 @@ public class OrderService {
     this.javers = javers;
     this.emailService = emailService;
     this.userRepository = userRepository;
-    this.userService = userService;
   }
 
   public Page<Order> findAll(Pageable pageable, String view) {
@@ -209,7 +211,6 @@ public class OrderService {
 
     return logs;
   }
-
 
   @Transactional(value = "tenantTransactionManager")
   public Order save(Order order) {
@@ -439,7 +440,7 @@ public class OrderService {
         });
     };
 
-    new Thread(task).start();
+    threadPool.execute(task);
     return mOrderList;
   }
 
