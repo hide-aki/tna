@@ -1,11 +1,13 @@
 package com.jazasoft.tna.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.jazasoft.mtdb.service.EmailServiceImpl;
 import com.jazasoft.tna.Constants;
 import com.jazasoft.tna.dto.Log;
 import com.jazasoft.tna.entity.*;
 import com.jazasoft.tna.repository.*;
 import com.jazasoft.tna.util.Graph;
+import com.jazasoft.tna.util.MapBuilder;
 import com.jazasoft.tna.util.Node;
 import com.jazasoft.tna.util.TnaUtils;
 import com.jazasoft.util.Assert;
@@ -27,6 +29,8 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -46,8 +50,12 @@ public class OrderService {
   private final OActivityRepository oActivityRepository;
   private final OSubActivityRepository oSubActivityRepository;
   private final Javers javers;
+  private final EmailServiceImpl emailService;
+  private final UserRepository userRepository;
+  private final UserService userService;
 
-  public OrderService(OrderRepository orderRepository, BuyerRepository buyerRepository, TimelineRepository timelineRepository, GarmentTypeRepository garmentTypeRepository, SeasonRepository seasonRepository, OActivityRepository oActivityRepository, OSubActivityRepository oSubActivityRepository, Javers javers) {
+
+  public OrderService(OrderRepository orderRepository, BuyerRepository buyerRepository, TimelineRepository timelineRepository, GarmentTypeRepository garmentTypeRepository, SeasonRepository seasonRepository, OActivityRepository oActivityRepository, OSubActivityRepository oSubActivityRepository, Javers javers, EmailServiceImpl emailService, UserRepository userRepository, UserService userService) {
     this.orderRepository = orderRepository;
     this.buyerRepository = buyerRepository;
     this.timelineRepository = timelineRepository;
@@ -56,6 +64,9 @@ public class OrderService {
     this.oActivityRepository = oActivityRepository;
     this.oSubActivityRepository = oSubActivityRepository;
     this.javers = javers;
+    this.emailService = emailService;
+    this.userRepository = userRepository;
+    this.userService = userService;
   }
 
   public Page<Order> findAll(Pageable pageable, String view) {
@@ -93,11 +104,11 @@ public class OrderService {
 
   public List<Log> findOrderLogs(Long id) {
     Revisions<Integer, Order> revisions = orderRepository.findRevisions(id);
-    
+
     List<Revision<Integer, Order>> revisionList = revisions.getContent().stream().sorted((a, b) -> a.getRevisionNumber().isPresent() && b.getRevisionNumber().isPresent() ? a.getRevisionNumber().get() - b.getRevisionNumber().get() : 0).collect(Collectors.toList());
 
     List<Log> logs = new ArrayList<>();
-    
+
     Revision<Integer, Order> prev = null;
     for (Revision<Integer, Order> curr: revisionList) {
       Log log = new Log();
@@ -330,11 +341,35 @@ public class OrderService {
   }
 
 
+  /**
+   *
+   *
+   * Notification Handling:
+   *
+   *    find changedActivityList
+   *
+   *    for each changedActivity: changedActivityList
+   *      buyerId = ... // from Order of this activity
+   *      departmentIds = ... // get from changedActivity
+   *
+   *      users = ... // fetch users from database applying above two filter
+   *
+   *      send email to above users
+   *
+   *
+   * @param orderList
+   * @param departmentId
+   * @return
+   */
   @Transactional(value = "tenantTransactionManager")
   public List<Order> updateAll(List<Order> orderList, Long departmentId) {
     // Fetch Orders from database
     Set<Long> ids = orderList.stream().map(Order::getId).collect(Collectors.toSet());
     List<Order> mOrderList = orderRepository.findAllById(ids);
+
+    List<OActivity> changedActivityList = new ArrayList<>();
+
+    DateFormat df = new SimpleDateFormat("dd/MM/yy");
 
     for (Order order : orderList) {
       Order mOrder = mOrderList.stream().filter(o -> o.getId().equals(order.getId())).findAny().orElseThrow(() -> new RuntimeException("Order with id " + order.getId() + " not found."));
@@ -343,8 +378,14 @@ public class OrderService {
       for (OActivity oActivity : order.getOActivityList()) {
 
         OActivity mActivity = mOrder.getOActivityList().stream().filter(a -> a.getId().equals(oActivity.getId())).findAny().orElse(null);
+
         if (mActivity != null) {
           Hibernate.initialize(mActivity.getOSubActivityList());
+
+          if (mActivity.getCompletedDate() != null && oActivity.getCompletedDate() != null && !df.format(mActivity.getCompletedDate()).equals(df.format(oActivity.getCompletedDate())) && mActivity.getTActivity().getActivity().getNotify() != null) {
+            changedActivityList.add(mActivity);
+          }
+
           if (departmentId == -1L || (mActivity.getTActivity() != null && mActivity.getTActivity().getDepartment() != null && departmentId.equals(mActivity.getTActivity().getDepartment().getId()))) {
             mActivity.setCompletedDate(oActivity.getCompletedDate());
             mActivity.setDelayReason(oActivity.getDelayReason());
@@ -362,6 +403,43 @@ public class OrderService {
         }
       }
     }
+
+    Map<Long, Map<String, Object>> activityUserMap = new HashMap<>();
+
+    for (OActivity mActivity: changedActivityList) {
+      Long buyerId = mActivity.getOrder().getBuyer().getId();
+      Set<Long> departmentIds = Utils.getListFromCsv(mActivity.getTActivity().getActivity().getNotify()).stream().map(Long::parseLong).collect(Collectors.toSet());
+
+      // Fetch user from database by applying department filter
+      List<User> users = userRepository.findAll(byDepartmentIdsIn(departmentIds));
+      // Filter user by applying buyerId filter in memory
+      users = users.stream().filter(user -> {
+        if (user.getBuyerIds() == null) return false;
+        Set<Long> buyerIds = Utils.getListFromCsv(user.getBuyerIds()).stream().map(Long::parseLong).collect(Collectors.toSet());
+        return buyerIds.contains(buyerId);
+      }).collect(Collectors.toList());
+
+      List<String> toUsers = users.stream().filter(user -> user.getEmail() != null).map(User::getEmail).collect(Collectors.toList());
+
+      String[] to = new String[toUsers.size()];
+      toUsers.toArray(to);
+      String subject = "" + mActivity.getName() + " is completed";
+      String body = "" + mActivity.getName() + " is completed at " + mActivity.getCompletedDate() + ".";
+      logger.debug("to ={}", to);
+
+      activityUserMap.put(mActivity.getId(), new MapBuilder<String, Object>().put("to", to).put("subject", subject).put("body", body).build());
+    }
+
+    Runnable task = () -> {
+        activityUserMap.values().forEach(map -> {
+            String[] to =  (String[]) map.get("to");
+            String subject = (String) map.get("subject");
+            String body = (String) map.get("body");
+            emailService.sendSimpleEmail(to, subject, body);
+        });
+    };
+
+    new Thread(task).start();
     return mOrderList;
   }
 
@@ -396,5 +474,9 @@ public class OrderService {
   @Transactional(value = "tenantTransactionManager")
   public void delete(Long id) {
     orderRepository.deleteById(id);
+  }
+
+  private Specification<User> byDepartmentIdsIn(Set<Long> departmentIds) {
+    return ((root, query, cb) -> root.get("departmentId").in(departmentIds));
   }
 }
