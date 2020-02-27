@@ -1,12 +1,8 @@
 package com.jazasoft.tna.service;
-
-
+import com.jazasoft.mtdb.service.EmailServiceImpl;
 import com.jazasoft.tna.Constants;
 import com.jazasoft.tna.entity.*;
-import com.jazasoft.tna.repository.ActivityRepository;
-import com.jazasoft.tna.repository.BuyerRepository;
-import com.jazasoft.tna.repository.SubActivityRepository;
-import com.jazasoft.tna.repository.TimelineRepository;
+import com.jazasoft.tna.repository.*;
 import com.jazasoft.tna.util.TnaUtils;
 import com.jazasoft.util.Utils;
 import org.hibernate.Hibernate;
@@ -17,8 +13,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -32,12 +28,18 @@ public class TimelineService {
     private final BuyerRepository buyerRepository;
     private final ActivityRepository activityRepository;
     private final SubActivityRepository subActivityRepository;
+    private final DepartmentRepository departmentRepository;
+    private final UserRepository userRepository;
+    private final EmailServiceImpl emailService;
 
-    public TimelineService(TimelineRepository timelineRepository, BuyerRepository buyerRepository, ActivityRepository activityRepository, SubActivityRepository subActivityRepository) {
+    public TimelineService(TimelineRepository timelineRepository, BuyerRepository buyerRepository, ActivityRepository activityRepository, SubActivityRepository subActivityRepository, DepartmentRepository departmentRepository, UserRepository userRepository, EmailServiceImpl emailService) {
         this.timelineRepository = timelineRepository;
         this.buyerRepository = buyerRepository;
         this.activityRepository = activityRepository;
         this.subActivityRepository = subActivityRepository;
+        this.departmentRepository = departmentRepository;
+        this.userRepository = userRepository;
+        this.emailService = emailService;
     }
 
     public Page<Timeline> findAll(Pageable pageable) {
@@ -108,9 +110,33 @@ public class TimelineService {
                 mActivity.setTimeFrom(Utils.getCsvFromIterable(tActivityIds));
             }
         }
-
         mTimeline.setStdLeadTime(TnaUtils.getStdLeadTime(mTimeline.getTActivityList()));
 
+
+        Optional<Department> departmentOp = departmentRepository.findByName(Constants.DEPARTMENT_MERCHANDISING);
+        if (departmentOp.isPresent()) {
+            Long departmentId = departmentOp.get().getId();
+            List<User> toUsers = userRepository.findAll(Specification.where(byRole(Constants.ROLE_HOD).and(byDepartmentId(departmentId))));
+
+            if (!toUsers.isEmpty()) {
+                toUsers = toUsers.stream().filter(user -> user.getEmail() != null).collect(Collectors.toList());
+                if (!toUsers.isEmpty()) {
+                    List<String> toIds = toUsers.stream().map(User::getEmail).collect(Collectors.toList());
+                    String[] to = new String[toIds.size()];
+                    toIds.toArray(to);
+
+                    String subject = "New Timeline Created";
+                    String body = "Timeline for buyer - " + mTimeline.getBuyer().getName() + " with label - " + mTimeline.getName() + " created. Please Approve.";
+                    emailService.sendSimpleEmail(to, subject, body);
+                } else {
+                    logger.warn("Email Id of Merchandising HOD is missing.");
+                }
+            } else {
+                logger.warn("No Merchandising HOD found.");
+            }
+        } else {
+            logger.warn("Merchandising Department not found. Make sure Merchandising department with name - {} exists.", Constants.DEPARTMENT_MERCHANDISING);
+        }
         return mTimeline;
     }
 
@@ -245,4 +271,16 @@ public class TimelineService {
     public void deleteTimeline(Long id) {
         timelineRepository.deleteById(id);
     }
+
+    private Specification<User> byRole(String role) {
+        return ((root, query, criteriaBuilder) -> criteriaBuilder.like(root.get("roles"), "%" + role + "%"));
+    }
+
+    private Specification<User> byDepartmentId(Long departmentId) {
+        return ((root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get("departmentId"), departmentId));
+    }
+    private Specification<User> byEmailNotNull() {
+        return ((root, query, criteriaBuilder) -> criteriaBuilder.isNotNull(root.get("email")));
+    }
+
 }
