@@ -43,7 +43,8 @@ class ActivityEdit extends Component {
   parse = record => {
     if (record && record.notify !== null) {
       const { notify, ...rest } = record;
-      return { ...rest, notify: notify.join() }; // Parsing modified record to the API
+      let filteredNotify = notify.filter(e => e !== record.departmentId);
+      return { ...rest, notify: filteredNotify.join() }; // Parsing modified record to the API
     } else {
       return record;
     }
@@ -94,7 +95,7 @@ class ActivityEdit extends Component {
               style={{ paddingTop: "1.5em", marginLeft: "-2em" }}
               {...inputOptions(2)}
             />
-            <BooleanInput defaultValue={false} source="overridable" label="Overridable" style={{ paddingTop: "1.5em"}} {...inputOptions(2)} />
+            <BooleanInput defaultValue={false} source="overridable" label="Overridable" style={{ paddingTop: "1.5em" }} {...inputOptions(2)} />
           </FormCard>
           <FormCard title="Subactivities">
             <ArrayInput label="Subactivity List" source="subActivityList" xs={12} fullWidth={true}>

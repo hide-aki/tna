@@ -36,7 +36,7 @@ class ActivityView extends Component {
   format = record => {
     if (record && record.notify !== null) {
       const { notify, ...rest } = record;
-      return { ...rest, notify: notify.split(",") };
+      return { ...rest, notify: notify.split(",")};
     } else {
       return record;
     }
