@@ -1,4 +1,4 @@
-import moment from 'moment';
+import moment from "moment";
 
 export const totalPagesExp = "{total_pages_count_string}";
 
@@ -37,8 +37,8 @@ export const setDefault = (doc, heading, date) => {
     theme: "grid",
     margin: { horizontal: 7 },
     tableWidth: "auto",
-    showHeader: "firstPage",
+    showHead: "firstPage",
     styles: { overflow: "linebreak", fontSize: 8, cellPadding: 1 },
-    addPageContent: pageContent(doc, heading, date)
+    didDrawPage: pageContent(doc, heading, date)
   });
 };

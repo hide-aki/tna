@@ -15,7 +15,18 @@ import DialogTitle from "@material-ui/core/DialogTitle";
 import withStyles from "@material-ui/core/styles/withStyles";
 import ActionCancel from "@material-ui/icons/Cancel";
 
-import { PageHeader, PageFooter, Button, SimpleForm, TextInput, TextField, SaveButton, changePassword, ReferenceField, ReferenceArrayField } from "jazasoft";
+import {
+  PageHeader,
+  PageFooter,
+  Button,
+  SimpleForm,
+  TextInput,
+  TextField,
+  SaveButton,
+  changePassword,
+  ReferenceField,
+  ReferenceArrayField
+} from "jazasoft";
 
 import SingleFieldListCsv from "../../components/SingleFieldListCsv";
 
@@ -91,31 +102,35 @@ class Profile extends Component {
       { label: "Mobile", value: authState.mobile },
       { label: "Roles", value: authState.roleList.map(r => r.role && r.role.name).join(", ") }
     ];
-    const departmentId = Number(authState.departmentId);
-    data.push({
-      label: "Department",
-      value: (
-        <span>
-          <ReferenceField record={{ departmentId }} source="departmentId" reference="departments">
-            <TextField source="name" />
-          </ReferenceField>
-        </span>
-      )
-    });
+    const departmentId = authState.departmentId ? Number(authState.departmentId) : null;
+    if (departmentId) {
+      data.push({
+        label: "Department",
+        value: (
+          <span>
+            <ReferenceField record={{ departmentId }} source="departmentId" reference="departments">
+              <TextField source="name" />
+            </ReferenceField>
+          </span>
+        )
+      });
+    }
 
-    const teamId = Number(authState.teamId);
-    data.push({
-      label: "Team",
-      value: (
-        <span>
-          <ReferenceField record={{ teamId }} source="teamId" reference="teams">
-            <TextField source="name" />
-          </ReferenceField>
-        </span>
-      )
-    });
+    const teamId = authState.teamId ? Number(authState.teamId) : null;
+    if (teamId) {
+      data.push({
+        label: "Team",
+        value: (
+          <span>
+            <ReferenceField record={{ teamId }} source="teamId" reference="teams">
+              <TextField source="name" />
+            </ReferenceField>
+          </span>
+        )
+      });
+    }
 
-    const buyerIds = authState.buyerId.map(Number);
+    const buyerIds = authState && authState.buyerId && authState.buyerId.map(Number);
     if (buyerIds && buyerIds.length > 0) {
       data.push({
         label: "Buyer Access",
