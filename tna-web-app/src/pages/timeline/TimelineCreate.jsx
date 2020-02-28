@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
 import isEqual from "lodash/isEqual";
+import { Field, Fields, FieldArray } from "redux-form";
 
 //Material-UI
 import { withStyles } from "@material-ui/styles";
@@ -56,7 +57,6 @@ import { SimpleForm } from "jazasoft/lib/mui/form/SimpleForm";
 import CardHeader from "../../components/CardHeader";
 import { dataProvider } from "../../App";
 import handleError from "../../utils/handleError";
-import { Field, FieldArray } from "redux-form";
 
 // Styling
 const homeStyle = theme => ({
@@ -178,15 +178,40 @@ const renderActivities = ({ fields, activities, classes, expanded, handleExpansi
               <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
                 <div className={classes.panelBtn}>
                   <Field name={`${activity}.name`} component={TextField} className={classes.heading} />
-                  <FormControlLabel
-                    onClick={event => event.stopPropagation()}
-                    onFocus={event => event.stopPropagation()}
-                    control={
-                      <Button showLabel={false} label="Remove Activity" onClick={_ => onRemoveActivity(fields, idx, activity)}>
-                        <RemoveIcon />
-                      </Button>
-                    }
-                  />
+                  <div style={{ display: "flex", flexDirection: "row", alignItems: "center" }}>
+                    <Fields
+                      names={[`${activity}.timeFrom`, `${activity}.leadTime`]}
+                      component={({ names, tActivityList }) => {
+                        const source = names[0];
+                        let idx = source && source.split(".")[0].substring(14);
+                        idx = idx.substring(0, idx.length - 1);
+
+                        const activity = tActivityList[idx];
+
+                        const leadTime = activity ? activity.leadTime.input.value : null;
+                        let timeFrom = activity ? activity.timeFrom.input.value : [];
+                        timeFrom = timeFrom.map(e => (e === "O" ? "Order Date" : activities[e] && activities[e].name));
+
+                        return timeFrom.length > 0 && leadTime ? (
+                          <div style={{ display: "flex", flexDirection: "row", alignItems: "center", marginRight: "3em" }}>
+                            <div> {timeFrom.join(", ")} </div>
+                            <div>&nbsp;+&nbsp; </div>
+                            <div> {leadTime} </div>
+                          </div>
+                        ) : null;
+                      }}
+                    />
+
+                    <FormControlLabel
+                      onClick={event => event.stopPropagation()}
+                      onFocus={event => event.stopPropagation()}
+                      control={
+                        <Button showLabel={false} label="Remove Activity" onClick={_ => onRemoveActivity(fields, idx, activity)}>
+                          <RemoveIcon />
+                        </Button>
+                      }
+                    />
+                  </div>
                 </div>
               </ExpansionPanelSummary>
               <ExpansionPanelDetails>
@@ -208,7 +233,7 @@ const renderActivities = ({ fields, activities, classes, expanded, handleExpansi
                       );
                     }}
                   </FormDataConsumer>
-                  <NumberInput source={`${activity}.leadTime`} label="Lead Time" validate={[required(1), minValue(1)]} {...inputOptions(6)} />
+                  <NumberInput label="Lead Time" source={`${activity}.leadTime`} validate={[required(), minValue(1)]} {...inputOptions(6)} />
                   <ArrayInput label="Subactivity List" source={`${activity}.tSubActivityList`} {...inputOptions(12)}>
                     <SimpleFormIterator>
                       {activityObj && activityObj.subActivityList && (
@@ -433,7 +458,7 @@ class TimelineCreate extends Component {
           fields={fields}
         />
         <div className={classes.container}>
-          <WithReduxForm initialValues={initialValues} validate={this.onValidate} onChange={this.onChange}>
+          <WithReduxForm initialValues={initialValues} validate={this.onValidate}>
             {({ handleSubmit }) => (
               <div>
                 <Card className={classes.card}>
