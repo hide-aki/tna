@@ -46,6 +46,8 @@ import CardHeader from "../../components/CardHeader";
 import handleError from "../../utils/handleError";
 import { Role } from "../../utils/types";
 
+import { setDefault } from "../../utils/pdfHelper";
+
 import jsPDF from "jspdf";
 import "jspdf-autotable";
 
@@ -118,41 +120,35 @@ const activityData = oActivityList => {
 // Print //
 const printOrder = order => {
   var doc = new jsPDF();
-  doc.setFontSize(16); // Table Header size
-  doc.text("Order details", 14, 20); // Table Header
+  setDefault(doc, "Order Details for " + order.buyer.name + " #" + order.poRef);
+  let startY = 10;
+  doc.setFontSize(10); // Table Header size
+  doc.text("Basic details", 7, startY + 7); // Table Header
 
   doc.autoTable({
-    startY: 25, // Margin from Top
+    startY: startY + 10, // Margin from Top
     columns: basicDetailsColumns(),
-    //head: basicDetailsHeader(),
     body: basicDetailsData(order),
     theme: "grid",
-    styles: { fontSize: 8 },
-    columnStyles: {
-      orderQty: {
-        halign: "center"
-      },
-      exFactoryDate: {
-        halign: "center"
-      }
-    }
   });
 
-  doc.text("Activities", 14, 60);
+  startY = doc.autoTable.previous.finalY;
+  doc.text("Activities", 7, startY + 7);
   doc.autoTable({
-    startY: 70,
+    startY: startY + 10,
     head: activityHeader(),
     body: activityData(order && order.oActivityList),
+    theme: "striped",
     columnStyles: {
       viewLeadTime: {
         halign: "center"
       },
       delayReason: {
-        overFlow: 'linebreak'
+        overFlow: "linebreak"
       }
     }
   });
-  doc.save("table.pdf");
+  doc.save("ORDER " + order.buyer.name + " " + order.poRef + ".pdf");
 };
 
 const leadTime = lt =>
