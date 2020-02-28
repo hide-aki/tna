@@ -30,6 +30,7 @@ import withStyles from "@material-ui/styles/withStyles";
 // Icons
 import EditIcon from "@material-ui/icons/Edit";
 import HistoryIcon from "@material-ui/icons/History";
+import PrintIcon from "@material-ui/icons/Print";
 
 //Dialog
 import HistoryDialog from "./HistoryDialog";
@@ -45,11 +46,114 @@ import CardHeader from "../../components/CardHeader";
 import handleError from "../../utils/handleError";
 import { Role } from "../../utils/types";
 
+import jsPDF from "jspdf";
+import "jspdf-autotable";
+
 const fieldOptions = sm => ({
   xs: 12,
   sm,
   fullWidth: true
 });
+
+// Print Order's basic details ///
+const basicDetailsColumns = () => {
+  return [
+    { dataKey: "poRef", header: "PO Ref No" },
+    { dataKey: "buyer", header: "Buyer" },
+    { dataKey: "timeline", header: "Timeline" },
+    { dataKey: "garmentType", header: "Season" },
+    { dataKey: "season", header: "Season" },
+    { dataKey: "style", header: "Style" },
+    { dataKey: "orderQty", header: "Order QTY" },
+    { dataKey: "orderDate", header: "Order Date" },
+    { dataKey: "exFactoryDate", header: "Ex Factory Date" },
+    { dataKey: "remarks", header: "Remarks" }
+  ];
+};
+
+const basicDetailsData = ({ buyer, season, garmentType, orderDate, exFactoryDate, etdDate, ...order }) => {
+  return [
+    {
+      ...order,
+      buyer: buyer.name,
+      season: season.name,
+      garmentType: garmentType.name,
+      orderDate: moment(orderDate).format("ll"),
+      exFactoryDate: moment(exFactoryDate).format("ll"),
+      etdDate: moment(etdDate).format("ll")
+    }
+  ];
+};
+
+// Print Activity details //
+const activityHeader = () => {
+  return [
+    {
+      name: "Name",
+      viewLeadTime: "Lead Time",
+      dueDate: "Due Date",
+      completedDate: "Completed Date",
+      delayReason: "Delay Reason",
+      remarks: "Remarks"
+    }
+  ];
+};
+
+const activityData = oActivityList => {
+  let oActivityListData = oActivityList
+    .sort((a, b) => a.tActivity.serialNo - b.tActivity.serialNo)
+    .map(({ name, dueDate, finalLeadTime, completedDate, delayReason, remarks }) => {
+      return {
+        name,
+        dueDate: moment(dueDate).format("ll"),
+        viewLeadTime: leadTime(finalLeadTime),
+        completedDate: completedDate == null || completedDate === "" ? undefined : moment(completedDate).format("ll"),
+        delayReason: delayReason == null ? undefined : delayReason,
+        remarks: remarks == null ? undefined : remarks
+      };
+    });
+  return oActivityListData;
+};
+
+// Print //
+const printOrder = order => {
+  var doc = new jsPDF();
+  doc.setFontSize(16); // Table Header size
+  doc.text("Order details", 14, 20); // Table Header
+
+  doc.autoTable({
+    startY: 25, // Margin from Top
+    columns: basicDetailsColumns(),
+    //head: basicDetailsHeader(),
+    body: basicDetailsData(order),
+    theme: "grid",
+    styles: { fontSize: 8 },
+    columnStyles: {
+      orderQty: {
+        halign: "center"
+      },
+      exFactoryDate: {
+        halign: "center"
+      }
+    }
+  });
+
+  doc.text("Activities", 14, 60);
+  doc.autoTable({
+    startY: 70,
+    head: activityHeader(),
+    body: activityData(order && order.oActivityList),
+    columnStyles: {
+      viewLeadTime: {
+        halign: "center"
+      },
+      delayReason: {
+        overFlow: 'linebreak'
+      }
+    }
+  });
+  doc.save("table.pdf");
+};
 
 const leadTime = lt =>
   lt &&
@@ -71,7 +175,7 @@ const columns = [
     title: "Completed Date",
     type: "date"
   },
-  { field: "delayReason", title: "Delay Reason" },
+  { field: "delayReason", title: "Delay Reasons" },
   { field: "remarks", title: "Remarks" }
 ];
 
@@ -246,6 +350,7 @@ class OrderView extends Component {
   onHistoryClick = (type, OrderId, ActivityId) => {
     this.setState({ historyData: [type, OrderId, ActivityId], historyDialogActive: true });
   };
+
   render() {
     const { id, roles = [], order = {}, getPermissions, classes } = this.props;
     const { dialogActive, overridableDialogActive, historyDialogActive, historyData } = this.state;
@@ -359,10 +464,19 @@ class OrderView extends Component {
             </Button>
 
             {roles.includes(Role.MERCHANT) && (
-              <Button label="Override" variant="contained" color="primary" onClick={_ => this.setState({ overridableDialogActive: true })}>
+              <Button
+                label="Override"
+                variant="contained"
+                color="primary"
+                style={{ marginRight: "1.5em" }}
+                onClick={_ => this.setState({ overridableDialogActive: true })}
+              >
                 <EditIcon />
               </Button>
             )}
+            <Button label="Print" variant="contained" color="primary" onClick={_ => printOrder(order)}>
+              <PrintIcon />
+            </Button>
           </PageFooter>
         </div>
       </div>

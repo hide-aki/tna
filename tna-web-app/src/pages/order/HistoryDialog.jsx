@@ -23,7 +23,7 @@ class HistoryDialog extends Component {
   state = {
     dialogActive: false,
     dataStr: {},
-    rows: {},
+    rows: {}
   };
 
   componentDidMount() {

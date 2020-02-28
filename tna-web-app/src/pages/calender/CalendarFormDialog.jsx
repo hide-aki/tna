@@ -14,8 +14,8 @@ import Typography from "@material-ui/core/Typography";
 import moment from "moment";
 import Button from "@material-ui/core/Button";
 
-const columns = [
-  { dataKey: "name", title: "Activity/SubActivity" },
+const columns = view => [
+  { dataKey: "name", title: view === "activity" ? "Activity" : "Activity/SubActivity" },
   { dataKey: "dueDate", title: "Due Date" },
   { dataKey: "completedDate", title: "Completed Date" },
   { dataKey: "poRef", title: "PO Ref. No." },
@@ -24,10 +24,7 @@ const columns = [
   { dataKey: "style", title: "Style" },
   { dataKey: "orderQty", title: "Order Qty" }
 ];
-
 class CalendarFormDialog extends Component {
-  state = {};
-
   onClose = () => {
     this.props.onClose && this.props.onClose();
   };
@@ -65,7 +62,7 @@ class CalendarFormDialog extends Component {
         <DialogTitle id="form-dialog-title">Task</DialogTitle>
         <DialogContent style={{ padding: 0 }}>
           {data.length ? (
-            <Table columns={columns} rows={rows} />
+            <Table columns={columns(this.props.view)} rows={rows} />
           ) : (
             <Grid item xs={12} sm={8}>
               <List>
