@@ -15,6 +15,8 @@ import PerfectScrollbar from "react-perfect-scrollbar";
 import {
   SelectInput,
   ReferenceInput,
+  ReferenceArrayInput,
+  AutoCompleteArrayInput,
   List,
   Datagrid,
   TextField,
@@ -50,7 +52,19 @@ const filters = (buyerIds = []) => (
     })}
   >
     <ReferenceInput
+      source="departmentId"
+      resource="departments"
+      reference="departments"
+      sort={{ field: "name", order: "asc" }}
+      xs={12}
+      fullWidth={true}
+      options={{ fullWidth: true }}
+    >
+      <SelectInput optionText="name" />
+    </ReferenceInput>
+    <ReferenceArrayInput
       source="buyerId"
+      label="Buyers"
       reference="buyers"
       resource="buyers"
       sort={{ field: "name", order: "asc" }}
@@ -59,8 +73,8 @@ const filters = (buyerIds = []) => (
       filter={{ id: buyerIds }}
       options={{ fullWidth: true }}
     >
-      <SelectInput optionText="name" />
-    </ReferenceInput>
+      <AutoCompleteArrayInput disablePortal={true} />
+    </ReferenceArrayInput>
   </Filter>
 );
 
@@ -107,12 +121,15 @@ const MyTextField = ({ column, record }) => {
   );
 };
 
-const getColumns = (orderList, onChange, onLinkClick) => {
+const getColumns = (orderList, onChange, onLinkClick, filterValues) => {
   let activityList = [];
   let activitySet = new Set();
+  const departmentId = filterValues && filterValues.departmentId;
   const aList = orderList
     ? orderList.flatMap(order =>
-        order.oActivityList ? order.oActivityList.map(({ name, tActivity }) => ({ serialNo: tActivity.serialNo, name })) : []
+        order.oActivityList
+          ? order.oActivityList.map(({ name, tActivity }) => ({ serialNo: tActivity.serialNo, name, departmentId: tActivity.departmentId }))
+          : []
       )
     : [];
   aList
@@ -120,7 +137,9 @@ const getColumns = (orderList, onChange, onLinkClick) => {
     .forEach(activity => {
       if (!activitySet.has(activity.name)) {
         activitySet.add(activity.name);
-        activityList.push(activity);
+        if (!departmentId || departmentId === activity.departmentId) {
+          activityList.push(activity);
+        }
       }
     });
   let columns = [
@@ -139,7 +158,7 @@ const getColumns = (orderList, onChange, onLinkClick) => {
   return columns;
 };
 
-const CustomDatagrid = ({ classes, view, roles, hasAccess, onEditClick, onLinkClick, ...props }) => {
+const CustomDatagrid = ({ classes, view, roles, hasAccess, onEditClick, onLinkClick, filterValues, ...props }) => {
   const [selectedIds, setSelectedIds] = React.useState([]);
   const onChange = ({ record, column }) => event => {
     let ids = selectedIds.slice();
@@ -210,7 +229,7 @@ const CustomDatagrid = ({ classes, view, roles, hasAccess, onEditClick, onLinkCl
         </React.Fragment>
       )}
       <PerfectScrollbar>
-        <Table classes={{ table: classes.nowrapTable }} columns={getColumns(rows, onChange, onLinkClick)} rows={rows} emptyMessage="" />
+        <Table classes={{ table: classes.nowrapTable }} columns={getColumns(rows, onChange, onLinkClick, filterValues)} rows={rows} emptyMessage="" />
       </PerfectScrollbar>
     </div>
   );
@@ -320,7 +339,7 @@ class Order extends React.Component {
     this.setState({ dialogActive: false });
   };
   render() {
-    const { classes, orders, dispatch, ...props } = this.props;
+    const { classes, orders, filterValues, dispatch, ...props } = this.props;
     const { view, dialogActive, ids } = this.state;
     const { roles, hasAccess, getPermissions } = props;
     const buyerIds = getPermissions && getPermissions("buyerId");
@@ -347,6 +366,7 @@ class Order extends React.Component {
           <CustomDatagrid
             classes={classes}
             view={view}
+            filterValues={filterValues}
             roles={roles}
             hasAccess={hasAccess}
             onEditClick={this.onEditClick}
@@ -358,7 +378,10 @@ class Order extends React.Component {
   }
 }
 
-const mapStateToProps = (state, props) => ({ orders: state.jazasoft.resources[props.resource] && state.jazasoft.resources[props.resource].data });
+const mapStateToProps = (state, props) => ({
+  orders: state.jazasoft.resources[props.resource] && state.jazasoft.resources[props.resource].data,
+  filterValues: state.form && state.form["filter-form"] && state.form["filter-form"].values
+});
 
 const StyledOrder = withStyles(styles)(Order);
 

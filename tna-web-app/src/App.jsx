@@ -41,6 +41,7 @@ import { GarmentTypeHome, CreateGarmentType, EditGarmentType } from "./pages/lib
 import { SeasonHome, CreateSeason, EditSeason } from "./pages/library/Season";
 import { DepartmentHome, CreateDepartment, EditDepartment } from "./pages/library/Department";
 import { TeamHome, CreateTeam, EditTeam } from "./pages/library/Team";
+import Profile from "./pages/profile/Profile";
 
 // Setting Page
 import Settings from "./pages/setting/Settings";
@@ -105,6 +106,8 @@ const resources = [
 ];
 
 const customRoutes = [
+  <Route name="profile" exact path="/profile" component={Profile} />,
+
   <Route name="users" resource="users" exact path="/users/upload" component={UserUpload} />,
   ...["help", "manual"].flatMap(type => [
     <Route
@@ -152,6 +155,7 @@ class App extends React.Component {
         dashboard={() => {}}
         history={history}
         theme={theme}
+
       >
         {({ roles, hasAccess }) => {
           let resourceList = [];

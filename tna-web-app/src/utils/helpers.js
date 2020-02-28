@@ -59,7 +59,7 @@ export const partialData = (jsonStr, onView) => {
         {jsonStr.substring(0, 60)}
         {jsonStr.length > 60 ? " ... " : ""}
         {jsonStr.length > 60 && (
-          <span style={{ color: "blue" }} onClick={onView}>
+          <span style={{ color: "blue", cursor: "pointer" }} onClick={onView}>
             view
           </span>
         )}
@@ -74,22 +74,19 @@ export const syntaxHighlight = (json = "") => {
     .replace(/&/g, "&amp;")
     .replace(/</g, "&lt;")
     .replace(/>/g, "&gt;");
-  return json.replace(
-    /("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+-]?\d+)?)/g,
-    match => {
-      var color = "darkorange"; //number
-      if (/^"/.test(match)) {
-        if (/:$/.test(match)) {
-          color = "red"; // key
-        } else {
-          color = "green"; //string
-        }
-      } else if (/true|false/.test(match)) {
-        color = "blue"; // boolean
-      } else if (/null/.test(match)) {
-        color = "magenta"; //null
+  return json.replace(/("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+-]?\d+)?)/g, match => {
+    var color = "darkorange"; //number
+    if (/^"/.test(match)) {
+      if (/:$/.test(match)) {
+        color = "red"; // key
+      } else {
+        color = "green"; //string
       }
-      return `<span style="color: ${color}" > ${match} </span>`;
+    } else if (/true|false/.test(match)) {
+      color = "blue"; // boolean
+    } else if (/null/.test(match)) {
+      color = "magenta"; //null
     }
-  );
+    return `<span style="color: ${color}" > ${match} </span>`;
+  });
 };
