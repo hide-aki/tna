@@ -24,6 +24,7 @@
             <column name="lower((name)::text)"/>
         </createIndex>
     </changeSet>
+
     <changeSet author="aditya" id="v2.0.x-id2">
         <createTable tableName="garment_type">
             <column autoIncrement="true" name="id" type="BIGSERIAL">
@@ -45,6 +46,7 @@
             <column name="lower((name)::text)"/>
         </createIndex>
     </changeSet>
+
     <changeSet id="v2.0.x-id3" author="aditya">
         <createTable tableName="department">
             <column autoIncrement="true" name="id" type="BIGSERIAL">
@@ -65,6 +67,7 @@
             <column name="lower((name)::text)"/>
         </createIndex>
     </changeSet>
+
     <changeSet author="aditya" id="v2.0.x-id4">
         <createTable tableName="team">
             <column autoIncrement="true" name="id" type="BIGSERIAL">
@@ -94,6 +97,7 @@
                                  initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
                                  referencedColumnNames="id" referencedTableName="department"/>
     </changeSet>
+
     <changeSet id="v2.0.x-id5" author="aditya">
         <createTable tableName="season">
             <column autoIncrement="true" name="id" type="BIGSERIAL">
@@ -114,6 +118,7 @@
             <column name="lower((name)::text)"/>
         </createIndex>
     </changeSet>
+
     <changeSet id="v2.0.x-id6" author="aditya">
         <createTable tableName="users">
             <column autoIncrement="true" name="id" type="BIGSERIAL">
@@ -155,6 +160,7 @@
                                  initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
                                  referencedColumnNames="id" referencedTableName="team"/>
     </changeSet>
+
     <changeSet id="v2.0.x-id7" author="aditya">
         <createTable tableName="activity">
             <column autoIncrement="true" name="id" type="BIGSERIAL">
@@ -224,7 +230,6 @@
                                  initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
                                  referencedColumnNames="id" referencedTableName="activity"/>
     </changeSet>
-
 
     <changeSet author="aditya" id="v2.0.x-id9">
         <createTable tableName="timeline">
@@ -329,7 +334,6 @@
                                  referencedColumnNames="id" referencedTableName="sub_activity"/>
     </changeSet>
 
-
     <changeSet id="v2.0.x-id12" author="aditya">
         <createTable tableName="orders">
             <column autoIncrement="true" name="id" type="BIGSERIAL">
@@ -395,7 +399,6 @@
                                  initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
                                  referencedColumnNames="id" referencedTableName="garment_type"/>
     </changeSet>
-
 
     <changeSet id="v2.0.x-id13" author="aditya">
         <createTable tableName="o_activity">
@@ -643,13 +646,11 @@
         </rollback>
     </changeSet>
 
-
     <changeSet author="razamd" id="v2.0.x-id28">
         <addColumn tableName="timeline">
             <column name="std_lead_time" type="INT"/>
         </addColumn>
     </changeSet>
-
 
     <changeSet author="razamd" id="v2.0.x-id29">
         <addColumn tableName="o_activity">
@@ -786,6 +787,15 @@
             FROM o_sub_activity sa, o_activity a, orders o, buyer b, season s, t_activity t, department d
             WHERE sa.o_activity_id = a.id AND a.order_id = o.id AND o.buyer_id = b.id AND o.season_id = s.id AND a.t_activity_id = t.id AND t.department_id = d.id;
         </createView>
+    </changeSet>
+
+    <changeSet id="v2.0.x-id41" author="razamd">
+        <dropIndex tableName="team" indexName="uk_team_name" />
+        <createIndex indexName="uk_team_name" tableName="team" unique="true">
+            <column name="lower((name)::text)"/>
+        </createIndex>
+
+        <rollback/>
     </changeSet>
 
 </databaseChangeLog>

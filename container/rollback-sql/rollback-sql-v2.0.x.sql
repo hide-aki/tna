@@ -1,3 +1,6 @@
+-- Rolling Back ChangeSet: db/changelog/changelog-2.0.x.xml::v2.0.x-id41::razamd
+DELETE FROM public.databasechangelog WHERE ID = 'v2.0.x-id41' AND AUTHOR = 'razamd' AND FILENAME = 'db/changelog/changelog-2.0.x.xml';
+
 -- Rolling Back ChangeSet: db/changelog/changelog-2.0.x.xml::v2.0.x-id40::razamd
 DROP VIEW public.task_sub_activity_view;
 

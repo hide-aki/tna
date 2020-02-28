@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
 import isEqual from "lodash/isEqual";
+import { Field, Fields, FieldArray } from "redux-form";
 
 //Material-UI
 import { withStyles } from "@material-ui/styles";
@@ -56,7 +57,6 @@ import {
 import { SimpleForm } from "jazasoft/lib/mui/form/SimpleForm";
 import CardHeader from "../../components/CardHeader";
 import { dataProvider } from "../../App";
-import { Field, FieldArray } from "redux-form";
 import handleError from "../../utils/handleError";
 
 // Styling
@@ -109,20 +109,7 @@ const inputOptions = sm => ({
 });
 
 // To populate Activity name on Expansion Panel
-const TextField = ({ className, input: { value } }) => {
-  //console.log({ className, value });
-
-  return <Typography className={className}>{value}</Typography>;
-};
-
-const onChange = timeline => {
-  const { tActivityList } = timeline;
-  tActivityList &&
-    tActivityList.map(({ id, leadTime }) => {
-      console.log({ id, leadTime });
-      return "";
-    });
-};
+const TextField = ({ className, input: { value } }) => <Typography className={className}>{value}</Typography>;
 
 // Add Activity Dialog box Content
 const SelectDialog = ({ open, onClose, data, fields, onSelect }) => {
@@ -171,20 +158,41 @@ const renderActivities = ({ fields, activities, classes, expanded, handleExpansi
               <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
                 <div className={classes.panelBtn}>
                   <Field name={`${activity}.name`} component={TextField} className={classes.heading} />
-                  <Field
-                    name={`${activity}.LeadTime`}
-                    component={TextField}
-                    //className={classes.heading}
-                  />
-                  <FormControlLabel
-                    onClick={event => event.stopPropagation()}
-                    onFocus={event => event.stopPropagation()}
-                    control={
-                      <Button showLabel={false} label="Remove Activity" onClick={_ => onRemoveActivity(fields, idx, activity)}>
-                        <RemoveIcon />
-                      </Button>
-                    }
-                  />
+
+                  <div style={{ display: "flex", flexDirection: "row", alignItems: "center" }}>
+                    <Fields
+                      names={[`${activity}.timeFrom`, `${activity}.leadTime`]}
+                      component={({ names, tActivityList }) => {
+                        const source = names[0];
+                        let idx = source && source.split(".")[0].substring(14);
+                        idx = idx.substring(0, idx.length - 1);
+
+                        const activity = tActivityList[idx];
+
+                        const leadTime = activity ? activity.leadTime.input.value : null;
+                        let timeFrom = activity ? activity.timeFrom.input.value : [];
+                        timeFrom = timeFrom.map(e => (e === "O" ? "Order Date" : activities[e] && activities[e].name));
+
+                        return timeFrom.length > 0 && leadTime ? (
+                          <div style={{ display: "flex", flexDirection: "row", alignItems: "center", marginRight: "3em" }}>
+                            <div> {timeFrom.join(", ")} </div>
+                            <div>&nbsp;+&nbsp; </div>
+                            <div> {leadTime} </div>
+                          </div>
+                        ) : null;
+                      }}
+                    />
+
+                    <FormControlLabel
+                      onClick={event => event.stopPropagation()}
+                      onFocus={event => event.stopPropagation()}
+                      control={
+                        <Button showLabel={false} label="Remove Activity" onClick={_ => onRemoveActivity(fields, idx, activity)}>
+                          <RemoveIcon />
+                        </Button>
+                      }
+                    />
+                  </div>
                 </div>
               </ExpansionPanelSummary>
               <ExpansionPanelDetails>
@@ -214,7 +222,7 @@ const renderActivities = ({ fields, activities, classes, expanded, handleExpansi
                       }
                     }}
                   </FormDataConsumer>
-                  <NumberInput source={`${activity}.leadTime`} label="Lead Time" {...inputOptions(6)} validate={[required(1), minValue(1)]} />
+                  <NumberInput source={`${activity}.leadTime`} label="Lead Time" {...inputOptions(6)} validate={[required(), minValue(1)]} />
                   {activityObj && activityObj.subActivityList && (
                     <ArrayInput label="Subactivity List" source={`${activity}.tSubActivityList`} {...inputOptions(12)}>
                       <SimpleFormIterator>
@@ -454,10 +462,6 @@ class TimelineEdit extends Component {
     this.setState({ expanded: isExpanded ? panel : false });
   };
 
-  // onChange = val => {
-  //   console.log({ val });
-  // };
-
   render() {
     const { hasAccess, roles, history, classes, activities } = this.props;
     const { dialogActive, rActivityList, fields, initialValues, expanded } = this.state;
@@ -475,7 +479,7 @@ class TimelineEdit extends Component {
           fields={fields}
         />
         <div className={classes.container}>
-          <WithReduxForm initialValues={initialValues} validate={this.onValidate} onChange={onChange}>
+          <WithReduxForm initialValues={initialValues} validate={this.onValidate}>
             {({ handleSubmit }) => (
               <div>
                 <Card className={classes.card}>
