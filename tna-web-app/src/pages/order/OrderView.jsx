@@ -129,7 +129,10 @@ const printOrder = order => {
     startY: startY + 10, // Margin from Top
     columns: basicDetailsColumns(),
     body: basicDetailsData(order),
-    theme: "grid",
+    rowPageBreak: "auto",
+    bodyStyles: { valign: "top" },
+    styles: { cellWidth: "wrap", cellPadding: 2 },
+    columnStyles: { remarks: { cellWidth: "auto" } }
   });
 
   startY = doc.autoTable.previous.finalY;
@@ -138,15 +141,10 @@ const printOrder = order => {
     startY: startY + 10,
     head: activityHeader(),
     body: activityData(order && order.oActivityList),
-    theme: "striped",
-    columnStyles: {
-      viewLeadTime: {
-        halign: "center"
-      },
-      delayReason: {
-        overFlow: "linebreak"
-      }
-    }
+    rowPageBreak: "auto",
+    bodyStyles: { valign: "top" },
+    styles: { cellWidth: "wrap", cellPadding: 2 },
+    columnStyles: { delayReason: { cellWidth: "auto" }, remarks: { cellWidth: "auto" }, viewLeadTime: { halign: "center" } }
   });
   doc.save("ORDER " + order.buyer.name + " " + order.poRef + ".pdf");
 };
@@ -439,6 +437,11 @@ class OrderView extends Component {
                 localization={{
                   header: {
                     actions: ""
+                  }
+                }}
+                components={{
+                  Action: props => {
+                    return props.data && props.data.tActivity ? <HistoryIcon onClick={e => props.action.onClick(e, props.data)} /> : null;
                   }
                 }}
               />

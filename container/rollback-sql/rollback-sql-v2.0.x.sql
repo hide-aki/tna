@@ -1,3 +1,10 @@
+-- Rolling Back ChangeSet: db/changelog/changelog-2.0.x.xml::v2.0.x-id42::razamd
+ALTER TABLE public.o_activity ALTER COLUMN remarks TYPE VARCHAR(255) USING (remarks::VARCHAR(255));
+
+ALTER TABLE public.o_sub_activity ALTER COLUMN remarks TYPE VARCHAR(255) USING (remarks::VARCHAR(255));
+
+DELETE FROM public.databasechangelog WHERE ID = 'v2.0.x-id42' AND AUTHOR = 'razamd' AND FILENAME = 'db/changelog/changelog-2.0.x.xml';
+
 -- Rolling Back ChangeSet: db/changelog/changelog-2.0.x.xml::v2.0.x-id41::razamd
 DELETE FROM public.databasechangelog WHERE ID = 'v2.0.x-id41' AND AUTHOR = 'razamd' AND FILENAME = 'db/changelog/changelog-2.0.x.xml';
 

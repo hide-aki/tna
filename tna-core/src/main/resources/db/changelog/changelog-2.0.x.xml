@@ -798,6 +798,16 @@
         <rollback/>
     </changeSet>
 
+    <changeSet id="v2.0.x-id42" author="razamd">
+        <modifyDataType tableName="o_activity" columnName="remarks" newDataType="TEXT" />
+        <modifyDataType tableName="o_sub_activity" columnName="remarks" newDataType="TEXT" />
+
+        <rollback>
+            <modifyDataType tableName="o_activity" columnName="remarks" newDataType="VARCHAR(255)" />
+            <modifyDataType tableName="o_sub_activity" columnName="remarks" newDataType="VARCHAR(255)" />
+        </rollback>
+    </changeSet>
+
 </databaseChangeLog>
 
 
