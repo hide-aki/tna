@@ -194,8 +194,18 @@ public class OrderRestController {
     return ResponseEntity.ok(mOrder);
   }
 
+  /**
+   * Update completed date, delayReason etc of activity and sub activity collectively  across multiple orders
+   *
+   * @param orderList
+   * @param action Just for privilege detection in UI
+   * @param request
+   * @return
+   */
   @PutMapping
-  public ResponseEntity<?> updateAll(@RequestBody List<Order> orderList, HttpServletRequest request) {
+  public ResponseEntity<?> updateAll(@RequestBody List<Order> orderList,
+                                     @RequestParam(value = "action", defaultValue = "activity") String action,
+                                     HttpServletRequest request) {
     // Extract Buyer Privilege from Request
     List<String> buyerIds = new ArrayList<>();
     Object attrBuyer = request.getAttribute(Constants.REQ_ATTRIBUTE_BUYER);

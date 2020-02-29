@@ -2,6 +2,8 @@ import React, { Component } from "react";
 
 import { Edit, SimpleForm, TextInput, NumberInput, DateInput, ReferenceInput, SelectInput, required, minLength } from "jazasoft";
 
+import Forbidden from "../../components/Forbidden";
+
 const inputOptions = sm => ({
   xs: 12,
   sm,
@@ -9,13 +11,16 @@ const inputOptions = sm => ({
   options: { fullWidth: true }
 });
 
-class OrederEdit extends Component {
+class OrderEdit extends Component {
   render() {
-    const { ...props } = this.props;
+    const { hasAccess } = this.props;
+    if (!hasAccess || !hasAccess("order", "update")) {
+      return <Forbidden history={this.props.history} />;
+    }
     return (
-      <Edit {...props}>
+      <Edit {...this.props}>
         <SimpleForm redirect="home">
-          <ReferenceInput source="buyerId" reference="buyers"  validate={required()} {...inputOptions(3)} disabled>
+          <ReferenceInput source="buyerId" reference="buyers" validate={required()} {...inputOptions(3)} disabled>
             <SelectInput optionText="name" />
           </ReferenceInput>
           <ReferenceInput source="garmentTypeId" reference="garmentTypes" validate={required()} {...inputOptions(3)}>
@@ -37,4 +42,4 @@ class OrederEdit extends Component {
   }
 }
 
-export default OrederEdit;
+export default OrderEdit;
