@@ -34,9 +34,9 @@ const Footer = ({ roles, hasAccess, resource, i18nKey, basePath, record }) => (
 
 class ActivityView extends Component {
   format = record => {
-    if (record && record.notify !== null) {
+    if (record && record.notify !== (null || "")) {
       const { notify, ...rest } = record;
-      return { ...rest, notify: notify.split(",")};
+      return { ...rest, notify: notify.split(",") };
     } else {
       return record;
     }
@@ -65,7 +65,7 @@ class ActivityView extends Component {
             title="Sub Activities"
             content={({ record = {} }) => {
               const data = record.subActivityList ? record.subActivityList.reduce((acc, el) => ({ ...acc, [el.id]: el }), {}) : {};
-              const ids = record.subActivityList ? record.subActivityList.map(e => e.id) : [];
+              const ids = record.subActivityList ? record.subActivityList.sort((a, b) => a.id - b.id).map(e => e.id) : [];
               return (
                 <Datagrid data={data} ids={ids}>
                   <TextField source="name" />

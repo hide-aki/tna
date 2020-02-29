@@ -171,7 +171,7 @@ const renderActivities = ({ fields, activities, classes, expanded, handleExpansi
 
                         const leadTime = activity ? activity.leadTime.input.value : null;
                         let timeFrom = activity ? activity.timeFrom.input.value : [];
-                        timeFrom = timeFrom.map(e => (e === "O" ? "Order Date" : activities[e] && activities[e].name));
+                        timeFrom = timeFrom && timeFrom.map(e => (e === "O" ? "Order Date" : activities[e] && activities[e].name));
 
                         return timeFrom.length > 0 && leadTime ? (
                           <div style={{ display: "flex", flexDirection: "row", alignItems: "center", marginRight: "3em" }}>
@@ -342,6 +342,36 @@ class TimelineEdit extends Component {
     this.setState({ dialogActive: true, rActivityList, fields });
   };
 
+  onSelect = (fields, activity) => {
+    let newActivity = {
+      activityId: activity.id,
+      name: activity.name,
+      serialNo: activity.serialNo,
+      timeFrom: ["O"],
+      tSubActivityList:
+        activity &&
+        activity.subActivityList &&
+        activity.subActivityList.map(({ id, name }) => ({
+          subActivityId: id,
+          name
+        }))
+    };
+    const fieldsList = fields.getAll();
+    const fieldsSerialNoList = fieldsList.sort((a, b) => a.serialNo - b.serialNo).map(e => e.serialNo);
+    const newActivitySerialNo = newActivity.serialNo;
+
+    var tempIdx = 0; // Computing the index order for new activity
+    fieldsSerialNoList.forEach((e, i) => {
+      if (newActivitySerialNo > e) {
+        tempIdx = i + 1;
+      }
+    });
+    fields.insert(tempIdx, newActivity);
+    let activityList = this.state.activityList.slice();
+    activityList.splice(tempIdx, 0, activity);
+    this.setState({ activityList, dialogActive: false });
+  };
+
   onSubmit = handleSubmit => {
     handleSubmit(values => {
       this.parse(values);
@@ -426,35 +456,6 @@ class TimelineEdit extends Component {
       errors.tActivityList = tActivityList;
     }
     return errors;
-  };
-
-  onSelect = (fields, activity) => {
-    let newActivity = {
-      activityId: activity.id,
-      name: activity.name,
-      serialNo: activity.serialNo,
-      tSubActivityList:
-        activity &&
-        activity.subActivityList &&
-        activity.subActivityList.map(({ id, name }) => ({
-          subActivityId: id,
-          name
-        }))
-    };
-    const fieldsList = fields.getAll();
-    const fieldsSerialNoList = fieldsList.sort((a, b) => a.serialNo - b.serialNo).map(e => e.serialNo);
-    const newActivitySerialNo = newActivity.serialNo;
-
-    var tempIdx = 0; // Computing the index order for new activity
-    fieldsSerialNoList.forEach((e, i) => {
-      if (newActivitySerialNo > e) {
-        tempIdx = i + 1;
-      }
-    });
-    fields.insert(tempIdx, newActivity);
-    let activityList = this.state.activityList.slice();
-    activityList.splice(tempIdx, 0, activity);
-    this.setState({ activityList, dialogActive: false });
   };
 
   // Expansion bar control

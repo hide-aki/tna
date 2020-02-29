@@ -4,9 +4,7 @@ import DialogActions from "@material-ui/core/DialogActions";
 import DialogContent from "@material-ui/core/DialogContent";
 import DialogTitle from "@material-ui/core/DialogTitle";
 import Table, { TextInput } from "jazasoft/lib/mui/components/Table";
-
 import isEqual from "lodash/isEqual";
-
 import Button from "@material-ui/core/Button";
 
 const overridableColumn = onChange => [

@@ -32,11 +32,18 @@ const styles = {};
 
 class ActivityEdit extends Component {
   format = record => {
-    if (record && record.notify !== null) {
-      const { notify, ...rest } = record;
-      return { ...rest, notify: notify.split(",").map(Number) };
-    } else {
-      return record;
+    if (record !== undefined) {
+      let Activity = {
+        ...record,
+        notify: record && record.notify !== (null) ? record.notify.split(",").map(Number) : null,
+        subActivityList:
+          record && record.subActivityList && record.subActivityList.length
+            ? record.subActivityList.sort((a, b) => a.id - b.id)
+            : record.subActivityList
+      };
+      console.log({ Activity });
+
+      return Activity;
     }
   };
 

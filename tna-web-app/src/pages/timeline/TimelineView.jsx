@@ -225,23 +225,28 @@ class TimelineView extends Component {
   onSaveClick = () => {
     const { timeline } = this.props;
     const { rowActivity } = this.state;
-
-    let parsedTimeline = {
-      ...timeline,
-      tActivityList: rowActivity.map(e => ({
-        ...e,
-        timeFrom: e.timeFrom.join(",")
-      }))
-    };
-    parsedTimeline &&
-      parsedTimeline.tActivityList.map(e => {
-        if (e.timeFrom.length > 1 && e.timeFrom.includes("O")) {
-          this.props.dispatch(showNotification("Time From values should be selection of Order Date or multi selection of Activities"));
-        } else {
-          this.updateTimeline(parsedTimeline);
-        }
-        return "";
-      });
+    let error = false;
+    for (let i = 0; i < rowActivity.length; i++) {
+      if (rowActivity[i].timeFrom.length > 1 && rowActivity[i].timeFrom.includes("O")) {
+        error = true;
+        this.props.dispatch(showNotification(`Time From value cannot be combined with Order Date and Activities for ${rowActivity[i].name}`));
+      } else if (Number(rowActivity[i].leadTime) > timeline.stdLeadTime) {
+        error = true;
+        this.props.dispatch(
+          showNotification(`${rowActivity[i].name} Lead Time cannot not exceed Standard Lead Time ${timeline.stdLeadTime}`, { type: "warning" })
+        );
+      }
+    }
+    if (!error) {
+      let parsedTimeline = {
+        ...timeline,
+        tActivityList: rowActivity.map(e => ({
+          ...e,
+          timeFrom: e.timeFrom.join(",")
+        }))
+      };
+      this.updateTimeline(parsedTimeline);
+    }
   };
 
   updateTimeline = timeline => {
