@@ -192,7 +192,7 @@ const format = (isGrassRootUser, order) => {
                 delayReason: oActivity.delayReason == null ? undefined : oActivity.delayReason,
                 remarks: oActivity.remarks == null ? undefined : oActivity.remarks
               },
-              ...oSubActivityList.map(e => ({
+              ...oSubActivityList.sort((c, d) => c.leadTime - d.leadTime).map(e => ({
                 ...e,
                 dueDate: moment(e.dueDate).format("ll"),
                 viewLeadTime: leadTime(oActivity.finalLeadTime + e.leadTime),
@@ -316,6 +316,7 @@ class OrderView extends Component {
       });
   };
 
+  // Overridable form submit
   onOverrideSubmit = values => {
     const options = {
       url: `orders/${this.props.id}`,
@@ -419,7 +420,6 @@ class OrderView extends Component {
                 actions={[
                   {
                     icon: HistoryIcon,
-                    tooltip: "Activity History",
                     onClick: (event, rowData) => this.onHistoryClick("Activity", Number(id), Number(rowData.id))
                   }
                 ]}
@@ -442,7 +442,11 @@ class OrderView extends Component {
                 }}
                 components={{
                   Action: props => {
-                    return props.data && props.data.tActivity ? <HistoryIcon onClick={e => props.action.onClick(e, props.data)} /> : null;
+                    return props.data && props.data.tActivity ? (
+                      <Button showLabel={false} label="Activity History" style={{ cursor: "pointer" }} onClick={e => props.action.onClick(e, props.data)}>
+                        <HistoryIcon />
+                      </Button>
+                    ) : null;
                   }
                 }}
               />

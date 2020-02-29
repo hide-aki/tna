@@ -20,7 +20,7 @@ class OrderEdit extends Component {
     return (
       <Edit {...this.props}>
         <SimpleForm redirect="home">
-          <ReferenceInput source="buyerId" reference="buyers" validate={required()} {...inputOptions(3)}>
+          <ReferenceInput source="buyerId" reference="buyers" validate={required()} {...inputOptions(3)} disabled>
             <SelectInput optionText="name" />
           </ReferenceInput>
           <ReferenceInput source="garmentTypeId" reference="garmentTypes" validate={required()} {...inputOptions(3)}>

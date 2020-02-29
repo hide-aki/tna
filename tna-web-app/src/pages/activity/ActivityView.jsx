@@ -62,7 +62,7 @@ class ActivityView extends Component {
             <TextField source="delayReasons" label="Delay Reason" />
           </ShowCard>
           <ShowCard
-            title="Subactivities"
+            title="Sub Activities"
             content={({ record = {} }) => {
               const data = record.subActivityList ? record.subActivityList.reduce((acc, el) => ({ ...acc, [el.id]: el }), {}) : {};
               const ids = record.subActivityList ? record.subActivityList.map(e => e.id) : [];
