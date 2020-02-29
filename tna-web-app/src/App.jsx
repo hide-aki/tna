@@ -155,7 +155,6 @@ class App extends React.Component {
         dashboard={() => {}}
         history={history}
         theme={theme}
-
       >
         {({ roles, hasAccess }) => {
           let resourceList = [];

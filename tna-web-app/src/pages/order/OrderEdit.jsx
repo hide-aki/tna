@@ -1,16 +1,8 @@
 import React, { Component } from "react";
 
-import {
-  Edit,
-  SimpleForm,
-  TextInput,
-  NumberInput,
-  DateInput,
-  ReferenceInput,
-  SelectInput,
-  required,
-  minLength
-} from "jazasoft";
+import { Edit, SimpleForm, TextInput, NumberInput, DateInput, ReferenceInput, SelectInput, required, minLength } from "jazasoft";
+
+import Forbidden from "../../components/Forbidden";
 
 const inputOptions = sm => ({
   xs: 12,
@@ -19,56 +11,30 @@ const inputOptions = sm => ({
   options: { fullWidth: true }
 });
 
-class OrederEdit extends Component {
+class OrderEdit extends Component {
   render() {
-    const { ...props } = this.props;
+    const { hasAccess } = this.props;
+    if (!hasAccess || !hasAccess("order", "update")) {
+      return <Forbidden history={this.props.history} />;
+    }
     return (
-      <Edit {...props}>
+      <Edit {...this.props}>
         <SimpleForm redirect="home">
-          <ReferenceInput
-            source="buyerId"
-            reference="buyers"
-            validate={required()}
-            {...inputOptions(3)}
-          >
+          <ReferenceInput source="buyerId" reference="buyers" validate={required()} {...inputOptions(3)}>
             <SelectInput optionText="name" />
           </ReferenceInput>
-          <ReferenceInput
-            source="garmentTypeId"
-            reference="garmentTypes"
-            validate={required()}
-            {...inputOptions(3)}
-          >
+          <ReferenceInput source="garmentTypeId" reference="garmentTypes" validate={required()} {...inputOptions(3)}>
             <SelectInput optionText="name" />
           </ReferenceInput>
-          <ReferenceInput
-            source="seasonId"
-            reference="seasons"
-            validate={required()}
-            {...inputOptions(3)}
-          >
+          <ReferenceInput source="seasonId" reference="seasons" validate={required()} {...inputOptions(3)}>
             <SelectInput optionText="name" />
           </ReferenceInput>
-          <TextInput
-            source="poRef"
-            label="PO Reference"
-            validate={[required(), minLength(2)]}
-            {...inputOptions(3)}
-          />
+          <TextInput source="poRef" label="PO Reference" validate={[required(), minLength(2)]} {...inputOptions(3)} />
           <NumberInput source="orderQty" validate={required()} {...inputOptions(3)} />
-          <TextInput
-            source="style"
-            validate={[required(), minLength(2)]}
-            {...inputOptions(3)}
-          />
-          <TextInput
-          source="remarks"
-          label="Remarks"
-          validate={[minLength(2)]}
-          {...inputOptions(3)}
-        />
-          <DateInput source="orderDate" validate={required()} {...inputOptions(3)}/>
-          <DateInput source="exFactoryDate" validate={required()} {...inputOptions(2)}/>
+          <TextInput source="style" validate={[required(), minLength(2)]} {...inputOptions(3)} />
+          <TextInput source="remarks" label="Remarks" validate={[minLength(2)]} {...inputOptions(3)} />
+          <DateInput source="orderDate" validate={required()} {...inputOptions(3)} />
+          <DateInput source="exFactoryDate" validate={required()} {...inputOptions(2)} />
           <DateInput label="ETD Date" source="etdDate" {...inputOptions(3)} />
         </SimpleForm>
       </Edit>
@@ -76,4 +42,4 @@ class OrederEdit extends Component {
   }
 }
 
-export default OrederEdit;
+export default OrderEdit;

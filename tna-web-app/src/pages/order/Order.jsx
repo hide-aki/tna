@@ -214,7 +214,7 @@ const CustomDatagrid = ({ classes, view, roles, hasAccess, onEditClick, onLinkCl
       <FunctionField source="orderDate" label="Order Date" render={record => moment(record.orderDate).format("ll")} />
       <FunctionField source="exFactoryDate" label="Ex-factory Date" render={record => moment(record.exFactoryDate).format("ll")} />
       <ShowButton cellClassName={classes.button} />
-      {hasPrivilege(roles, hasAccess, "order", "update") && <EditButton cellClassName={classes.button} />}
+      {hasAccess && hasAccess("order", "update", "default") && <EditButton cellClassName={classes.button} />}
       {hasPrivilege(roles, hasAccess, "order", "delete") && <DeleteButton cellClassName={classes.button} />}
     </Datagrid>
   ) : (
@@ -306,6 +306,7 @@ class Order extends React.Component {
     const options = {
       url: "orders",
       method: "put",
+      params: { action: "activity" },
       data: orderList
     };
     this.props.dispatch({ type: FETCH_START });
@@ -353,7 +354,7 @@ class Order extends React.Component {
           searchKeys={["poRef", "style"]}
           actions={({ basePath }) => (
             <div>
-              {hasPrivilege(roles, hasAccess, "order", "write") && <CreateButton basePath={basePath} showLabel={false} />}
+              {hasAccess && hasAccess("order", "write") && <CreateButton basePath={basePath} showLabel={false} />}
               <FilterButton showLabel={false} />
               <Button showLabel={false} label="View" onClick={this.onViwSwitch}>
                 {view === "list" ? <ListIcon /> : <GridIcon />}

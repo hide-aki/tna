@@ -2,6 +2,8 @@ import React, { Component } from "react";
 
 import { Create, SimpleForm, FormDataConsumer, TextInput, NumberInput, DateInput, ReferenceInput, SelectInput, required, minLength } from "jazasoft";
 
+import Forbidden from "../../components/Forbidden";
+
 const inputOptions = sm => ({
   xs: 12,
   sm,
@@ -11,9 +13,13 @@ const inputOptions = sm => ({
 
 class OrederCreate extends Component {
   render() {
-    const { ...props } = this.props;
+    const { hasAccess } = this.props;
+    console.log({hasAccess: hasAccess && hasAccess("order", "write")});
+    if (!hasAccess || !hasAccess("order", "write")) {
+      return <Forbidden history={this.props.history} />;
+    }
     return (
-      <Create {...props}>
+      <Create {...this.props}>
         <SimpleForm redirect="home">
           <ReferenceInput source="buyerId" reference="buyers" validate={required()} {...inputOptions(3)}>
             <SelectInput optionText="name" />

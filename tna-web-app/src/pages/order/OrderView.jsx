@@ -47,6 +47,7 @@ import handleError from "../../utils/handleError";
 import { Role } from "../../utils/types";
 
 import { setDefault } from "../../utils/pdfHelper";
+import hasPrivilege from "../../utils/hasPrivilege";
 
 import jsPDF from "jspdf";
 import "jspdf-autotable";
@@ -346,7 +347,7 @@ class OrderView extends Component {
   };
 
   render() {
-    const { id, roles = [], order = {}, getPermissions, classes } = this.props;
+    const { id, roles = [], hasAccess, order = {}, getPermissions, classes } = this.props;
     const { dialogActive, overridableDialogActive, historyDialogActive, historyData } = this.state;
     const isGrassRootUser = roles.includes(Role.MERCHANT) || roles.includes(Role.USER);
     const activityList = format(isGrassRootUser, order);
@@ -449,20 +450,23 @@ class OrderView extends Component {
           </Card>
           <PageFooter>
             <BackButton variant="contained" style={{ marginRight: "1.5em" }} />
-            <Button label="History" variant="contained" style={{ marginRight: "1.5em" }} onClick={_ => this.onHistoryClick("Order", Number(id))}>
-              <HistoryIcon />
-            </Button>
-            <Button
-              label="Update Activity"
-              variant="contained"
-              color="primary"
-              style={{ marginRight: "1.5em" }}
-              onClick={_ => this.setState({ dialogActive: true })}
-            >
-              <EditIcon />
-            </Button>
-
-            {roles.includes(Role.MERCHANT) && (
+            {hasPrivilege(roles, hasAccess) && (
+              <Button label="History" variant="contained" style={{ marginRight: "1.5em" }} onClick={_ => this.onHistoryClick("Order", Number(id))}>
+                <HistoryIcon />
+              </Button>
+            )}
+            {hasPrivilege(roles, hasAccess, "order", "update", "activity") && (
+              <Button
+                label="Update Activity"
+                variant="contained"
+                color="primary"
+                style={{ marginRight: "1.5em" }}
+                onClick={_ => this.setState({ dialogActive: true })}
+              >
+                <EditIcon />
+              </Button>
+            )}
+            {hasPrivilege(roles, hasAccess, "order", "update", "override") && (
               <Button
                 label="Override"
                 variant="contained"
