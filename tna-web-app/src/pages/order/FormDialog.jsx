@@ -91,7 +91,8 @@ class FormDialog extends React.Component {
         delayReasons: tActivity.delayReasons,
         delayReason: a.delayReason ? a.delayReason.split(",").map(e => e.trim()) : [],
         activityId: btoa(a.name),
-        activity: a.name
+        activity: a.name,
+        oSubActivityList: a.oSubActivityList && a.oSubActivityList.sort((c, d) => -c.leadTime + d.leadTime)
       }))
       .sort((a, b) => a.serialNo - b.serialNo);
     this.setState({ rowsActivity });
@@ -179,7 +180,7 @@ class FormDialog extends React.Component {
 
   render() {
     const { page, rowsActivity, rowsSubActivity, activity = {} } = this.state;
-    
+
     return (
       <Dialog open={this.props.open} maxWidth="md" fullWidth onClose={this.handleClose} aria-labelledby="form-dialog-title">
         <DialogTitle id="form-dialog-title">{page === "Activity" ? "Activities" : `${activity.name} --> Sub Activities`}</DialogTitle>
