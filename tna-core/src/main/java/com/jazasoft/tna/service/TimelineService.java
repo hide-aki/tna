@@ -30,27 +30,31 @@ public class TimelineService {
     private final SubActivityRepository subActivityRepository;
     private final DepartmentRepository departmentRepository;
     private final UserRepository userRepository;
+    private final GarmentTypeRepository garmentTypeRepository;
     private final EmailServiceImpl emailService;
 
-    public TimelineService(TimelineRepository timelineRepository, BuyerRepository buyerRepository, ActivityRepository activityRepository, SubActivityRepository subActivityRepository, DepartmentRepository departmentRepository, UserRepository userRepository, EmailServiceImpl emailService) {
+    public TimelineService(TimelineRepository timelineRepository, BuyerRepository buyerRepository, ActivityRepository activityRepository, SubActivityRepository subActivityRepository, DepartmentRepository departmentRepository, UserRepository userRepository, GarmentTypeRepository garmentTypeRepository, EmailServiceImpl emailService) {
         this.timelineRepository = timelineRepository;
         this.buyerRepository = buyerRepository;
         this.activityRepository = activityRepository;
         this.subActivityRepository = subActivityRepository;
         this.departmentRepository = departmentRepository;
         this.userRepository = userRepository;
+        this.garmentTypeRepository = garmentTypeRepository;
         this.emailService = emailService;
     }
 
     public Page<Timeline> findAll(Pageable pageable) {
         Page<Timeline> page = timelineRepository.findAll(pageable);
         page.forEach(timeline -> Hibernate.initialize(timeline.getBuyer()));
+        page.forEach(timeline -> Hibernate.initialize(timeline.getGarmentType()));
         return page;
     }
 
     public Page<Timeline> findAll(Specification<Timeline> spec, Pageable pageable) {
         Page<Timeline> page = timelineRepository.findAll(spec, pageable);
         page.forEach(timeline -> Hibernate.initialize(timeline.getBuyer()));
+        page.forEach(timeline -> Hibernate.initialize(timeline.getGarmentType()));
         return page;
     }
 
@@ -61,6 +65,7 @@ public class TimelineService {
             timeline.getTActivityList().forEach(tActivity -> Hibernate.initialize(tActivity.getTSubActivityList()));
             timeline.getTActivityList().forEach(tActivity -> tActivity.getTSubActivityList().forEach(tSubActivity -> Hibernate.initialize(tSubActivity.getSubActivity())));
             Hibernate.initialize(timeline.getBuyer());
+            Hibernate.initialize(timeline.getGarmentType());
             timeline.getTActivityList().forEach(tActivity -> Hibernate.initialize(tActivity.getActivity()));
         }
         return timeline;
@@ -70,6 +75,10 @@ public class TimelineService {
     public Timeline save(Timeline timeline) {
         if (timeline.getBuyerId() != null) {
             timeline.setBuyer(buyerRepository.findById(timeline.getBuyerId()).orElse(null));
+        }
+
+        if (timeline.getGarmentTypeId() != null) {
+            timeline.setGarmentType(garmentTypeRepository.findById(timeline.getGarmentTypeId()).orElse(null));
         }
 
         //todo: validate subActivity is the child of Activity.
@@ -169,6 +178,8 @@ public class TimelineService {
             mTimeline.setName(timeline.getName());
             mTimeline.setBuyer(buyerRepository.findById(timeline.getBuyerId()).orElse(null));
             mTimeline.setBuyerId(timeline.getBuyerId());
+            mTimeline.setGarmentType(garmentTypeRepository.findById(timeline.getGarmentTypeId()).orElse(null));
+            mTimeline.setGarmentTypeId(timeline.getGarmentTypeId());
 
             //update Relational fields
             Set<Long> existingTActivityIds = timeline.getTActivityList().stream().

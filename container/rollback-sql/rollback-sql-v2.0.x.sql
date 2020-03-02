@@ -1,3 +1,10 @@
+-- Rolling Back ChangeSet: db/changelog/changelog-2.0.x.xml::v2.0.x-id43::aditya
+ALTER TABLE public.timeline DROP CONSTRAINT fk_timeline_garment_type_id;
+
+ALTER TABLE public.timeline DROP COLUMN garment_type_id;
+
+DELETE FROM public.databasechangelog WHERE ID = 'v2.0.x-id43' AND AUTHOR = 'aditya' AND FILENAME = 'db/changelog/changelog-2.0.x.xml';
+
 -- Rolling Back ChangeSet: db/changelog/changelog-2.0.x.xml::v2.0.x-id42::razamd
 ALTER TABLE public.o_activity ALTER COLUMN remarks TYPE VARCHAR(255) USING (remarks::VARCHAR(255));
 
