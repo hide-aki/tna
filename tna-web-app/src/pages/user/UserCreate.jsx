@@ -71,7 +71,7 @@ class UserCreate extends Component {
               {...inputOptions(3)}
             />
             <SelectArrayInput label="Roles" validate={[required()]} source="roleIds" choices={choicesRoles} {...inputOptions(3)} />
-            <SelectInput label="Department" validate={[required()]} source="departmentId" choices={choicesDepartments} {...inputOptions(3)} />
+            <SelectInput label="Department" allowEmpty={true} source="departmentId" choices={choicesDepartments} {...inputOptions(3)} />
             <FormDataConsumer {...inputOptions(3)}>
               {({ formData }) => {
                 const department = formData.departmentId && permissionList.find(p => p.id === formData.departmentId);
@@ -81,10 +81,10 @@ class UserCreate extends Component {
                     ? permissionList.filter(p => p.key === "teamId" && p.parentValue === department.value).map(r => ({ id: r.id, name: r.name }))
                     : [];
                 }
-                return <SelectInput label="Team" validate={[required()]} source="teamId" choices={choicesTeams} {...inputOptions(3)} />;
+                return <SelectInput label="Team" allowEmpty={true} source="teamId" choices={choicesTeams} {...inputOptions(3)} />;
               }}
             </FormDataConsumer>
-            <AutoCompleteArrayInput label="Buyers" validate={[required()]} source="buyerIds" choices={choicesBuyers} {...inputOptions(3)} />
+            <AutoCompleteArrayInput label="Buyers" allowEmpty={true} source="buyerIds" choices={choicesBuyers} {...inputOptions(3)} />
           </SimpleForm>
         </Paper>
       </div>

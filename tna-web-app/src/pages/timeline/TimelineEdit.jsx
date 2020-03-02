@@ -188,7 +188,7 @@ const renderActivities = ({ fields, activities, classes, expanded, handleExpansi
                       onFocus={event => event.stopPropagation()}
                       control={
                         <Button showLabel={false} label="Remove Activity" onClick={_ => onRemoveActivity(fields, idx, activity)}>
-                          <RemoveIcon />
+                          <RemoveIcon style={{color: "#f44336"}}/>
                         </Button>
                       }
                     />
@@ -222,9 +222,9 @@ const renderActivities = ({ fields, activities, classes, expanded, handleExpansi
                       }
                     }}
                   </FormDataConsumer>
-                  <NumberInput source={`${activity}.leadTime`} label="Lead Time" {...inputOptions(6)} validate={[required(), minValue(1)]} />
+                  <NumberInput source={`${activity}.leadTime`} label="Lead Time" {...inputOptions(6)} validate={[required(), minValue(0)]} />
                   {activityObj && activityObj.subActivityList && (
-                    <ArrayInput label="Sub Activity List" source={`${activity}.tSubActivityList`} {...inputOptions(12)}>
+                    <ArrayInput label="" source={`${activity}.tSubActivityList`} {...inputOptions(12)}>
                       <SimpleFormIterator>
                         {activityObj && activityObj.subActivityList && activityObj.subActivityList.length && (
                           <SelectInput

@@ -24,7 +24,6 @@ import { SelectInput } from "../../components/Table";
 import EditIcon from "@material-ui/icons/Edit";
 import MaterialTable from "material-table";
 import { Icons } from "../../components/MaterialTableIcons";
-import hasPrivilege from "../../utils/hasPrivilege";
 import ApproveIcon from "@material-ui/icons/Check";
 import SaveIcon from "@material-ui/icons/Save";
 import BackIcon from "@material-ui/icons/KeyboardBackspace";
@@ -35,19 +34,33 @@ import { Role } from "../../utils/types";
 
 const leadTime = lt =>
   lt &&
-  ` + ${Array(3 - `${lt}`.length)
+  `${Array(3 - `${lt}`.length)
     .fill("0")
     .join("")}${lt}`;
 
-const matActivityColumns = approvalStatus => {
-  return approvalStatus
+const renderSubActivityName = rowData =>
+  rowData ? (
+    <span>
+      {rowData.key && rowData.key.includes("C") && <span>&nbsp;&nbsp;&nbsp;&nbsp;</span>}
+      {rowData.name}
+    </span>
+  ) : (
+    <span />
+  );
+
+const matActivityColumns = hasAccess => {
+  return hasAccess("timeline", "update", "approve")
     ? [
-        { field: "name", title: "Name" },
+        {
+          field: "name",
+          title: "Name",
+          render: rowData => renderSubActivityName(rowData)
+        },
+        { field: "prevLeadTime", title: "Prev Lead Time", emptyValue: "-", cellStyle: { paddingLeft: "10em" }, headerStyle: { paddingLeft: "8em" } },
         { field: "leadTime", title: "Lead Time", cellStyle: { textAlign: "right", paddingRight: "3.5em" }, headerStyle: { textAlign: "right" } }
       ]
     : [
         { field: "name", title: "Name" },
-        { field: "prevLeadTime", title: "Prev Lead Time", emptyValue: "-", cellStyle: { paddingLeft: "10em" }, headerStyle: { paddingLeft: "8em" } },
         { field: "leadTime", title: "Lead Time", cellStyle: { textAlign: "right", paddingRight: "3.5em" }, headerStyle: { textAlign: "right" } }
       ];
 };
@@ -93,7 +106,7 @@ const homeStyle = () => ({
   }
 });
 
-const Footer = ({ roles, hasAccess, classes, editMode, approvalStatus, onApprove, onUpdateClick, onBackClick, onSaveClick }) => {
+const Footer = ({ hasAccess, classes, editMode, approvalStatus, onApprove, onUpdateClick, onBackClick, onSaveClick }) => {
   return (
     <PageFooter>
       {!editMode && <BackButton variant="contained" style={{ marginLeft: "1.5em" }} />}
@@ -102,7 +115,7 @@ const Footer = ({ roles, hasAccess, classes, editMode, approvalStatus, onApprove
           <BackIcon />
         </Button>
       )}
-      {hasPrivilege(roles, hasAccess, "timeline", "update", "approve") && !editMode && !approvalStatus && (
+      {hasAccess("timeline", "update", "approval_edit") && !editMode && !approvalStatus && (
         <Button variant="contained" label="Update" onClick={onUpdateClick} className={classes.content} color="primary">
           <EditIcon />
         </Button>
@@ -112,7 +125,7 @@ const Footer = ({ roles, hasAccess, classes, editMode, approvalStatus, onApprove
           <SaveIcon />
         </Button>
       )}
-      {hasPrivilege(roles, hasAccess, "timeline", "update", "approve") && !editMode && !approvalStatus && (
+      {hasAccess("timeline", "update", "approve") && !editMode && !approvalStatus && (
         <Button variant="contained" label="Approve" onClick={onApprove} color="primary">
           <ApproveIcon />
         </Button>
@@ -318,7 +331,7 @@ class TimelineView extends Component {
                             ...tActivity,
                             leadTime:
                               tActivity.timeFrom && tActivity.timeFrom === "O"
-                                ? `Order Date` + leadTime(tActivity.leadTime)
+                                ? `Order Date + ` + leadTime(tActivity.leadTime)
                                 : tActivity.timeFrom
                                     .split(",")
                                     .map(e => {
@@ -332,11 +345,14 @@ class TimelineView extends Component {
                                     })
                                     .sort((a, b) => a.serialNo - b.serialNo)
                                     .map(e => e.name)
-                                    .join(", ") + leadTime(tActivity.leadTime),
+                                    .join(", ") +
+                                  " + " +
+                                  leadTime(tActivity.leadTime),
                             key: `P-${tActivity.id}`
                           },
                           ...tSubActivityList.map(e => ({
                             ...e,
+                            leadTime: tActivity.name + " - " + leadTime(Number(-e.leadTime)),
                             key: `C-${e.id}`,
                             parentKey: `P-${tActivity.id}`
                           }))
@@ -349,7 +365,7 @@ class TimelineView extends Component {
                           ...tActivity,
                           leadTime:
                             tActivity.timeFrom && tActivity.timeFrom === "O"
-                              ? `Order Date` + leadTime(tActivity.leadTime)
+                              ? `Order Date + ` + leadTime(tActivity.leadTime)
                               : tActivity.timeFrom
                                   .split(",")
                                   .map(e => {
@@ -363,12 +379,14 @@ class TimelineView extends Component {
                                   })
                                   .sort((a, b) => a.serialNo - b.serialNo)
                                   .map(e => e.name)
-                                  .join(", ") + leadTime(tActivity.leadTime)
+                                  .join(", ") +
+                                " + " +
+                                leadTime(tActivity.leadTime)
                         };
                       });
                 return (
                   <MaterialTable
-                    columns={matActivityColumns(approvalStatus)}
+                    columns={matActivityColumns(hasAccess)}
                     data={data}
                     icons={Icons}
                     options={{
