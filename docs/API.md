@@ -734,7 +734,9 @@
                 "tnaType":"forward",
                 "approved": true,
                 "approvedBy": "UserX",
-                "buyerId": 1
+                "buyerId": 1,
+                "garmentTypeId": 1
+
             }
 ```
 
@@ -754,6 +756,7 @@
                "approved": true,
                "approvedBy": "HOD",
                "buyerId": 1,
+               "garmentTypeId": 1,
                "tActivityList":[
                             {
                                 "leadTimeNormal":2,
@@ -785,6 +788,7 @@
                "name": "Time line 2",
                "tnaType":"backward",
                "buyerId": 1,
+               "garmentTypeId": 1,
                "tActivityList":[
                             {
                                 "leadTime":2,
@@ -805,6 +809,7 @@
                "name": "Time line 2",
                "tnaType":"backward",
                "buyerId": 1,
+               "garmentTypeId": 1,
                "tActivityList":[
                             {
                                 "id": 1
@@ -842,6 +847,7 @@
                "approved": false,
                "approvedBy": "",
                "buyerId": 1,
+               "garmentTypeId": 1
                "tActivityList":[
                             {
                                 "id": 1
@@ -868,6 +874,7 @@
                "approved": false,
                "approvedBy": "",
                "buyerId": 1,
+               "garmentTypeId": 1,
                "tActivityList":[
                             {
                                 "id": 1
@@ -901,6 +908,7 @@
                "approved": false,
                "approvedBy": "",
                "buyerId": 1,
+               "garmentTypeId": 1,
                "tActivityList":[
                             {
                                 "id": 1
@@ -919,6 +927,7 @@
                "approved": false,
                "approvedBy": "",
                "buyerId": 1,
+               "garmentTypeId": 1,
                "tActivityList":[
                             {
                                 "id": 1

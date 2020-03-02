@@ -67,8 +67,14 @@ public class Timeline extends Auditable {
   @JsonProperty("tActivityList")
   private Set<TActivity> tActivityList = new HashSet<>();
 
+  @ManyToOne(optional = false, fetch = FetchType.LAZY)
+  private GarmentType garmentType;
+
   @Transient
   private Long buyerId;
+
+  @Transient
+  private Long garmentTypeId;
 
   public void addTActivity(TActivity tActivity) {
     this.tActivityList.add(tActivity);
@@ -87,12 +93,13 @@ public class Timeline extends Auditable {
         Timeline timeline = (Timeline) o;
         return Objects.equals(id, timeline.id) &&
                 Objects.equals(name, timeline.name) &&
-                Objects.equals(buyerId, timeline.buyerId);
+                Objects.equals(buyerId, timeline.buyerId) &&
+                Objects.equals(garmentTypeId, timeline.garmentTypeId);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, buyerId);
+        return Objects.hash(id, name, buyerId, garmentTypeId);
     }
 
     @Override
@@ -103,6 +110,7 @@ public class Timeline extends Auditable {
                 ", approved=" + approved +
                 ", approvedBy='" + approvedBy + '\'' +
                 ", buyerId=" + buyerId +
+                ",garmentTypeId="+ garmentTypeId +
                 '}';
     }
 }

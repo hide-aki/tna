@@ -808,6 +808,17 @@
         </rollback>
     </changeSet>
 
+    <changeSet id="v2.0.x-id43" author="aditya">
+        <addColumn tableName="timeline">
+            <column name="garment_type_id" type="BIGINT"/>
+        </addColumn>
+
+        <addForeignKeyConstraint baseColumnNames="garment_type_id" baseTableName="timeline"
+                                 constraintName="fk_timeline_garment_type_id" deferrable="false"
+                                 initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
+                                 referencedColumnNames="id" referencedTableName="garment_type"/>
+    </changeSet>
+
 </databaseChangeLog>
 
 
