@@ -14,7 +14,6 @@ const inputOptions = sm => ({
 class OrederCreate extends Component {
   render() {
     const { hasAccess } = this.props;
-    console.log({hasAccess: hasAccess && hasAccess("order", "write")});
     if (!hasAccess || !hasAccess("order", "write")) {
       return <Forbidden history={this.props.history} />;
     }

@@ -48,7 +48,7 @@ class ActivityCreate extends Component {
       return <Forbidden history={history} />;
     }
     return (
-      <Create title="Generate Activity and subactivities" cardWrapper={false} record={{ subActivityList: [{}] }} parse={this.parse} {...props}>
+      <Create title="Generate Activity and subactivities" cardWrapper={false} record={{ subActivityList: [] }} parse={this.parse} {...props}>
         <MultiCardForm redirect="home">
           <FormCard title="Activity Details">
             <TextInput source="name" validate={[required(), minLength(2), maxLength(30)]} {...inputOptions(3)} />

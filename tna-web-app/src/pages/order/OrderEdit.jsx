@@ -1,7 +1,6 @@
 import React, { Component } from "react";
 
 import { Edit, SimpleForm, TextInput, NumberInput, DateInput, ReferenceInput, SelectInput, required, minLength } from "jazasoft";
-
 import Forbidden from "../../components/Forbidden";
 
 const inputOptions = sm => ({
@@ -14,7 +13,7 @@ const inputOptions = sm => ({
 class OrderEdit extends Component {
   render() {
     const { hasAccess } = this.props;
-    if (!hasAccess || !hasAccess("order", "update")) {
+    if (!hasAccess || !hasAccess("order", "update", "default")) {
       return <Forbidden history={this.props.history} />;
     }
     return (

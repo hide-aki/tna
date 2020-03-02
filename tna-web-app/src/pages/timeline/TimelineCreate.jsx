@@ -185,13 +185,11 @@ const renderActivities = ({ fields, activities, classes, expanded, handleExpansi
                         const source = names[0];
                         let idx = source && source.split(".")[0].substring(14);
                         idx = idx.substring(0, idx.length - 1);
-
                         const activity = tActivityList[idx];
 
                         const leadTime = activity ? activity.leadTime.input.value : null;
                         let timeFrom = activity ? activity.timeFrom.input.value : [];
-                        timeFrom = timeFrom.map(e => (e === "O" ? "Order Date" : activities[e] && activities[e].name));
-
+                        timeFrom = timeFrom && timeFrom.map(e => (e === "O" ? "Order Date" : activities[e] && activities[e].name));
                         return timeFrom.length > 0 && leadTime ? (
                           <div style={{ display: "flex", flexDirection: "row", alignItems: "center", marginRight: "3em" }}>
                             <div> {timeFrom.join(", ")} </div>
@@ -304,6 +302,8 @@ class TimelineCreate extends Component {
   };
 
   onRemoveActivity = (fields, index) => {
+    console.log({ fields, index });
+
     let activityList = this.state.activityList.slice();
     activityList.splice(index, 1);
     this.setState({ activityList: activityList });

@@ -192,14 +192,16 @@ const format = (isGrassRootUser, order) => {
                 delayReason: oActivity.delayReason == null ? undefined : oActivity.delayReason,
                 remarks: oActivity.remarks == null ? undefined : oActivity.remarks
               },
-              ...oSubActivityList.sort((c, d) => c.leadTime - d.leadTime).map(e => ({
-                ...e,
-                dueDate: moment(e.dueDate).format("ll"),
-                viewLeadTime: leadTime(oActivity.finalLeadTime + e.leadTime),
-                compDate: e.completedDate == null || e.completedDate === "" ? undefined : moment(e.completedDate).format("ll"),
-                delayReason: e.delayReason == null ? undefined : e.delayReason,
-                remarks: e.remarks == null ? undefined : e.remarks
-              }))
+              ...oSubActivityList
+                .sort((c, d) => c.leadTime - d.leadTime)
+                .map(e => ({
+                  ...e,
+                  dueDate: moment(e.dueDate).format("ll"),
+                  viewLeadTime: leadTime(oActivity.finalLeadTime + e.leadTime),
+                  compDate: e.completedDate == null || e.completedDate === "" ? undefined : moment(e.completedDate).format("ll"),
+                  delayReason: e.delayReason == null ? undefined : e.delayReason,
+                  remarks: e.remarks == null ? undefined : e.remarks
+                }))
             ]
           : [
               {
@@ -442,11 +444,16 @@ class OrderView extends Component {
                 }}
                 components={{
                   Action: props => {
-                    return props.data && props.data.tActivity ? (
-                      <Button showLabel={false} label="Activity History" style={{ cursor: "pointer" }} onClick={e => props.action.onClick(e, props.data)}>
+                    return props.data && props.data.tActivity && hasPrivilege(roles, hasAccess) ? (
+                      <Button
+                        showLabel={false}
+                        label="Activity History"
+                        style={{ cursor: "pointer" }}
+                        onClick={e => props.action.onClick(e, props.data)}
+                      >
                         <HistoryIcon />
                       </Button>
-                    ) : null;
+                    ) : null
                   }
                 }}
               />
