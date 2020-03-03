@@ -105,7 +105,7 @@ class ActivityEdit extends Component {
             <BooleanInput defaultValue={false} source="overridable" label="Overridable" style={{ paddingTop: "1.5em" }} {...inputOptions(2)} />
           </FormCard>
           <FormCard title="Sub Activities">
-            <ArrayInput label="Sub Activity List" source="subActivityList" xs={12} fullWidth={true}>
+          <ArrayInput label="" source="subActivityList" xs={12} fullWidth={true}>
               <SimpleFormIterator>
                 <TextInput label="Name" source="name" validate={[required(), minLength(2)]} {...inputOptions(4)} />
                 <TextInput label="Description" source="desc" {...inputOptions(8)} />

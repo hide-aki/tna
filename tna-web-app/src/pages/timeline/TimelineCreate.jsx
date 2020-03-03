@@ -112,17 +112,12 @@ const format = activityList => {
   let timeline = {
     tActivityList:
       activityList &&
-      activityList.map(({ id, name, serialNo, subActivityList }) => ({
+      activityList.map(({ id, name, serialNo }) => ({
         activityId: id,
         timeFrom: ["O"],
         name,
         serialNo,
-        tSubActivityList:
-          subActivityList &&
-          subActivityList.map(({ id, name }) => ({
-            subActivityId: id,
-            name
-          }))
+        tSubActivityList: []
       }))
   };
   return timeline;
@@ -205,7 +200,7 @@ const renderActivities = ({ fields, activities, classes, expanded, handleExpansi
                       onFocus={event => event.stopPropagation()}
                       control={
                         <Button showLabel={false} label="Remove Activity" onClick={_ => onRemoveActivity(fields, idx, activity)}>
-                          <RemoveIcon />
+                          <RemoveIcon style={{ color: "#f44336" }} />
                         </Button>
                       }
                     />
@@ -231,8 +226,8 @@ const renderActivities = ({ fields, activities, classes, expanded, handleExpansi
                       );
                     }}
                   </FormDataConsumer>
-                  <NumberInput label="Lead Time" source={`${activity}.leadTime`} validate={[required(), minValue(1)]} {...inputOptions(6)} />
-                  <ArrayInput label="Sub Activity List" source={`${activity}.tSubActivityList`} {...inputOptions(12)}>
+                  <NumberInput label="Lead Time" source={`${activity}.leadTime`} validate={[required(), minValue(0)]} {...inputOptions(6)} />
+                  <ArrayInput label="" source={`${activity}.tSubActivityList`} {...inputOptions(12)}>
                     <SimpleFormIterator>
                       {activityObj && activityObj.subActivityList && (
                         <SelectInput

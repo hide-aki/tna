@@ -14,8 +14,6 @@ import {
   SelectInput
 } from "jazasoft";
 
-import hasPrivilege from "../../utils/hasPrivilege";
-
 const homeStyle = theme => ({
   button: {
     width: theme.spacing(2)
@@ -43,12 +41,11 @@ const filters = (
 );
 
 export default withStyles(homeStyle)(({ classes, ...props }) => {
-  const { roles, hasAccess } = props;
-
+  const { hasAccess = () => {}} = props;
   return (
     <List
-      actions={({ basePath, roles, hasAccess }) => (
-        <div>{hasPrivilege(roles, hasAccess, "timeline", "write") && <CreateButton basePath={basePath} showLabel={false} />}</div>
+      actions={({ basePath  }) => (
+        <div>{hasAccess("timeline", "write") && <CreateButton basePath={basePath} showLabel={false} />}</div>
       )}
       {...props}
       filters={filters}
@@ -59,8 +56,8 @@ export default withStyles(homeStyle)(({ classes, ...props }) => {
         <FunctionField label="Std Lead Time" render={record => (record.stdLeadTime ? `${record.stdLeadTime} days` : "")} />
         <FunctionField label="Approved" render={record => (record.approved ? "Yes" : "No")} />
         <ShowButton cellClassName={classes.button} />
-        {hasPrivilege(roles, hasAccess, "timeline", "update", "default") && <EditButton cellClassName={classes.button} />}
-        {hasPrivilege(roles, hasAccess, "timeline", "delete") && <DeleteButton cellClassName={classes.button} />}
+        {hasAccess("timeline", "update", "default") && <EditButton cellClassName={classes.button} />}
+        {hasAccess("timeline", "delete") && <DeleteButton cellClassName={classes.button} />}
       </Datagrid>
     </List>
   );

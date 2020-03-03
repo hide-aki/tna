@@ -148,9 +148,7 @@ class Calendar extends Component {
     const lastDay = moment(nav)
       .endOf("month")
       .valueOf();
-    this.fetchEvents(firstDay, lastDay);
-    console.log({nav: moment(nav).format("lll"), firstDay: moment(firstDay).format("lll"), lastDay: moment(lastDay).format("lll")});
-    
+    this.fetchEvents(firstDay, lastDay); 
   };
 
   fetchEvents = (firstDay = this.state.firstDay, lastDay = this.state.lastDay, action = "activity") => {
