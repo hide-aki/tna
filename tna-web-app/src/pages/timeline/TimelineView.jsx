@@ -240,13 +240,21 @@ class TimelineView extends Component {
     const { rowActivity } = this.state;
     let error = false;
     for (let i = 0; i < rowActivity.length; i++) {
-      if (rowActivity[i].timeFrom.length > 1 && rowActivity[i].timeFrom.includes("O")) {
+      if(rowActivity[i].timeFrom[0] === ""){
+        rowActivity[i].timeFrom.shift()
+        this.props.dispatch(showNotification(`${rowActivity[i].name}'s Time From value must not be empty`, { type: "warning" }));
+      }
+      else if (!(rowActivity[i].timeFrom.length)) {
         error = true;
-        this.props.dispatch(showNotification(`Time From value cannot be combined with Order Date and Activities for ${rowActivity[i].name}`));
+        this.props.dispatch(showNotification(`${rowActivity[i].name}'s Time From value must not be empty`, { type: "warning" }));
+      }
+      else if (rowActivity[i].timeFrom.length > 1 && rowActivity[i].timeFrom.includes("O")) {
+        error = true;
+        this.props.dispatch(showNotification(`${rowActivity[i].name}'s Time From value cannot be combined with Order Date and Activities for`, { type: "warning" }));
       } else if (Number(rowActivity[i].leadTime) > timeline.stdLeadTime) {
         error = true;
         this.props.dispatch(
-          showNotification(`${rowActivity[i].name} Lead Time cannot not exceed Standard Lead Time ${timeline.stdLeadTime}`, { type: "warning" })
+          showNotification(`${rowActivity[i].name}'s Lead Time cannot not exceed Standard Lead Time ${timeline.stdLeadTime}`, { type: "warning" })
         );
       }
     }

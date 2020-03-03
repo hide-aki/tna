@@ -156,8 +156,18 @@ const leadTime = lt =>
     .fill("0")
     .join("")}${lt}`;
 
+const renderSubActivityName = rowData =>
+  rowData ? (
+    <span>
+      {rowData.key && rowData.key.includes("C") && <span>&nbsp;&nbsp;&nbsp;&nbsp;</span>}
+      {rowData.name}
+    </span>
+  ) : (
+    <span />
+  );
+
 const columns = [
-  { field: "name", title: "Name" },
+  { field: "name", title: "Name", render: rowData => renderSubActivityName(rowData) },
   {
     field: "viewLeadTime",
     title: "Lead Time",
@@ -190,7 +200,8 @@ const format = (isGrassRootUser, order) => {
                 compDate:
                   oActivity.completedDate == null || oActivity.completedDate === "" ? undefined : moment(oActivity.completedDate).format("ll"),
                 delayReason: oActivity.delayReason == null ? undefined : oActivity.delayReason,
-                remarks: oActivity.remarks == null ? undefined : oActivity.remarks
+                remarks: oActivity.remarks == null ? undefined : oActivity.remarks,
+                key: `P-${oActivity.tActivity.id}`
               },
               ...oSubActivityList
                 .sort((c, d) => c.leadTime - d.leadTime)
@@ -200,7 +211,9 @@ const format = (isGrassRootUser, order) => {
                   viewLeadTime: leadTime(oActivity.finalLeadTime + e.leadTime),
                   compDate: e.completedDate == null || e.completedDate === "" ? undefined : moment(e.completedDate).format("ll"),
                   delayReason: e.delayReason == null ? undefined : e.delayReason,
-                  remarks: e.remarks == null ? undefined : e.remarks
+                  remarks: e.remarks == null ? undefined : e.remarks,
+                  key: `C-${e.id}`,
+                  parentKey: `P-${oActivity.tActivity.id}`
                 }))
             ]
           : [
@@ -416,7 +429,7 @@ class OrderView extends Component {
                     ? null
                     : (row, rows) =>
                         rows.find(a => {
-                          return a.id === row.oActivityId;
+                          return a.key === row.parentKey;
                         })
                 }
                 actions={[
@@ -453,7 +466,7 @@ class OrderView extends Component {
                       >
                         <HistoryIcon />
                       </Button>
-                    ) : null
+                    ) : null;
                   }
                 }}
               />

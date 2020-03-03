@@ -95,7 +95,6 @@ class HistoryDialog extends Component {
 
   render() {
     const { dataStr, dialogActive, rows } = this.state;
-
     return (
       <React.Fragment>
         <Dialog open={this.props.open} maxWidth="md" fullWidth onClose={this.onClose} aria-labelledby="form-dialog-title">
