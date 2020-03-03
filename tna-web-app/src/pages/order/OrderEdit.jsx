@@ -31,10 +31,10 @@ class OrderEdit extends Component {
           <TextInput source="poRef" label="PO Reference" validate={[required(), minLength(2)]} {...inputOptions(3)} />
           <NumberInput source="orderQty" validate={required()} {...inputOptions(3)} />
           <TextInput source="style" validate={[required(), minLength(2)]} {...inputOptions(3)} />
-          <TextInput source="remarks" label="Remarks" validate={[minLength(2)]} {...inputOptions(3)} />
           <DateInput source="orderDate" validate={required()} {...inputOptions(3)} />
-          <DateInput source="exFactoryDate" validate={required()} {...inputOptions(2)} />
+          <DateInput source="exFactoryDate" validate={required()} {...inputOptions(3)} />
           <DateInput label="ETD Date" source="etdDate" {...inputOptions(3)} />
+          <TextInput source="remarks" label="Remarks" validate={[minLength(2)]} {...inputOptions(9)} />
         </SimpleForm>
       </Edit>
     );

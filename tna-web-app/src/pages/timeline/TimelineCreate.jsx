@@ -227,25 +227,26 @@ const renderActivities = ({ fields, activities, classes, expanded, handleExpansi
                     }}
                   </FormDataConsumer>
                   <NumberInput label="Lead Time" source={`${activity}.leadTime`} validate={[required(), minValue(0)]} {...inputOptions(6)} />
-                  <ArrayInput label="" source={`${activity}.tSubActivityList`} {...inputOptions(12)}>
-                    <SimpleFormIterator>
-                      {activityObj && activityObj.subActivityList && (
-                        <SelectInput
-                          key={idx}
-                          source="subActivityId"
-                          label="Sub Activities"
-                          choices={activityObj.subActivityList.map(({ id, name }) => ({
-                            id: id,
-                            name
-                          }))}
-                          {...inputOptions(6)}
-                          validate={required()}
-                        />
-                      )}
+                  {activityObj && activityObj.subActivityList && activityObj.subActivityList.length &&(
+                    <ArrayInput label="" source={`${activity}.tSubActivityList`} {...inputOptions(12)}>
+                      <SimpleFormIterator>
+                        {activityObj.subActivityList.length && (
+                          <SelectInput
+                            source="subActivityId"
+                            label="Sub Activities"
+                            choices={activityObj && activityObj.subActivityList && activityObj.subActivityList.map(({ id, name }) => ({
+                              id: id,
+                              name
+                            }))}
+                            {...inputOptions(6)}
+                            validate={required()}
+                          />
+                        )}
 
-                      <NumberInput source="leadTime" label="Lead Time" {...inputOptions(6)} validate={[required(), maxValue(0)]} />
-                    </SimpleFormIterator>
-                  </ArrayInput>
+                        <NumberInput source="leadTime" label="Lead Time" {...inputOptions(6)} validate={[required(), maxValue(0)]} />
+                      </SimpleFormIterator>
+                    </ArrayInput>
+                  )}
                 </SimpleForm>
               </ExpansionPanelDetails>
             </ExpansionPanel>
@@ -297,8 +298,6 @@ class TimelineCreate extends Component {
   };
 
   onRemoveActivity = (fields, index) => {
-    console.log({ fields, index });
-
     let activityList = this.state.activityList.slice();
     activityList.splice(index, 1);
     this.setState({ activityList: activityList });
@@ -322,13 +321,7 @@ class TimelineCreate extends Component {
       name: activity.name,
       serialNo: activity.serialNo,
       timeFrom: ["O"],
-      tSubActivityList:
-        activity &&
-        activity.subActivityList &&
-        activity.subActivityList.map(({ id, name }) => ({
-          subActivityId: id,
-          name
-        }))
+      tSubActivityList: []
     };
     const fieldsList = fields.getAll();
     const fieldsSerialNoList = fieldsList.sort((a, b) => a.serialNo - b.serialNo).map(e => e.serialNo);
@@ -465,11 +458,13 @@ class TimelineCreate extends Component {
                       <ReferenceInput source="buyerId" reference="buyers" {...inputOptions(4)} validate={required()}>
                         <SelectInput optionText="name" />
                       </ReferenceInput>
-                      <TextInput source="name" validate={[maxLength(30), required()]} {...inputOptions(3)} />
+                      <ReferenceInput source="garmentTypeId" reference="garmentTypes" {...inputOptions(4)} validate={required()}>
+                        <SelectInput optionText="name" />
+                      </ReferenceInput>
+                      <TextInput source="name" validate={[maxLength(30), required()]} {...inputOptions(4)} />
                     </SimpleForm>
                   </div>
                 </Card>
-
                 <FieldArray
                   name="tActivityList"
                   component={renderActivities}
@@ -480,7 +475,6 @@ class TimelineCreate extends Component {
                   onAddActivity={this.onAddActivity}
                   onRemoveActivity={this.onRemoveActivity}
                 />
-
                 <PageFooter>
                   <Button label="Save" variant="contained" color="primary" onClick={_ => this.onSubmit(handleSubmit)}>
                     <SaveIcon />

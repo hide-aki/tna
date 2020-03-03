@@ -313,6 +313,7 @@ class TimelineView extends Component {
         >
           <ShowCard title="Timeline Details">
             <FunctionField label="Buyer" render={record => (record.buyer ? record.buyer.name : "-")} />
+            <FunctionField label="Garment Type" render={record => (record.garmentType ? record.garmentType.name : "-")} />
             <TextField source="name" />
             <TextField source="stdLeadTime" label="Standard Lead Time" />
             <FunctionField label="Approval status" render={record => (record.approved ? "Approved" : "Not Approved")} />

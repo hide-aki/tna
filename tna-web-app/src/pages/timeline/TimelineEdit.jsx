@@ -182,13 +182,12 @@ const renderActivities = ({ fields, activities, classes, expanded, handleExpansi
                         ) : null;
                       }}
                     />
-
                     <FormControlLabel
                       onClick={event => event.stopPropagation()}
                       onFocus={event => event.stopPropagation()}
                       control={
                         <Button showLabel={false} label="Remove Activity" onClick={_ => onRemoveActivity(fields, idx, activity)}>
-                          <RemoveIcon style={{color: "#f44336"}}/>
+                          <RemoveIcon style={{ color: "#f44336" }} />
                         </Button>
                       }
                     />
@@ -223,14 +222,14 @@ const renderActivities = ({ fields, activities, classes, expanded, handleExpansi
                     }}
                   </FormDataConsumer>
                   <NumberInput source={`${activity}.leadTime`} label="Lead Time" {...inputOptions(6)} validate={[required(), minValue(0)]} />
-                  {activityObj && activityObj.subActivityList && (
+                  {activityObj && activityObj.subActivityList && activityObj.subActivityList.length &&(
                     <ArrayInput label="" source={`${activity}.tSubActivityList`} {...inputOptions(12)}>
                       <SimpleFormIterator>
-                        {activityObj && activityObj.subActivityList && activityObj.subActivityList.length && (
+                        {activityObj.subActivityList.length && (
                           <SelectInput
                             source="subActivityId"
                             label="Sub Activities"
-                            choices={activityObj.subActivityList.map(({ id, name }) => ({
+                            choices={activityObj && activityObj.subActivityList && activityObj.subActivityList.map(({ id, name }) => ({
                               id: id,
                               name
                             }))}
@@ -348,13 +347,7 @@ class TimelineEdit extends Component {
       name: activity.name,
       serialNo: activity.serialNo,
       timeFrom: ["O"],
-      tSubActivityList:
-        activity &&
-        activity.subActivityList &&
-        activity.subActivityList.map(({ id, name }) => ({
-          subActivityId: id,
-          name
-        }))
+      tSubActivityList: []
     };
     const fieldsList = fields.getAll();
     const fieldsSerialNoList = fieldsList.sort((a, b) => a.serialNo - b.serialNo).map(e => e.serialNo);
@@ -491,7 +484,10 @@ class TimelineEdit extends Component {
                       <ReferenceInput source="buyerId" reference="buyers" {...inputOptions(4)} validate={required()}>
                         <SelectInput optionText="name" />
                       </ReferenceInput>
-                      <TextInput source="name" validate={[maxLength(30), required()]} {...inputOptions(3)} />
+                      <ReferenceInput source="garmentTypeId" reference="garmentTypes" {...inputOptions(4)} validate={required()}>
+                        <SelectInput optionText="name" />
+                      </ReferenceInput>
+                      <TextInput source="name" validate={[maxLength(30), required()]} {...inputOptions(4)} />
                     </SimpleForm>
                   </div>
                 </Card>

@@ -23,13 +23,16 @@ class OrederCreate extends Component {
           <ReferenceInput source="buyerId" reference="buyers" validate={required()} {...inputOptions(3)}>
             <SelectInput optionText="name" />
           </ReferenceInput>
+          <ReferenceInput source="garmentTypeId" reference="garmentTypes" validate={required()} {...inputOptions(3)}>
+            <SelectInput optionText="name" />
+          </ReferenceInput>
           <FormDataConsumer {...inputOptions(3)}>
             {({ formData }) => {
               return (
                 <ReferenceInput
                   source="timelineId"
                   reference="timelines"
-                  filter={{ "buyer.id": formData.buyerId || "-1" }}
+                  filter={{ "buyer.id": formData.buyerId || "-1", "garmentType.id": formData.garmentTypeId || "-1" }}
                   validate={required()}
                   {...inputOptions(3)}
                 >
@@ -38,20 +41,16 @@ class OrederCreate extends Component {
               );
             }}
           </FormDataConsumer>
-
-          <ReferenceInput source="garmentTypeId" reference="garmentTypes" validate={required()} {...inputOptions(3)}>
-            <SelectInput optionText="name" />
-          </ReferenceInput>
           <ReferenceInput source="seasonId" reference="seasons" validate={required()} {...inputOptions(3)}>
             <SelectInput optionText="name" />
           </ReferenceInput>
           <TextInput source="poRef" label="PO Reference" validate={[required(), minLength(2)]} {...inputOptions(3)} />
           <NumberInput source="orderQty" validate={required()} {...inputOptions(3)} />
           <TextInput source="style" validate={[required(), minLength(2)]} {...inputOptions(3)} />
-          <TextInput source="remarks" label="Remarks" validate={[minLength(2)]} {...inputOptions(3)} />
           <DateInput source="orderDate" validate={required()} {...inputOptions(3)} />
           <DateInput label="EX Factory Date" source="exFactoryDate" validate={required()} {...inputOptions(3)} />
           <DateInput label="ETD Date" source="etdDate" {...inputOptions(3)} />
+          <TextInput source="remarks" label="Remarks" validate={[minLength(2)]} {...inputOptions(6)} />
         </SimpleForm>
       </Create>
     );
