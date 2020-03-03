@@ -47,6 +47,7 @@ public class TimelineRestController {
         }
         pages.forEach(timeline -> timeline.setTActivityList(null));
         pages.forEach(timeline -> timeline.setBuyerId(timeline.getBuyer() != null ? timeline.getBuyer().getId() : null));
+        pages.forEach(timeline -> timeline.setGarmentTypeId(timeline.getGarmentType() != null ? timeline.getGarmentType().getId() : null));
         return ResponseEntity.ok(pages);
     }
 
@@ -69,6 +70,7 @@ public class TimelineRestController {
             }
         }
         timeline.setBuyerId(timeline.getBuyer() != null ? timeline.getBuyer().getId() : null);
+        timeline.setGarmentTypeId(timeline.getGarmentType() != null ? timeline.getGarmentType().getId() : null);
 
 
         timeline.getTActivityList().forEach(tActivity -> tActivity.getActivity().setDepartment(null));
