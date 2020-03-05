@@ -10,5 +10,9 @@ public interface Constants {
   String REQ_ATTRIBUTE_TEAM = "teamId";
 
   String ROLE_HOD = "hod";
+  String ROLE_USER = "user";
+  String ROLE_MERCHANDISING = "merchant";
+
   String DEPARTMENT_MERCHANDISING = "Merchandising";
+
 }

@@ -76,6 +76,10 @@ public class Timeline extends Auditable {
   @Transient
   private Long garmentTypeId;
 
+  public Boolean getApproved() {
+    return approved != null ? approved : false;
+  }
+
   public void addTActivity(TActivity tActivity) {
     this.tActivityList.add(tActivity);
     tActivity.setTimeline(this);

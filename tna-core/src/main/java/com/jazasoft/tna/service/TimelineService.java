@@ -76,10 +76,10 @@ public class TimelineService {
         if (timeline.getBuyerId() != null) {
             timeline.setBuyer(buyerRepository.findById(timeline.getBuyerId()).orElse(null));
         }
-
         if (timeline.getGarmentTypeId() != null) {
             timeline.setGarmentType(garmentTypeRepository.findById(timeline.getGarmentTypeId()).orElse(null));
         }
+        timeline.setApproved(false);
 
         //todo: validate subActivity is the child of Activity.
 
@@ -151,7 +151,6 @@ public class TimelineService {
 
     @Transactional(value = "tenantTransactionManager")
     public Timeline update(Timeline timeline, String action) {
-
         Timeline mTimeline = timelineRepository.findById(timeline.getId()).orElseThrow();
         if (action.equalsIgnoreCase("approve")) {
             mTimeline.setApproved(true);
@@ -271,6 +270,7 @@ public class TimelineService {
             mTimeline.setStdLeadTime(TnaUtils.getStdLeadTime(mTimeline.getTActivityList()));
         }
 
+        Hibernate.initialize(mTimeline.getGarmentType());
         return mTimeline;
     }
 

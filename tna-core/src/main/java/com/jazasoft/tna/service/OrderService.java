@@ -71,6 +71,12 @@ public class OrderService {
     this.userRepository = userRepository;
   }
 
+  public List<Order> findAll() {
+    List<Order> orderList = orderRepository.findAll();
+    orderList.forEach(order -> Hibernate.initialize(order.getOActivityList()));
+    return orderList;
+  }
+
   public Page<Order> findAll(Pageable pageable, String view) {
     Page<Order> page = orderRepository.findAll(pageable);
     if (view.equalsIgnoreCase("grid")) {
