@@ -147,8 +147,8 @@ public class ScheduledTask {
 ////    userCache.updateCache();
 //  }
 
-//  @Scheduled(cron = "0 0 8 * * *")
-@Scheduled(cron = "0 0 * * * *")
+  //  @Scheduled(cron = "0 0 8 * * *")
+  @Scheduled(cron = "0 0 * * * *")
   private void delayedActivity() throws ParseException {
     logger.info("Schedular Started for sending delayed oactivity notification");
     List<String> tenantIds = tenantService.findAll().stream().map(Tenant::getTenantId).collect(Collectors.toList());
@@ -181,8 +181,8 @@ public class ScheduledTask {
             String[] to = new String[toUser.size()];
             toUser.toArray(to);
             String subject = "" + oActivity.getName() + " is delayed ";
-            String body = "Due Date of " + oActivity.getName() + " was "+oActivity.getDueDate();
-            emailService.sendSimpleEmail(to, "", "");
+            String body = "Due Date of '" + oActivity.getName() + "' was " + oActivity.getDueDate();
+            logger.debug("to ={}" + to);
 
             oActivityUserMap.put(oActivity.getId(), new MapBuilder<String, Object>().put("to", to).put("subject", subject).put("body", body).build());
           }
@@ -200,7 +200,7 @@ public class ScheduledTask {
 
       mTenantConnectionProvider.setDefaultTenant(null);
     }
-  logger.info("Schedular Ended after notify for delayed oActivity");
+    logger.info("Schedular Ended after notify for delayed oActivity");
   }
 
   private Specification<User> byDepartmentId(Long departmentId) {
