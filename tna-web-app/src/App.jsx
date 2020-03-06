@@ -51,8 +51,8 @@ import { Docs, Section, Topic, CreateTopic, EditTopic } from "./pages/docs";
 
 export const appId = "tna";
 
-const rootUrl = window.location.protocol + "//" + window.location.hostname + (window.location.port ? ":" + window.location.port : "");
-// const rootUrl = `http://${window.location.hostname}:8006`;
+//const rootUrl = window.location.protocol + "//" + window.location.hostname + (window.location.port ? ":" + window.location.port : "");
+const rootUrl = `http://${window.location.hostname}:8006`;
 // const rootUrl = `https://tna.jaza-soft.com`;
 
 ///// Env: Local IAM ///////

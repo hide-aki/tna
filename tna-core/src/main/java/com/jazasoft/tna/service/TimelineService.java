@@ -152,6 +152,7 @@ public class TimelineService {
     @Transactional(value = "tenantTransactionManager")
     public Timeline update(Timeline timeline, String action) {
         Timeline mTimeline = timelineRepository.findById(timeline.getId()).orElseThrow();
+        Hibernate.initialize(mTimeline.getGarmentType());
         if (action.equalsIgnoreCase("approve")) {
             mTimeline.setApproved(true);
             mTimeline.setApprovedBy(timeline.getApprovedBy());

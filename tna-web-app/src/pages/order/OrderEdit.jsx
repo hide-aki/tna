@@ -22,6 +22,7 @@ class OrderEdit extends Component {
           <ReferenceInput source="buyerId" reference="buyers" validate={required()} {...inputOptions(3)} disabled>
             <SelectInput optionText="name" />
           </ReferenceInput>
+          <TextInput source="timeline" label="Timeline" validate={[required(), minLength(2)]} {...inputOptions(3)} />
           <ReferenceInput source="garmentTypeId" reference="garmentTypes" validate={required()} {...inputOptions(3)}>
             <SelectInput optionText="name" />
           </ReferenceInput>
@@ -34,7 +35,7 @@ class OrderEdit extends Component {
           <DateInput source="orderDate" validate={required()} {...inputOptions(3)} />
           <DateInput source="exFactoryDate" validate={required()} {...inputOptions(3)} />
           <DateInput label="ETD Date" source="etdDate" {...inputOptions(3)} />
-          <TextInput source="remarks" label="Remarks" validate={[minLength(2)]} {...inputOptions(9)} />
+          <TextInput source="remarks" label="Remarks" validate={[minLength(2)]} {...inputOptions(5)} />
         </SimpleForm>
       </Edit>
     );
