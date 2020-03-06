@@ -26,6 +26,7 @@ import SaveIcon from "@material-ui/icons/Save";
 import AddIcon from "@material-ui/icons/Add";
 import hasPrivilege from "../../utils/hasPrivilege";
 import Forbidden from "../../components/Forbidden";
+import ExcelErrorDialog from "../../components/ExcelErrorDialog";
 
 import {
   PageHeader,
@@ -222,17 +223,21 @@ const renderActivities = ({ fields, activities, classes, expanded, handleExpansi
                     }}
                   </FormDataConsumer>
                   <NumberInput source={`${activity}.leadTime`} label="Lead Time" {...inputOptions(6)} validate={[required(), minValue(0)]} />
-                  {activityObj && activityObj.subActivityList && activityObj.subActivityList.length &&(
+                  {activityObj && activityObj.subActivityList && activityObj.subActivityList.length && (
                     <ArrayInput label="" source={`${activity}.tSubActivityList`} {...inputOptions(12)}>
                       <SimpleFormIterator>
                         {activityObj.subActivityList.length && (
                           <SelectInput
                             source="subActivityId"
                             label="Sub Activities"
-                            choices={activityObj && activityObj.subActivityList && activityObj.subActivityList.map(({ id, name }) => ({
-                              id: id,
-                              name
-                            }))}
+                            choices={
+                              activityObj &&
+                              activityObj.subActivityList &&
+                              activityObj.subActivityList.map(({ id, name }) => ({
+                                id: id,
+                                name
+                              }))
+                            }
                             {...inputOptions(6)}
                             validate={required()}
                           />
@@ -258,7 +263,8 @@ class TimelineEdit extends Component {
     rActivityList: [], // Remaining activity List
     initialValues: {},
     dialogActive: false,
-    expanded: null
+    expanded: null,
+    errors: null
   };
 
   componentDidMount() {
@@ -367,7 +373,7 @@ class TimelineEdit extends Component {
 
   onSubmit = handleSubmit => {
     handleSubmit(values => {
-      this.parse(values);
+      this.updateTimeline(this.parse(values));
     })();
   };
 
@@ -381,7 +387,7 @@ class TimelineEdit extends Component {
         timeFrom: activity.timeFrom.join()
       }))
     };
-    this.updateTimeline(parsedValue);
+    return parsedValue;
   };
 
   updateTimeline = timeline => {
@@ -402,7 +408,11 @@ class TimelineEdit extends Component {
         this.props.dispatch({ type: SAVING_END });
       })
       .catch(error => {
-        handleError(error, this.props.dispatch);
+        if (error.status === 400) {
+          this.setState({ errors: error.errors });
+        } else {
+          handleError(error, this.props.dispatch);
+        }
         this.props.dispatch({ type: FETCH_END });
         this.props.dispatch({ type: SAVING_END });
       });
@@ -462,9 +472,11 @@ class TimelineEdit extends Component {
     if (!hasPrivilege(roles, hasAccess, "timeline", "update", "default")) {
       return <Forbidden history={history} />;
     }
+
     return (
       <div>
         <PageHeader title="Edit Timeline" />
+
         <SelectDialog
           open={dialogActive}
           onClose={() => this.setState({ dialogActive: false, fields: null })}
@@ -472,6 +484,15 @@ class TimelineEdit extends Component {
           onSelect={this.onSelect}
           fields={fields}
         />
+
+        <ExcelErrorDialog
+          maxWidth="xl"
+          open={Array.isArray(this.state.errors)}
+          errors={this.state.errors}
+          onClose={() => this.setState({ errors: null })}
+          isExcelError={false}
+        />
+
         <div className={classes.container}>
           <WithReduxForm initialValues={initialValues} validate={this.onValidate}>
             {({ handleSubmit }) => (

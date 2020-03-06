@@ -57,6 +57,7 @@ import { SimpleForm } from "jazasoft/lib/mui/form/SimpleForm";
 import CardHeader from "../../components/CardHeader";
 import { dataProvider } from "../../App";
 import handleError from "../../utils/handleError";
+import ExcelErrorDialog from "../../components/ExcelErrorDialog";
 
 // Styling
 const homeStyle = theme => ({
@@ -345,7 +346,7 @@ class TimelineCreate extends Component {
 
   onSubmit = handleSubmit => {
     handleSubmit(values => {
-      this.parse(values);
+      this.createTimeline(this.parse(values));
     })();
   };
 
@@ -359,7 +360,7 @@ class TimelineCreate extends Component {
         timeFrom: activity.timeFrom.join()
       }))
     };
-    this.createTimeline(parsedValue);
+    return parsedValue;
   };
 
   createTimeline = timeline => {
@@ -380,7 +381,11 @@ class TimelineCreate extends Component {
         this.props.dispatch({ type: SAVING_END });
       })
       .catch(error => {
-        handleError(error, this.props.dispatch);
+        if (error.status === 400) {
+          this.setState({ errors: error.errors });
+        } else {
+          handleError(error, this.props.dispatch);
+        }
         this.props.dispatch({ type: FETCH_END });
         this.props.dispatch({ type: SAVING_END });
       });
@@ -443,6 +448,7 @@ class TimelineCreate extends Component {
     return (
       <div>
         <PageHeader title="Create Timeline" />
+
         <SelectDialog
           open={dialogActive}
           onClose={() => this.setState({ dialogActive: false, fields: null })}
@@ -450,6 +456,15 @@ class TimelineCreate extends Component {
           onSelect={this.onSelect}
           fields={fields}
         />
+
+        <ExcelErrorDialog
+          maxWidth="xl"
+          open={Array.isArray(this.state.errors)}
+          errors={this.state.errors}
+          onClose={() => this.setState({ errors: null })}
+          isExcelError={false}
+        />
+
         <div className={classes.container}>
           <WithReduxForm initialValues={initialValues} validate={this.onValidate}>
             {({ handleSubmit }) => (
