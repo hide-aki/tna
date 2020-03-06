@@ -5,13 +5,13 @@ package com.jazasoft.tna.dto;
  */
 public class ExcelRowError {
     private String column;
-    private int row;
+    private String row;
     private String message;
 
     public ExcelRowError() {
     }
 
-    public ExcelRowError(String column, int row, String message) {
+    public ExcelRowError(String column, String row, String message) {
         this.column = column;
         this.row = row;
         this.message = message;
@@ -25,11 +25,11 @@ public class ExcelRowError {
         this.column = column;
     }
 
-    public int getRow() {
+    public String getRow() {
         return row;
     }
 
-    public void setRow(int row) {
+    public void setRow(String row) {
         this.row = row;
     }
 

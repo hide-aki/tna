@@ -261,19 +261,19 @@ public class UserService {
     int idx = 1;
     for (User user : userList) {
       if (!StringUtils.hasText(user.getFullName())) {
-        errorList.add(new ExcelRowError("fullName", idx, "Full Name Required."));
+        errorList.add(new ExcelRowError("fullName", String.valueOf(idx), "Full Name Required."));
       }
 
       if (!StringUtils.hasText(user.getUsername())) {
-        errorList.add(new ExcelRowError("username", idx, "Username Required."));
+        errorList.add(new ExcelRowError("username", String.valueOf(idx), "Username Required."));
       }
 
       if (!StringUtils.hasText(user.getMobile())) {
-        errorList.add(new ExcelRowError("mobile", idx, "Mobile Required."));
+        errorList.add(new ExcelRowError("mobile", String.valueOf(idx), "Mobile Required."));
       }
 
       if (!StringUtils.hasText(user.getRoles())) {
-        errorList.add(new ExcelRowError("roles", idx, "Roles Required."));
+        errorList.add(new ExcelRowError("roles", String.valueOf(idx), "Roles Required."));
       }
 
     }

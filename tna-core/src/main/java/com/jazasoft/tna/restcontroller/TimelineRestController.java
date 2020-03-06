@@ -4,10 +4,13 @@ import com.jazasoft.mtdb.IConfigKeys;
 import com.jazasoft.mtdb.specification.CustomRsqlVisitor;
 import com.jazasoft.tna.ApiUrls;
 import com.jazasoft.tna.Constants;
+import com.jazasoft.tna.dto.ExcelRowError;
 import com.jazasoft.tna.entity.TActivity;
 import com.jazasoft.tna.entity.TSubActivity;
 import com.jazasoft.tna.entity.Timeline;
+import com.jazasoft.tna.exception.ExcelUploadNotValidException;
 import com.jazasoft.tna.service.TimelineService;
+import com.jazasoft.util.StringUtils;
 import com.jazasoft.util.Utils;
 import cz.jirutka.rsql.parser.RSQLParser;
 import cz.jirutka.rsql.parser.ast.Node;
@@ -116,13 +119,8 @@ public class TimelineRestController {
 
     @PostMapping
     private ResponseEntity<?> save(@Valid @RequestBody Timeline timeline) {
-//        Set<Long> list = new HashSet<>();
-//        for (TActivity tActivity : timeline.getTActivityList()) {
-//            if (!list.add(tActivity.getTActivityId())) {
-//                return new ResponseEntity<>("Duplicate SubActivities. Each subActivityId must be unique", HttpStatus.CONFLICT);
-//            }
-//        }
-//        activity.setId(null);
+        validate(timeline);
+
         timeline = timelineService.save(timeline);
         timeline.getTActivityList().forEach(tActivity -> {
             tActivity.getActivity().setSubActivityList(null);
@@ -146,6 +144,7 @@ public class TimelineRestController {
         if (!timelineService.exists(id)) {
             return ResponseEntity.notFound().build();
         }
+        validate(timeline);
         timeline.setId(id);
         timeline.setApprovedBy(username);
         Timeline mTimeline = timelineService.update(timeline, action);
@@ -173,5 +172,21 @@ public class TimelineRestController {
         }
         timelineService.deleteTimeline(id);
         return ResponseEntity.noContent().build();
+    }
+
+    private void validate(Timeline timeline) {
+        List<ExcelRowError> errors = new ArrayList<>();
+        for (TActivity tActivity: timeline.getTActivityList()) {
+            if (!StringUtils.hasText(tActivity.getTimeFrom())) {
+                errors.add(new ExcelRowError("FROM", tActivity.getName(), "From value is required."));
+            }
+            if (tActivity.getLeadTime() == null) {
+                errors.add(new ExcelRowError("LEAD TIME",  tActivity.getName(), "Lead Time value is required."));
+            }
+        }
+
+        if (!errors.isEmpty()) {
+            throw new ExcelUploadNotValidException("Timeline form has errors", errors);
+        }
     }
 }
