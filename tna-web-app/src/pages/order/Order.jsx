@@ -40,7 +40,7 @@ import { LinkField } from "../../components/Table";
 
 import FormDialog from "./FormDialog";
 
-import hasPrivilege from "../../utils/hasPrivilege";
+//import hasPrivilege from "../../utils/hasPrivilege";
 import handleError from "../../utils/handleError";
 import { dataProvider } from "../../App";
 import { ColorNotification } from "../../utils/colors";
@@ -121,7 +121,7 @@ const MyTextField = ({ column, record }) => {
   );
 };
 
-const getColumns = (orderList, onChange, onLinkClick, filterValues) => {
+const getColumns = (orderList, onChange, onLinkClick, filterValues, hasAccess) => {
   let activityList = [];
   let activitySet = new Set();
   const departmentId = filterValues && filterValues.departmentId;
@@ -142,9 +142,13 @@ const getColumns = (orderList, onChange, onLinkClick, filterValues) => {
         }
       }
     });
-  let columns = [
-    { dataKey: "selector", element: <CheckBox onChange={onChange} /> },
-    { dataKey: "edit" },
+
+  let columns = [];
+  if (hasAccess("order", "update", "activity")) {
+    columns = [{ dataKey: "selector", element: <CheckBox onChange={onChange} /> }, { dataKey: "edit" }];
+  }
+  columns = [
+    ...columns,
     { dataKey: "poRef", title: "PO Ref. No", element: <LinkField onClick={onLinkClick} /> },
     { dataKey: "buyerName", title: "Buyer" },
     { dataKey: "seasonName", title: "Season" },
@@ -190,7 +194,7 @@ const CustomDatagrid = ({ classes, view, roles, hasAccess, onEditClick, onLinkCl
           ),
           buyerName: e.buyer && e.buyer.name,
           seasonName: e.season && e.season.name,
-          exFactory: moment(e.exFactory).format("ll"),
+          exFactory: moment(e.exFactoryDate).format("ll"),
           ...activityList.reduce(
             (acc, activity) => ({
               ...acc,
@@ -215,7 +219,7 @@ const CustomDatagrid = ({ classes, view, roles, hasAccess, onEditClick, onLinkCl
       <FunctionField source="exFactoryDate" label="Ex-factory Date" render={record => moment(record.exFactoryDate).format("ll")} />
       <ShowButton cellClassName={classes.button} />
       {hasAccess && hasAccess("order", "update", "default") && <EditButton cellClassName={classes.button} />}
-      {hasPrivilege(roles, hasAccess, "order", "delete") && <DeleteButton cellClassName={classes.button} />}
+      {hasAccess && hasAccess("order", "delete") && <DeleteButton cellClassName={classes.button} />}
     </Datagrid>
   ) : (
     <div>
@@ -229,7 +233,12 @@ const CustomDatagrid = ({ classes, view, roles, hasAccess, onEditClick, onLinkCl
         </React.Fragment>
       )}
       <PerfectScrollbar>
-        <Table classes={{ table: classes.nowrapTable }} columns={getColumns(rows, onChange, onLinkClick, filterValues)} rows={rows} emptyMessage="" />
+        <Table
+          classes={{ table: classes.nowrapTable }}
+          columns={getColumns(rows, onChange, onLinkClick, filterValues, hasAccess)}
+          rows={rows}
+          emptyMessage=""
+        />
       </PerfectScrollbar>
     </div>
   );

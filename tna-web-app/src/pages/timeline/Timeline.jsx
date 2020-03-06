@@ -41,12 +41,10 @@ const filters = (
 );
 
 export default withStyles(homeStyle)(({ classes, ...props }) => {
-  const { hasAccess = () => {}} = props;
+  const { hasAccess = () => {} } = props;
   return (
     <List
-      actions={({ basePath  }) => (
-        <div>{hasAccess("timeline", "write") && <CreateButton basePath={basePath} showLabel={false} />}</div>
-      )}
+      actions={({ basePath }) => <div>{hasAccess("timeline", "write") && <CreateButton basePath={basePath} showLabel={false} />}</div>}
       {...props}
       filters={filters}
     >

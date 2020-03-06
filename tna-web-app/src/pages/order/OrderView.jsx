@@ -191,31 +191,33 @@ const format = (isGrassRootUser, order) => {
       .map(e => ({ ...e.tActivity, ...e }))
       .sort((a, b) => a.serialNo - b.serialNo)
       .flatMap(({ oSubActivityList, ...oActivity }) =>
-        isGrassRootUser && oSubActivityList
-          ? [
-              {
-                ...oActivity,
-                dueDate: moment(oActivity.dueDate).format("ll"),
-                viewLeadTime: leadTime(oActivity.finalLeadTime),
-                compDate:
-                  oActivity.completedDate == null || oActivity.completedDate === "" ? undefined : moment(oActivity.completedDate).format("ll"),
-                delayReason: oActivity.delayReason == null ? undefined : oActivity.delayReason,
-                remarks: oActivity.remarks == null ? undefined : oActivity.remarks,
-                key: `P-${oActivity.tActivity.id}`
-              },
-              ...oSubActivityList
-                .sort((c, d) => c.leadTime - d.leadTime)
-                .map(e => ({
-                  ...e,
-                  dueDate: moment(e.dueDate).format("ll"),
-                  viewLeadTime: leadTime(oActivity.finalLeadTime + e.leadTime),
-                  compDate: e.completedDate == null || e.completedDate === "" ? undefined : moment(e.completedDate).format("ll"),
-                  delayReason: e.delayReason == null ? undefined : e.delayReason,
-                  remarks: e.remarks == null ? undefined : e.remarks,
-                  key: `C-${e.id}`,
-                  parentKey: `P-${oActivity.tActivity.id}`
-                }))
-            ]
+        isGrassRootUser
+          ? !oSubActivityList
+            ? []
+            : [
+                {
+                  ...oActivity,
+                  dueDate: moment(oActivity.dueDate).format("ll"),
+                  viewLeadTime: leadTime(oActivity.finalLeadTime),
+                  compDate:
+                    oActivity.completedDate == null || oActivity.completedDate === "" ? undefined : moment(oActivity.completedDate).format("ll"),
+                  delayReason: oActivity.delayReason == null ? undefined : oActivity.delayReason,
+                  remarks: oActivity.remarks == null ? undefined : oActivity.remarks,
+                  key: `P-${oActivity.tActivity.id}`
+                },
+                ...oSubActivityList
+                  .sort((c, d) => c.leadTime - d.leadTime)
+                  .map(e => ({
+                    ...e,
+                    dueDate: moment(e.dueDate).format("ll"),
+                    viewLeadTime: leadTime(oActivity.finalLeadTime + e.leadTime),
+                    compDate: e.completedDate == null || e.completedDate === "" ? undefined : moment(e.completedDate).format("ll"),
+                    delayReason: e.delayReason == null ? undefined : e.delayReason,
+                    remarks: e.remarks == null ? undefined : e.remarks,
+                    key: `C-${e.id}`,
+                    parentKey: `P-${oActivity.tActivity.id}`
+                  }))
+              ]
           : [
               {
                 ...oActivity,
@@ -479,7 +481,7 @@ class OrderView extends Component {
                 <HistoryIcon />
               </Button>
             )}
-            {hasPrivilege(roles, hasAccess, "order", "update", "activity") && (
+            {hasAccess && hasAccess("order", "update", "activity") && (
               <Button
                 label="Update Activity"
                 variant="contained"
@@ -490,7 +492,7 @@ class OrderView extends Component {
                 <EditIcon />
               </Button>
             )}
-            {hasPrivilege(roles, hasAccess, "order", "update", "override") && (
+            {hasAccess && hasAccess("order", "update", "override") && (
               <Button
                 label="Override"
                 variant="contained"

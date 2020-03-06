@@ -227,17 +227,21 @@ const renderActivities = ({ fields, activities, classes, expanded, handleExpansi
                     }}
                   </FormDataConsumer>
                   <NumberInput label="Lead Time" source={`${activity}.leadTime`} validate={[required(), minValue(0)]} {...inputOptions(6)} />
-                  {activityObj && activityObj.subActivityList && activityObj.subActivityList.length &&(
+                  {activityObj && activityObj.subActivityList && activityObj.subActivityList.length && (
                     <ArrayInput label="" source={`${activity}.tSubActivityList`} {...inputOptions(12)}>
                       <SimpleFormIterator>
                         {activityObj.subActivityList.length && (
                           <SelectInput
                             source="subActivityId"
                             label="Sub Activities"
-                            choices={activityObj && activityObj.subActivityList && activityObj.subActivityList.map(({ id, name }) => ({
-                              id: id,
-                              name
-                            }))}
+                            choices={
+                              activityObj &&
+                              activityObj.subActivityList &&
+                              activityObj.subActivityList.map(({ id, name }) => ({
+                                id: id,
+                                name
+                              }))
+                            }
                             {...inputOptions(6)}
                             validate={required()}
                           />
