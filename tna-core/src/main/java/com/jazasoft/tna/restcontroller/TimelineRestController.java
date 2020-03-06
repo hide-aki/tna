@@ -3,15 +3,18 @@ package com.jazasoft.tna.restcontroller;
 import com.jazasoft.mtdb.IConfigKeys;
 import com.jazasoft.mtdb.specification.CustomRsqlVisitor;
 import com.jazasoft.tna.ApiUrls;
+import com.jazasoft.tna.Constants;
 import com.jazasoft.tna.entity.TActivity;
 import com.jazasoft.tna.entity.TSubActivity;
 import com.jazasoft.tna.entity.Timeline;
 import com.jazasoft.tna.service.TimelineService;
+import com.jazasoft.util.Utils;
 import cz.jirutka.rsql.parser.RSQLParser;
 import cz.jirutka.rsql.parser.ast.Node;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.ResponseEntity;
@@ -21,7 +24,11 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.net.URI;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping(ApiUrls.ROOT_URL_TIMELINES)
@@ -36,7 +43,21 @@ public class TimelineRestController {
     }
 
     @GetMapping
-    public ResponseEntity<?> findAll(@RequestParam(value = "search", defaultValue = "") String search, Pageable pageable) {
+    public ResponseEntity<?> findAll(@RequestParam(value = "search", defaultValue = "") String search,
+                                     HttpServletRequest request,
+                                     Pageable pageable) {
+        //Extract buyer privilege from Request
+        List<String> buyerIds = new ArrayList<>();
+        Object attrBuyer = request.getAttribute(Constants.REQ_ATTRIBUTE_BUYER);
+        if (attrBuyer instanceof List) {
+            buyerIds = (List<String>) attrBuyer;
+        }
+        //If buyer privilege is present and there is no filter on buyer, apply filter
+        if (!search.contains("buyer") && !buyerIds.isEmpty()) {
+            search = search.isEmpty() ? search : search + ";";
+            search += "buyer.id=in=(" + Utils.getCsvFromIterable(buyerIds) + ")";
+        }
+
         Page<Timeline> pages;
         if (search.trim().isEmpty()) {
             pages = timelineService.findAll(pageable);
@@ -45,6 +66,14 @@ public class TimelineRestController {
             Specification<Timeline> spec = rootNode.accept(new CustomRsqlVisitor<>());
             pages = timelineService.findAll(spec, pageable);
         }
+        // If buyer privilege is present and there was already filter on buyer, Make sure that filter was not for other buyers
+        if (!buyerIds.isEmpty() && search.contains("buyer")) {
+            List<Timeline> timelines = pages.getContent();
+            Set<Long> ids = buyerIds.stream().map(Long::parseLong).collect(Collectors.toSet());
+            timelines = timelines.stream().filter(timeline -> timeline.getBuyer() != null && ids.contains(timeline.getBuyer().getId())).collect(Collectors.toList());
+            pages = new PageImpl<>(timelines);
+        }
+
         pages.forEach(timeline -> timeline.setTActivityList(null));
         pages.forEach(timeline -> timeline.setBuyerId(timeline.getBuyer() != null ? timeline.getBuyer().getId() : null));
         pages.forEach(timeline -> timeline.setGarmentTypeId(timeline.getGarmentType() != null ? timeline.getGarmentType().getId() : null));

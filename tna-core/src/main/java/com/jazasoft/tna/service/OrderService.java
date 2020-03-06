@@ -302,6 +302,7 @@ public class OrderService {
       mOrder.setOrderDate(order.getOrderDate());
       mOrder.setRemarks(order.getRemarks());
       mOrder.setExFactoryDate(order.getExFactoryDate());
+      mOrder.setEtdDate(order.getEtdDate());
 
       if (order.getBuyerId() != null) {
         mOrder.setBuyer(buyerRepository.findById(order.getBuyerId()).orElse(null));
