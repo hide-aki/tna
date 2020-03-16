@@ -84,6 +84,10 @@ public class Order extends Auditable {
 
   private String remarks;
 
+  private String state;
+
+  private Boolean delayed;
+
   @Audited(targetAuditMode = NOT_AUDITED)
   @ManyToOne(optional = false, fetch = FetchType.LAZY)
   private Season season;
@@ -119,6 +123,10 @@ public class Order extends Auditable {
   @Transient
   private Long seasonId;
 
+  public Boolean getDelayed() {
+    return delayed != null ? delayed : false;
+  }
+
   @Override
   public boolean equals(Object o) {
     if (this == o) return true;
@@ -152,6 +160,8 @@ public class Order extends Auditable {
         ", timelineId=" + timelineId +
         ", garmentTypeId=" + garmentTypeId +
         ", seasonId=" + seasonId +
+        ", state=" + state +
+        ", delayed=" + delayed +
         '}';
   }
 }

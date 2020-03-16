@@ -1,3 +1,10 @@
+-- Rolling Back ChangeSet: db/changelog/changelog-2.0.x.xml::v2.0.x-id44::aditya
+ALTER TABLE public.orders DROP COLUMN state;
+
+ALTER TABLE public.orders DROP COLUMN delayed;
+
+DELETE FROM public.databasechangelog WHERE ID = 'v2.0.x-id44' AND AUTHOR = 'aditya' AND FILENAME = 'db/changelog/changelog-2.0.x.xml';
+
 -- Rolling Back ChangeSet: db/changelog/changelog-2.0.x.xml::v2.0.x-id43::aditya
 ALTER TABLE public.timeline DROP CONSTRAINT fk_timeline_garment_type_id;
 

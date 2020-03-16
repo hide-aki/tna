@@ -61,11 +61,18 @@ public class OActivity extends Auditable {
     @JsonProperty("tActivityId")
     private Long tActivityId;
 
+    @Transient
+    private Boolean delayed;
+
     @Temporal(value = TemporalType.TIMESTAMP)
     private Date dueDate;
 
 
     public OActivity() {
+    }
+
+    public Boolean getDelayed() {
+        return delayed != null ? delayed : false;
     }
 
     @Override
@@ -97,6 +104,7 @@ public class OActivity extends Auditable {
             ", orderId=" + orderId +
             ", tActivityId=" + tActivityId +
             ", dueDate=" + dueDate +
+            ", delayed=" + delayed +
             '}';
     }
 }

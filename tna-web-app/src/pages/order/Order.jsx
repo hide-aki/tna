@@ -47,8 +47,10 @@ import { ColorNotification } from "../../utils/colors";
 
 const filters = (buyerIds = []) => (
   <Filter
-    parse={({ buyerId }) => ({
-      "buyer.id": buyerId
+    parse={({ buyerId, delayed, state }) => ({
+      "buyer.id": buyerId,
+      delayed,
+      state
     })}
   >
     <ReferenceInput
@@ -62,6 +64,21 @@ const filters = (buyerIds = []) => (
     >
       <SelectInput optionText="name" />
     </ReferenceInput>
+    <SelectInput
+      source="delayed"
+      choices={[{id: 'true', name: "Delayed"}, {id: 'false', name: "On Time"}]}
+      xs={12}
+      fullWidth={true}
+      options={{ fullWidth: true }}
+    />
+    <SelectInput
+      label="Order State"
+      source="state"
+      choices={[{id: "Running", name: "Running"}, {id: "Completed", name: "Completed"}]}
+      xs={12}
+      fullWidth={true}
+      options={{ fullWidth: true }}
+    />
     <ReferenceArrayInput
       source="buyerId"
       label="Buyers"

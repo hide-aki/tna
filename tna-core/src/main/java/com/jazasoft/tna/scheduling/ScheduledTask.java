@@ -10,10 +10,12 @@ import com.jazasoft.tna.Constants;
 import com.jazasoft.tna.entity.OActivity;
 import com.jazasoft.tna.entity.Order;
 import com.jazasoft.tna.entity.User;
+import com.jazasoft.tna.OState;
 import com.jazasoft.tna.repository.UserRepository;
 import com.jazasoft.tna.service.OrderService;
 import com.jazasoft.tna.service.UserService;
 import com.jazasoft.tna.util.MapBuilder;
+import com.jazasoft.util.DateUtils;
 import com.jazasoft.util.ProcessUtils;
 import com.jazasoft.util.Utils;
 import org.hibernate.engine.jdbc.connections.spi.MultiTenantConnectionProvider;
@@ -27,6 +29,8 @@ import java.io.File;
 import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -58,7 +62,7 @@ public class ScheduledTask {
   /**
    * Run Database backup at 1.00 AM every day
    */
-  @Scheduled(cron = "0 0 15 * * *")
+  @Scheduled(cron = "0 0 1 * * *")
   public void backupDatabase() {
     logger.info("Database backup started...");
     List<String> databaseList = tenantService.findAll().stream().map(Tenant::getTenantId).map(tenantId -> "tna_" + tenantId).collect(Collectors.toList());
@@ -147,8 +151,7 @@ public class ScheduledTask {
 ////    userCache.updateCache();
 //  }
 
-  //  @Scheduled(cron = "0 0 8 * * *")
-  @Scheduled(cron = "0 0 * * * *")
+  @Scheduled(cron = "0 0 8 * * *")
   private void delayedActivity() throws ParseException {
     logger.info("Schedular Started for sending delayed oactivity notification");
     List<String> tenantIds = tenantService.findAll().stream().map(Tenant::getTenantId).collect(Collectors.toList());
@@ -203,12 +206,55 @@ public class ScheduledTask {
     logger.info("Schedular Ended after notify for delayed oActivity");
   }
 
+//check the order is delayed or not
+  @Scheduled(cron = "0 0 22 * * *" )
+  private void delayedOrder() {
+    logger.info("scheduler started... ");
+
+    List<String> tenantIds = tenantService.findAll().stream().map(Tenant::getTenantId).collect(Collectors.toList());
+    for (String tenantId : tenantIds) {
+      MultiTenantConnectionProviderImpl mTenantConnectionProvider = (MultiTenantConnectionProviderImpl) multiTenantConnectionProvider;
+      mTenantConnectionProvider.setDefaultTenant(tenantId);
+
+      Date today = new Date();
+      List<Order> mOrderList = orderService.findAll(Specification.where(byRunningState(OState.RUNNING)));
+      for (Order order : mOrderList) {
+        for (OActivity oActivity : order.getOActivityList()) {
+          logger.trace("Activity = {}, today = {}, dueDate = {}, completedDate = {}", oActivity.getName(), today, oActivity.getDueDate(), oActivity.getCompletedDate());
+          if (LocalDate.now().isAfter(DateUtils.toLocalDate(oActivity.getDueDate()))) {
+            boolean isDelayed = oActivity.getCompletedDate() == null || DateUtils.toLocalDate(oActivity.getCompletedDate()).isAfter(DateUtils.toLocalDate(oActivity.getDueDate()));
+            long delayDays = oActivity.getCompletedDate() == null ? daysBetween(oActivity.getDueDate(), today) : daysBetween(oActivity.getDueDate(), oActivity.getCompletedDate());
+            if (isDelayed && delayDays <= Constants.WEEKLY_MEETING) {
+              oActivity.setDelayed(true);
+            }
+          }
+        }
+        boolean isDelayed = order.getOActivityList().stream().anyMatch(oActivity -> Boolean.TRUE.equals(oActivity.getDelayed()));
+        boolean isCompleted = order.getOActivityList().stream().allMatch(oActivity -> oActivity.getCompletedDate() != null);
+        if (!order.getDelayed().equals(isDelayed) || (OState.parse(order.getState()) != OState.COMPLETED && isCompleted)) {
+          order.setDelayed(isDelayed);
+          if (isCompleted) {
+            order.setState(OState.COMPLETED.getValue());
+          }
+          orderService.update(order, "default");
+        }
+      }
+      logger.info("scheduler ended. ");
+      mTenantConnectionProvider.setDefaultTenant(null);
+    }
+  }
+
   private Specification<User> byDepartmentId(Long departmentId) {
     return ((root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get("departmentId"), departmentId));
   }
-
   private Specification<User> byRole(String role) {
     return ((root, query, criteriaBuilder) -> criteriaBuilder.like(root.get("roles"), "%" + role + "%"));
   }
+  private Specification<Order> byRunningState(OState OState) {
+    return (((root, criteriaQuery, criteriaBuilder) -> criteriaBuilder.like(root.get("state"), OState.getValue())));
+  }
 
+  private static long daysBetween(Date first, Date second) {
+    return DateUtils.toLocalDate(first).until(DateUtils.toLocalDate(second), ChronoUnit.DAYS);
+  }
 }

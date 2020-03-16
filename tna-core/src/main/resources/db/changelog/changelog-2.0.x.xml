@@ -819,6 +819,13 @@
                                  referencedColumnNames="id" referencedTableName="garment_type"/>
     </changeSet>
 
+    <changeSet id="v2.0.x-id44" author="aditya">
+        <addColumn tableName="orders">
+            <column name="state" type="VARCHAR(255)"/>
+            <column name="delayed" type="BOOL"/>
+        </addColumn>
+    </changeSet>
+
 </databaseChangeLog>
 
 

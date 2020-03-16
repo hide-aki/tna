@@ -5,6 +5,7 @@ import com.jazasoft.mtdb.service.EmailServiceImpl;
 import com.jazasoft.tna.Constants;
 import com.jazasoft.tna.dto.Log;
 import com.jazasoft.tna.entity.*;
+import com.jazasoft.tna.OState;
 import com.jazasoft.tna.repository.*;
 import com.jazasoft.tna.util.Graph;
 import com.jazasoft.tna.util.MapBuilder;
@@ -73,6 +74,12 @@ public class OrderService {
 
   public List<Order> findAll() {
     List<Order> orderList = orderRepository.findAll();
+    orderList.forEach(order -> Hibernate.initialize(order.getOActivityList()));
+    return orderList;
+  }
+
+  public List<Order> findAll(Specification<Order> spec) {
+    List <Order> orderList =  orderRepository.findAll(spec);
     orderList.forEach(order -> Hibernate.initialize(order.getOActivityList()));
     return orderList;
   }
@@ -235,6 +242,8 @@ public class OrderService {
     if (order.getSeasonId() != null) {
       order.setSeason(seasonRepository.findById(order.getSeasonId()).orElse(null));
     }
+    order.setState(OState.RUNNING.getValue());
+    order.setDelayed(false);
 
     // Calculate Standard Lead Time
     int currentLeadTime = (int) DAYS.between(DateUtils.toLocalDate(order.getOrderDate()), DateUtils.toLocalDate(order.getExFactoryDate()));
@@ -303,6 +312,8 @@ public class OrderService {
       mOrder.setRemarks(order.getRemarks());
       mOrder.setExFactoryDate(order.getExFactoryDate());
       mOrder.setEtdDate(order.getEtdDate());
+      mOrder.setState(order.getState());
+      mOrder.setDelayed(order.getDelayed());
 
       if (order.getBuyerId() != null) {
         mOrder.setBuyer(buyerRepository.findById(order.getBuyerId()).orElse(null));

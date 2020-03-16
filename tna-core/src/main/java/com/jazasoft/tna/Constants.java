@@ -15,4 +15,6 @@ public interface Constants {
 
   String DEPARTMENT_MERCHANDISING = "Merchandising";
 
+  Integer WEEKLY_MEETING = 10;
+
 }
