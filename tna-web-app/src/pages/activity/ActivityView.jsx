@@ -34,7 +34,7 @@ const Footer = ({ roles, hasAccess, resource, i18nKey, basePath, record }) => (
 
 class ActivityView extends Component {
   format = record => {
-    if (record && record.notify !== (null || "")) {
+    if (record && (record.notify !== null) && (record.notify !== "") ) {
       const { notify, ...rest } = record;
       return { ...rest, notify: notify.split(",") };
     } else {

@@ -213,8 +213,8 @@ const renderActivities = ({ fields, activities, classes, expanded, handleExpansi
                   <FormDataConsumer {...inputOptions(6)}>
                     {({ formData }) => {
                       const formActList = formData.tActivityList;
-                      const currentId = activityObj.id;
-                      const filteredActList = formActList.filter(e => e.activityId < currentId);
+                      const currentSerialNo = activityObj.serialNo;
+                      const filteredActList = formActList.filter(e => e.serialNo < currentSerialNo);
                       const choices = filteredActList.map(({ activityId, name }) => {
                         return {
                           id: activityId,
