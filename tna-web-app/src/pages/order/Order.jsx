@@ -161,7 +161,7 @@ const getColumns = (orderList, onChange, onLinkClick, filterValues, hasAccess) =
     });
 
   let columns = [];
-  if (hasAccess("order", "update", "activity")) {
+  if (hasAccess && hasAccess("order", "update", "activity")) {
     columns = [{ dataKey: "selector", element: <CheckBox onChange={onChange} /> }, { dataKey: "edit" }];
   }
   columns = [

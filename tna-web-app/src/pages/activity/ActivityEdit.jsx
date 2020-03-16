@@ -35,14 +35,12 @@ class ActivityEdit extends Component {
     if (record !== undefined) {
       let Activity = {
         ...record,
-        notify: record && record.notify !== (null) ? record.notify.split(",").map(Number) : null,
+        notify: record.notify !== null ? (record.notify !== "" ? record.notify.split(",").map(Number) : null) : null,
         subActivityList:
           record && record.subActivityList && record.subActivityList.length
             ? record.subActivityList.sort((a, b) => a.id - b.id)
             : record.subActivityList
       };
-      console.log({ Activity });
-
       return Activity;
     }
   };
@@ -84,7 +82,6 @@ class ActivityEdit extends Component {
                       id,
                       name
                     }));
-
                   return <SelectArrayInput source="notify" label="Notify Departments" optionText="name" choices={choices} {...inputOptions(5)} />;
                 } else {
                   return <SelectArrayInput source="notify" label="Notify Departments" optionText="name" choices={[]} {...inputOptions(5)} />;
@@ -105,7 +102,7 @@ class ActivityEdit extends Component {
             <BooleanInput defaultValue={false} source="overridable" label="Overridable" style={{ paddingTop: "1.5em" }} {...inputOptions(2)} />
           </FormCard>
           <FormCard title="Sub Activities">
-          <ArrayInput label="" source="subActivityList" xs={12} fullWidth={true}>
+            <ArrayInput label="" source="subActivityList" xs={12} fullWidth={true}>
               <SimpleFormIterator>
                 <TextInput label="Name" source="name" validate={[required(), minLength(2)]} {...inputOptions(4)} />
                 <TextInput label="Description" source="desc" {...inputOptions(8)} />

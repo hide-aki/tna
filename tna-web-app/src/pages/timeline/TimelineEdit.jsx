@@ -201,8 +201,8 @@ const renderActivities = ({ fields, activities, classes, expanded, handleExpansi
                     {({ formData }) => {
                       if (formData.tActivityList) {
                         const formActList = formData.tActivityList;
-                        const currentId = activityObj.id;
-                        const filteredActList = formActList.filter(e => e.activityId < currentId);
+                        const currentSerialNo = activityObj.serialNo;
+                        const filteredActList = formActList.filter(e => e.serialNo < currentSerialNo);
                         const choices = filteredActList.map(({ activityId, name }) => {
                           return {
                             id: activityId,
@@ -421,10 +421,15 @@ class TimelineEdit extends Component {
   onValidate = values => {
     const errors = {};
     const tActivityList = [];
+    let availableActivityIds = [];
+    values.tActivityList && values.tActivityList.map(({ activityId }) => availableActivityIds.push(activityId));
     values &&
       values.tActivityList &&
       values.tActivityList.forEach((activity, activityIdx) => {
         const tActivity = {};
+        if (activity.timeFrom[0] === "") {
+          activity.timeFrom.shift();
+        }
         let timeFromLength = activity.timeFrom ? activity.timeFrom.length : 0;
         for (let i = 0; i < timeFromLength; i++) {
           for (let j = 1; j < timeFromLength; j++) {
