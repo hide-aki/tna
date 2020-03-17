@@ -430,6 +430,9 @@ class TimelineEdit extends Component {
         if (activity.timeFrom[0] === "") {
           activity.timeFrom.shift();
         }
+        if (activity.timeFrom[0] !== "O") {
+          activity.timeFrom.forEach(e => (!availableActivityIds.includes(e) ? ((activity.timeFrom = []), (activity.leadTime = null)) : {}));
+        }
         let timeFromLength = activity.timeFrom ? activity.timeFrom.length : 0;
         for (let i = 0; i < timeFromLength; i++) {
           for (let j = 1; j < timeFromLength; j++) {

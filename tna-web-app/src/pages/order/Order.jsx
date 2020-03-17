@@ -66,7 +66,10 @@ const filters = (buyerIds = []) => (
     </ReferenceInput>
     <SelectInput
       source="delayed"
-      choices={[{id: 'true', name: "Delayed"}, {id: 'false', name: "On Time"}]}
+      choices={[
+        { id: "true", name: "Delayed" },
+        { id: "false", name: "On Time" }
+      ]}
       xs={12}
       fullWidth={true}
       options={{ fullWidth: true }}
@@ -74,7 +77,10 @@ const filters = (buyerIds = []) => (
     <SelectInput
       label="Order State"
       source="state"
-      choices={[{id: "Running", name: "Running"}, {id: "Completed", name: "Completed"}]}
+      choices={[
+        { id: "Running", name: "Running" },
+        { id: "Completed", name: "Completed" }
+      ]}
       xs={12}
       fullWidth={true}
       options={{ fullWidth: true }}
@@ -100,10 +106,16 @@ const MyTextField = ({ column, record }) => {
   const activity = record[column.dataKey];
   let value, bgColor;
   if (activity) {
-    let dueDate = moment(record.orderDate).add(activity.finalLeadTime, "days");
+    let dueDate = moment(record.orderDate)
+      .add(activity.finalLeadTime, "days")
+      .startOf("day");
     value = activity.completedDate ? moment(activity.completedDate).format("ll") : dueDate ? dueDate.format("ll") : null;
     if (activity.completedDate) {
-      if (moment(activity.completedDate).isSameOrBefore(dueDate)) {
+      if (
+        moment(activity.completedDate)
+          .startOf("day")
+          .isSameOrBefore(dueDate)
+      ) {
         bgColor = ColorNotification.GREEN; // Green
       } else {
         bgColor = ColorNotification.ORANGE; //Orange

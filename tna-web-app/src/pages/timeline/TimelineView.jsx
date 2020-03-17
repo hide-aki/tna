@@ -48,21 +48,26 @@ const renderSubActivityName = rowData =>
     <span />
   );
 
-const matActivityColumns = hasAccess => {
-  return hasAccess("timeline", "update", "approve")
-    ? [
-        {
-          field: "name",
-          title: "Name",
-          render: rowData => renderSubActivityName(rowData)
-        },
-        { field: "prevLeadTime", title: "Prev Lead Time", emptyValue: "-", cellStyle: { paddingLeft: "10em" }, headerStyle: { paddingLeft: "8em" } },
-        { field: "leadTime", title: "Lead Time", cellStyle: { textAlign: "right", paddingRight: "3.5em" }, headerStyle: { textAlign: "right" } }
-      ]
-    : [
-        { field: "name", title: "Name" },
-        { field: "leadTime", title: "Lead Time", cellStyle: { textAlign: "right", paddingRight: "3.5em" }, headerStyle: { textAlign: "right" } }
-      ];
+const matActivityColumns = (hasAccess, approvalStatus) => {
+  return [
+    {
+      field: "name",
+      title: "Name",
+      render: rowData => renderSubActivityName(rowData)
+    },
+    hasAccess("timeline", "update", "approval_edit")
+      ? !approvalStatus
+        ? {
+            field: "prevLeadTime",
+            title: "Prev Lead Time",
+            emptyValue: "-",
+            cellStyle: { paddingLeft: "10em" },
+            headerStyle: { paddingLeft: "8em" }
+          }
+        : {}
+      : {},
+    { field: "leadTime", title: "Lead Time", cellStyle: { textAlign: "right", paddingRight: "3.5em" }, headerStyle: { textAlign: "right" } }
+  ];
 };
 
 const muiActivityColumns = (timeline, onChange) => [
@@ -240,17 +245,17 @@ class TimelineView extends Component {
     const { rowActivity } = this.state;
     let error = false;
     for (let i = 0; i < rowActivity.length; i++) {
-      if(rowActivity[i].timeFrom[0] === ""){
-        rowActivity[i].timeFrom.shift()
+      if (rowActivity[i].timeFrom[0] === "") {
+        rowActivity[i].timeFrom.shift();
         this.props.dispatch(showNotification(`${rowActivity[i].name}'s Time From value must not be empty`, { type: "warning" }));
-      }
-      else if (!(rowActivity[i].timeFrom.length)) {
+      } else if (!rowActivity[i].timeFrom.length) {
         error = true;
         this.props.dispatch(showNotification(`${rowActivity[i].name}'s Time From value must not be empty`, { type: "warning" }));
-      }
-      else if (rowActivity[i].timeFrom.length > 1 && rowActivity[i].timeFrom.includes("O")) {
+      } else if (rowActivity[i].timeFrom.length > 1 && rowActivity[i].timeFrom.includes("O")) {
         error = true;
-        this.props.dispatch(showNotification(`${rowActivity[i].name}'s Time From value cannot be combined with Order Date and Activities for`, { type: "warning" }));
+        this.props.dispatch(
+          showNotification(`${rowActivity[i].name}'s Time From value cannot be combined with Order Date and Activities for`, { type: "warning" })
+        );
       } else if (Number(rowActivity[i].leadTime) > timeline.stdLeadTime) {
         error = true;
         this.props.dispatch(
@@ -395,7 +400,7 @@ class TimelineView extends Component {
                       });
                 return (
                   <MaterialTable
-                    columns={matActivityColumns(hasAccess)}
+                    columns={matActivityColumns(hasAccess, approvalStatus)}
                     data={data}
                     icons={Icons}
                     options={{
