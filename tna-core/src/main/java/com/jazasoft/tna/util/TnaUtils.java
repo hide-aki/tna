@@ -3,12 +3,11 @@ package com.jazasoft.tna.util;
 import com.jazasoft.tna.Constants;
 import com.jazasoft.tna.entity.TActivity;
 import com.jazasoft.util.Assert;
+import com.jazasoft.util.DateUtils;
 import com.jazasoft.util.Utils;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Comparator;
-import java.util.List;
+import java.time.temporal.ChronoUnit;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class TnaUtils {
@@ -38,6 +37,10 @@ public class TnaUtils {
 
   public static int getLeadTime(int leadTime, int currLeadTime, int stdLeadTime) {
     return (int)Math.round ( (double) (leadTime * currLeadTime)/stdLeadTime);
+  }
+
+  public static long daysBetween(Date first, Date second) {
+    return DateUtils.toLocalDate(first).until(DateUtils.toLocalDate(second), ChronoUnit.DAYS);
   }
 
   public static String removeKeyFromSearch(String search, String key) {

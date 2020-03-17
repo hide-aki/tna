@@ -32,11 +32,13 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 
+import static com.jazasoft.tna.util.TnaUtils.daysBetween;
 import static java.time.temporal.ChronoUnit.DAYS;
 
 @Service
@@ -419,8 +421,20 @@ public class OrderService {
               mSubActivity.setRemarks(oSubActivity.getRemarks());
             }
           }
+
+          //Set Delayed Flag
+          if (LocalDate.now().isAfter(DateUtils.toLocalDate(mActivity.getDueDate()))) {
+            boolean isDelayed = mActivity.getCompletedDate() == null || DateUtils.toLocalDate(mActivity.getCompletedDate()).isAfter(DateUtils.toLocalDate(mActivity.getDueDate()));
+            long delayDays = mActivity.getCompletedDate() == null ? daysBetween(mActivity.getDueDate(), new Date()) : daysBetween(mActivity.getDueDate(), mActivity.getCompletedDate());
+            if (isDelayed && delayDays <= Constants.WEEKLY_MEETING) {
+              mActivity.setDelayed(true);
+            }
+          }
         }
       }
+
+      boolean isDelayed = mOrder.getOActivityList().stream().anyMatch(oActivity -> Boolean.TRUE.equals(oActivity.getDelayed()));
+      mOrder.setDelayed(isDelayed);
     }
 
     Map<Long, Map<String, Object>> activityUserMap = new HashMap<>();
@@ -462,6 +476,7 @@ public class OrderService {
     return mOrderList;
   }
 
+  @Deprecated
   @Transactional(value = "tenantTransactionManager")
   public OActivity updateActivity(Long orderId, OActivity oActivity) {
     Order mOrder = orderRepository.getOne(orderId);
@@ -473,6 +488,7 @@ public class OrderService {
     return mOActivity;
   }
 
+  @Deprecated
   @Transactional(value = "tenantTransactionManager")
   public OSubActivity updateSubActivity(Long oActivityId, OSubActivity oSubActivity) {
 

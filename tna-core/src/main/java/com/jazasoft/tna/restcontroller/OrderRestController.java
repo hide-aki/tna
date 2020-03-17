@@ -240,6 +240,7 @@ public class OrderRestController {
     return ResponseEntity.ok(mOrderList);
   }
 
+  @Deprecated
   @PutMapping(ApiUrls.URL_ORDERS_ORDER + URL_ORDERS_ORDER_ACTIVITIES_ACTIVITY)
   public ResponseEntity<?> updateActivity(@PathVariable(value = "orderId") Long orderId,
                                           @PathVariable(value = "activityId") Long activityId,
@@ -256,6 +257,7 @@ public class OrderRestController {
     return ResponseEntity.ok(mActivity);
   }
 
+  @Deprecated
   @PutMapping(ApiUrls.URL_ORDERS_ORDER + URL_ORDERS_ORDER_ACTIVITIES_ACTIVITY + URL_ORDERS_ORDER_SUBACTIVITIES_SUBACTIVITY)
   public ResponseEntity<?> updateSubActivity(@PathVariable(value = "orderId") Long orderId,
                                                   @PathVariable(value = "activityId") Long activityId,

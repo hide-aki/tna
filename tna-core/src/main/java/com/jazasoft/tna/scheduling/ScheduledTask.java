@@ -36,6 +36,8 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 
+import static com.jazasoft.tna.util.TnaUtils.daysBetween;
+
 @Component
 public class ScheduledTask {
   private final Logger logger = LoggerFactory.getLogger(ScheduledTask.class);
@@ -252,9 +254,5 @@ public class ScheduledTask {
   }
   private Specification<Order> byRunningState(OState OState) {
     return (((root, criteriaQuery, criteriaBuilder) -> criteriaBuilder.like(root.get("state"), OState.getValue())));
-  }
-
-  private static long daysBetween(Date first, Date second) {
-    return DateUtils.toLocalDate(first).until(DateUtils.toLocalDate(second), ChronoUnit.DAYS);
   }
 }
