@@ -22,7 +22,6 @@ class OrderEdit extends Component {
           <ReferenceInput source="buyerId" reference="buyers" validate={required()} {...inputOptions(3)} disabled>
             <SelectInput optionText="name" />
           </ReferenceInput>
-          <TextInput source="timeline" label="Timeline" validate={[required(), minLength(2)]} {...inputOptions(3)} />
           <ReferenceInput source="garmentTypeId" reference="garmentTypes" validate={required()} {...inputOptions(3)}>
             <SelectInput optionText="name" />
           </ReferenceInput>
