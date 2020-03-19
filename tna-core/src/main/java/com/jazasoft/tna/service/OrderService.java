@@ -300,6 +300,19 @@ public class OrderService {
         oSubActivity.setDueDate(DateUtils.fromLocalDate(DateUtils.toLocalDate(oActivity.getDueDate()).plusDays(oSubActivity.getLeadTime())));
       }
     }
+
+    for (OActivity oActivity : order.getOActivityList()) {
+      if (LocalDate.now().isAfter(DateUtils.toLocalDate(oActivity.getDueDate()))) {
+        boolean isDelayed = oActivity.getCompletedDate() == null || DateUtils.toLocalDate(oActivity.getCompletedDate()).isAfter(DateUtils.toLocalDate(oActivity.getDueDate()));
+        long delayDays = oActivity.getCompletedDate() == null ? daysBetween(oActivity.getDueDate(), new Date()) : daysBetween(oActivity.getDueDate(), oActivity.getCompletedDate());
+        if (isDelayed && delayDays <= Constants.WEEKLY_MEETING) {
+          oActivity.setDelayed(true);
+        }
+      }
+    }
+
+    boolean isDelayed = order.getOActivityList().stream().anyMatch(oActivity -> Boolean.TRUE.equals(oActivity.getDelayed()));
+    order.setDelayed(isDelayed);
     return orderRepository.save(order);
   }
 
