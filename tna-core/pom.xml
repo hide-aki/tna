@@ -6,7 +6,7 @@
 
     <groupId>com.jazasoft</groupId>
     <artifactId>tna-core</artifactId>
-    <version>2.0.0-beta.1</version>
+    <version>2.0.0-beta.2</version>
     <packaging>war</packaging>
 
     <parent>
