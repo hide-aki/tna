@@ -15,7 +15,7 @@
     </encoder>
   </appender>
 
-  <logger name="com.jazasoft.mtdb" level="INFO" additivity="false">
+  <logger name="com.jazasoft.mtdb" level="DEBUG" additivity="false">
     <appender-ref ref="FILE" />
     <appender-ref ref="STDOUT" />
   </logger>

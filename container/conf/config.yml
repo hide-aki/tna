@@ -9,6 +9,12 @@ liquibase:
    tenant-changelog: classpath:/db/changelog-tenant.xml
    rollback-sql: rollback-sql-temp.sql
    enabled: true
+iam:
+   endpoint: https://iam-dev.jaza-soft.com
+client:
+   id: client
+   secret: secret
+
 configuration: 
    settings: 
    - !com.jazasoft.mtdb.dto.Setting

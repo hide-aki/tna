@@ -56,22 +56,4 @@
         </insert>
     </changeSet>
 
-    <changeSet id="v2.0.x-id6" author="aditya">
-        <insert tableName="activity">
-            <column name="id" valueNumeric="1" />
-            <column name="department_id" type="BIGINT" value="1"/>
-            <column name="serial_no" value="1"/>
-        </insert>
-        <insert tableName="activity">
-            <column name="id" valueNumeric="2" />
-            <column name="department_id" type="BIGINT" value="1"/>
-            <column name="serial_no" value="2"/>
-        </insert>
-
-
-    </changeSet>
-
-
-
-
 </databaseChangeLog>

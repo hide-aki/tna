@@ -13,7 +13,7 @@ spring:
     show-sql: true
     format-sql: true
     hibernate:
-      ddl-auto: update
+      ddl-auto: none
     properties:
       hibernate:
         dialect: org.hibernate.dialect.H2Dialect
@@ -25,6 +25,7 @@ spring:
 
   liquibase:
     enabled: true
+    change-log: 'classpath:/db/changelog/db.changelog-master-h2.yaml'
 
   security:
     oauth2:
@@ -35,8 +36,8 @@ spring:
 test:
   tenant:
     datasource:
-      db-name: tna_test
-      url: jdbc:h2:mem:tna_test;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
+      db-name: tna_dev
+      url: jdbc:h2:mem:tna_dev;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
       driver-class-name: org.h2.Driver
       username: sa
       password: ""

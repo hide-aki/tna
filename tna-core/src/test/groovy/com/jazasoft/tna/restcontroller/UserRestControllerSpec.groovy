@@ -3,8 +3,10 @@ package com.jazasoft.tna.restcontroller
 import com.jazasoft.tna.ApiUrls
 import com.jazasoft.tna.BaseISpec
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity
+import spock.lang.Ignore
 
 
+@Ignore
 class UserRestControllerSpec extends BaseISpec {
 
     def "find all user"() {
@@ -12,11 +14,6 @@ class UserRestControllerSpec extends BaseISpec {
         mvc.perform(get(ApiUrls.ROOT_URL_USERS + "?sort=id,asc").header(name: "Authorization", "Bearer" + accessToken))
                 .andExpect(status().isok())
                 .andExpect()
-
-
-
-
-
 
     }
 }

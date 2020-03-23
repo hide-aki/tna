@@ -32,7 +32,7 @@
         <dependency>
             <groupId>com.jazasoft</groupId>
             <artifactId>jazasoft-mtdb</artifactId>
-            <version>3.0.0</version>
+            <version>3.3.0-RELEASE</version>
         </dependency>
 
         <dependency>
@@ -412,5 +412,11 @@
         </plugins>
     </build>
 
+    <repositories>
+        <repository>
+            <id>maven-public</id>
+            <url>https://nexus.jaza-soft.com/repository/maven-public/</url>
+        </repository>
+    </repositories>
 
 </project>

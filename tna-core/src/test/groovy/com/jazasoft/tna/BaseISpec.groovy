@@ -85,8 +85,8 @@ class BaseISpec extends Specification {
     }
 
     def setup() {
-        def username = "admin_tna"
-        def password = "8904360418"
+        def username = "su_dev"
+        def password = "Jaza@7292"
 
         String appId = (String) MtdbUtils.getAppId();
         String authorization = MtdbUtils.getBasicAuthorization();
@@ -95,7 +95,7 @@ class BaseISpec extends Specification {
         headers.setContentType(MediaType.APPLICATION_JSON);
         HttpEntity<String> httpEntity = new HttpEntity("", headers);
 
-        def baseUrl = MtdbUtils.getConfProperty(IConfigKeys.AUTH_SERVER_ENDPOINTS_BASE);
+        def baseUrl = MtdbUtils.getConfProperty("iam.endpoint");
         UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(baseUrl + "/oauth/token")
                 .queryParam("grant_type", "password")
                 .queryParam("username", username)
