@@ -55,5 +55,26 @@
             <column name="department_id" type="BIGINT" value="1"/>
         </insert>
     </changeSet>
+    <changeSet id="v2.0.x-id6" author="aditya">
+        <insert tableName="users">
+            <column name="id" valueNumeric="1"/>
+            <column name="full_name" value="aditya"/>
+            <column name="email" value="adityababu55@gmail.com"/>
+            <column name="username" value="m_user"/>
+            <column name="roles" value="hod"/>
+            <column name="mobile" value="8744952966"/>
+            <column name="team_id" valueNumeric="1" />
+        </insert>
+        <insert tableName="users">
+            <column name="id" valueNumeric="2"/>
+            <column name="full_name" value="zahid"/>
+            <column name="email" value="adityamishra2966@gmail.com"/>
+            <column name="username" value="h_user"/>
+            <column name="roles" value="user"/>
+            <column name="mobile" value="8744952966"/>
+            <column name="team_id" value="2"/>
+        </insert>
+    </changeSet>
+    
 
 </databaseChangeLog>
