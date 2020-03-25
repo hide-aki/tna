@@ -414,7 +414,7 @@
 
     <repositories>
         <repository>
-            <id>maven-public</id>
+            <id>nexus</id>
             <url>https://nexus.jaza-soft.com/repository/maven-public/</url>
         </repository>
     </repositories>
